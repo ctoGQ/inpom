@@ -86,8 +86,8 @@ export function CardDisplay({
         </div>
 
         {/* Right side: 3D Animated Card */}
-        <div className="lg:col-span-3 flex items-center justify-center slide-in-card-container">
-          <div className="w-full max-w-md slide-in-card">
+        <div className="lg:col-span-3 flex items-center justify-center slide-in-card-container overflow-hidden">
+          <div className="w-full max-w-xs lg:max-w-md slide-in-card">
             <TierCard 
               variant={getTierVariant(cardType)} 
               imageUrl={getCardImageUrl(cardType)}
@@ -99,6 +99,7 @@ export function CardDisplay({
               opacity: 0;
               animation: fadeIn 0.8s ease-out forwards;
               animation-delay: 0.2s;
+              min-h-[200px];
             }
 
             .slide-in-card {
@@ -114,12 +115,30 @@ export function CardDisplay({
 
             @keyframes slideInCard {
               from {
-                transform: translateX(100px);
+                transform: translateY(100px);
                 opacity: 0;
               }
               to {
-                transform: translateX(0);
+                transform: translateY(0);
                 opacity: 1;
+              }
+            }
+
+            @media (min-width: 1024px) {
+              .slide-in-card {
+                animation: slideInCardDesktop 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+                animation-delay: 0.2s;
+              }
+
+              @keyframes slideInCardDesktop {
+                from {
+                  transform: translateX(100px);
+                  opacity: 0;
+                }
+                to {
+                  transform: translateX(0);
+                  opacity: 1;
+                }
               }
             }
           `}</style>
