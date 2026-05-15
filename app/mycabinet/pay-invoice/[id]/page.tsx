@@ -156,7 +156,7 @@ export default async function PayInvoicePage({ params }: PageProps) {
         {/* Payment Confirmation */}
         <PaymentConfirm
           invoiceId={invoiceId}
-          amount={amountNumber}
+          amount={invoice.amount}
           creatorName={invoice.creator_name}
           customerId={customer.id}
           isExpired={isExpired}
