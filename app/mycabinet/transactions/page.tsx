@@ -17,6 +17,7 @@ interface Transaction {
 
 async function getTransactions(customerId: number) {
   try {
+    console.log(`[getTransactions] Fetching transactions for customer ID: ${customerId}`);
     const result = await sql`
       SELECT id, type, amount, description, created_at, invoice_id
       FROM transactions
@@ -24,9 +25,15 @@ async function getTransactions(customerId: number) {
       ORDER BY created_at DESC
       LIMIT 100
     `;
+    
+    console.log(`[getTransactions] Found ${result.rows?.length || 0} transactions`);
+    if (result.rows?.length) {
+      console.log(`[getTransactions] Transaction IDs:`, result.rows.map(t => `${t.id} (${typeof t.id})`).join(', '));
+    }
+    
     return result.rows || [];
   } catch (error) {
-    console.error('Error fetching transactions:', error);
+    console.error('[getTransactions] Error fetching transactions:', error);
     return [];
   }
 }
@@ -71,7 +78,7 @@ export default async function TransactionsPage() {
             {transactions.map((transaction: Transaction) => (
               <Link
                 key={transaction.id}
-                href={`/mycabinet/transactions/${transaction.id}`}
+                href={`/mycabinet/transactions/${Number(transaction.id)}`}
                 className="block hover:opacity-80 transition-opacity"
               >
                 <div className="flex items-center justify-between p-4 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 hover:border-foreground/20 transition-colors">

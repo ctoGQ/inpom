@@ -23,22 +23,41 @@ interface PageProps {
 
 async function getTransaction(transactionId: number, customerId: number) {
   try {
-    console.log(`Fetching transaction ${transactionId} for customer ${customerId}`);
+    console.log(`[getTransaction] Fetching transaction ID: ${transactionId} for customer ID: ${customerId}`);
+    
     const result = await sql`
       SELECT id, type, amount, description, created_at, invoice_id
       FROM transactions
       WHERE id = ${transactionId} AND customer_id = ${customerId}
     `;
     
+    console.log(`[getTransaction] Query result:`, result);
+    console.log(`[getTransaction] Number of rows:`, result.rows?.length || 0);
+    
     if (!result.rows?.length) {
-      console.warn(`Transaction ${transactionId} not found for customer ${customerId}`);
+      console.warn(`[getTransaction] ❌ Transaction ${transactionId} not found for customer ${customerId}`);
+      
+      // Try to check if transaction exists at all (for debugging)
+      try {
+        const allTransResult = await sql`
+          SELECT id, customer_id FROM transactions WHERE id = ${transactionId}
+        `;
+        if (allTransResult.rows?.length) {
+          console.warn(`[getTransaction] ⚠️ Transaction ${transactionId} EXISTS but belongs to customer ${allTransResult.rows[0].customer_id}, not ${customerId}`);
+        } else {
+          console.warn(`[getTransaction] ⚠️ Transaction ${transactionId} does not exist at all in database`);
+        }
+      } catch (e) {
+        console.error(`[getTransaction] Error checking transaction existence:`, e);
+      }
+      
       return null;
     }
     
-    console.log(`Found transaction:`, result.rows[0]);
+    console.log(`[getTransaction] ✅ Found transaction:`, result.rows[0]);
     return result.rows[0];
   } catch (error) {
-    console.error('Error fetching transaction:', error);
+    console.error('[getTransaction] Error fetching transaction:', error);
     return null;
   }
 }
@@ -73,7 +92,13 @@ export default async function TransactionDetailPage({ params }: PageProps) {
     redirect('/auth/signin');
   }
 
-  const transactionId = parseInt(params.id);
+  // Get params.id (from URL)
+  const rawId = params.id;
+  console.log(`[Transaction Detail] Raw params.id: "${rawId}" (type: ${typeof rawId})`);
+  
+  const transactionId = parseInt(rawId, 10);
+  console.log(`[Transaction Detail] Parsed transactionId: ${transactionId} (valid: ${!isNaN(transactionId)})`);
+  console.log(`[Transaction Detail] Customer ID: ${customer.id}`);
   
   if (isNaN(transactionId)) {
     return (
@@ -82,7 +107,7 @@ export default async function TransactionDetailPage({ params }: PageProps) {
           <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
             <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
             <p className="text-sm text-muted-foreground">
-              Некоректний ID транзакції
+              Некоректний ID транзакції: "{rawId}"
             </p>
           </div>
         </div>
