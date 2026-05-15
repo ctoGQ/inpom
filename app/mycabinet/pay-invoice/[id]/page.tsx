@@ -4,6 +4,7 @@ import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
 import { AlertCircle } from 'lucide-react';
 import { PaymentConfirm } from '@/components/cabinet/payment-confirm';
 import { sql } from '@/lib/db';
+import { formatAmount } from '@/lib/format-amount';
 
 interface PageProps {
   params: {
@@ -95,11 +96,6 @@ export default async function PayInvoicePage({ params }: PageProps) {
 
   const isExpired = invoice.expires_at && new Date(invoice.expires_at) < new Date();
   const isAlreadyPaid = invoice.status === 'paid';
-  
-  // Convert amount to number (comes as string from DB)
-  const amountNumber = typeof invoice.amount === 'number' 
-    ? invoice.amount 
-    : parseFloat(invoice.amount as unknown as string);
 
   return (
     <CabinetLayout title="Платіж" showBack>
@@ -128,7 +124,7 @@ export default async function PayInvoicePage({ params }: PageProps) {
                 Сума до оплати
               </p>
               <p className="text-4xl font-display text-foreground">
-                {amountNumber.toFixed(2)}
+                {formatAmount(invoice.amount)}
               </p>
               <p className="text-sm text-muted-foreground">inpom</p>
             </div>

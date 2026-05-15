@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getSessionCustomer } from '@/lib/auth';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
 import { sql } from '@/lib/db';
+import { formatAmount } from '@/lib/format-amount';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
@@ -131,7 +132,7 @@ export default async function TransactionsPage() {
                         transaction.type.includes('payment_received')
                           ? '+'
                           : '-'}
-                        {typeof transaction.amount === 'number' ? transaction.amount.toFixed(2) : '0.00'}
+                        {formatAmount(transaction.amount)}
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">inpom</p>
                     </div>

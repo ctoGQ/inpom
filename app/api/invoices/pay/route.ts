@@ -79,6 +79,14 @@ export async function POST(request: NextRequest) {
     const payerBalance = parseFloat(payerCard.balance);
     const invoiceAmount = parseFloat(invoice.amount);
 
+    console.log(`[PayInvoice] Balance conversion:`, {
+      payerBalance,
+      invoiceAmount,
+      payerCardBalance: payerCard.balance,
+      invoiceAmount: invoice.amount,
+      balanceTypes: { payer: typeof payerBalance, invoice: typeof invoiceAmount }
+    });
+
     if (payerBalance < invoiceAmount) {
       return NextResponse.json(
         {
@@ -100,6 +108,13 @@ export async function POST(request: NextRequest) {
 
     // Deduct from payer
     const newPayerBalance = payerBalance - invoiceAmount;
+    console.log(`[PayInvoice] Updating payer balance:`, {
+      payerId: payerIdNum,
+      oldBalance: payerBalance,
+      amount: invoiceAmount,
+      newBalance: newPayerBalance
+    });
+
     await sql`
       UPDATE user_cards 
       SET balance = ${newPayerBalance}, updated_at = NOW() 
@@ -116,6 +131,14 @@ export async function POST(request: NextRequest) {
     if (creatorCard) {
       const creatorBalance = parseFloat(creatorCard.balance);
       const newCreatorBalance = creatorBalance + invoiceAmount;
+      
+      console.log(`[PayInvoice] Updating creator balance:`, {
+        creatorId: invoice.creator_customer_id,
+        oldBalance: creatorBalance,
+        amount: invoiceAmount,
+        newBalance: newCreatorBalance
+      });
+
       await sql`
         UPDATE user_cards 
         SET balance = ${newCreatorBalance}, updated_at = NOW() 
@@ -123,6 +146,8 @@ export async function POST(request: NextRequest) {
       `;
     } else {
       // Create card for creator if doesn't exist
+      console.log(`[PayInvoice] Creating new card for creator:`, invoice.creator_customer_id);
+      
       await sql`
         INSERT INTO user_cards (customer_id, card_type, balance, created_at, updated_at)
         VALUES (${invoice.creator_customer_id}, 'black', ${invoiceAmount}, NOW(), NOW())
@@ -130,16 +155,20 @@ export async function POST(request: NextRequest) {
     }
 
     // Create transaction for payer
+    console.log(`[PayInvoice] Creating payer transaction`);
     await sql`
       INSERT INTO transactions (customer_id, type, amount, invoice_id, description, created_at)
       VALUES (${payerIdNum}, 'payment_sent', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment for invoice #${invoiceIdNum}`}, NOW())
     `;
 
     // Create transaction for creator
+    console.log(`[PayInvoice] Creating creator transaction`);
     await sql`
       INSERT INTO transactions (customer_id, type, amount, invoice_id, description, created_at)
       VALUES (${invoice.creator_customer_id}, 'payment_received', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment received for invoice #${invoiceIdNum}`}, NOW())
     `;
+
+    console.log(`[PayInvoice] ✅ Payment processed successfully`);
 
     return NextResponse.json({
       success: true,
@@ -148,6 +177,8 @@ export async function POST(request: NextRequest) {
         id: invoice.id,
         status: 'paid',
       },
+      payerNewBalance: newPayerBalance,
+      creatorNewBalance: creatorCard ? parseFloat(creatorCard.balance) + invoiceAmount : invoiceAmount,
     });
   } catch (error) {
     console.error('Error processing payment:', error);

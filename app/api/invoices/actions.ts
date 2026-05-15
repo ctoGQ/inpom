@@ -77,19 +77,44 @@ export async function payInvoice(invoiceId: number, payerCustomerId: number) {
       return { error: 'Карта не знайдена' };
     }
 
-    if (payerCard.balance < invoice.amount) {
-      return { error: 'Недостатньо коштів на балансі' };
+    // Parse amounts from DB (they come as strings)
+    const payerBalance = parseFloat(payerCard.balance);
+    const invoiceAmount = parseFloat(invoice.amount);
+
+    console.log(`[PayInvoiceAction] Balance check:`, {
+      payerBalance,
+      invoiceAmount,
+      payerCardBalance: payerCard.balance,
+      invoiceAmount: invoice.amount,
+    });
+
+    if (isNaN(payerBalance) || isNaN(invoiceAmount)) {
+      return { error: 'Помилка при конвертації суми' };
+    }
+
+    if (payerBalance < invoiceAmount) {
+      return { 
+        error: `Недостатньо коштів на балансі. Потрібно ${invoiceAmount.toFixed(2)} inpom, а на балансі ${payerBalance.toFixed(2)} inpom`,
+        code: 'INSUFFICIENT_BALANCE'
+      };
     }
 
     // Update invoice status
     await sql`
-      UPDATE invoices SET status = 'paid' WHERE id = ${invoiceId}
+      UPDATE invoices SET status = 'paid', updated_at = NOW() WHERE id = ${invoiceId}
     `;
 
     // Deduct from payer
-    const newPayerBalance = payerCard.balance - invoice.amount;
+    const newPayerBalance = payerBalance - invoiceAmount;
+    console.log(`[PayInvoiceAction] Updating payer balance:`, {
+      payerId: payerCustomerId,
+      oldBalance: payerBalance,
+      amount: invoiceAmount,
+      newBalance: newPayerBalance
+    });
+
     await sql`
-      UPDATE user_cards SET balance = ${newPayerBalance} WHERE id = ${payerCard.id}
+      UPDATE user_cards SET balance = ${newPayerBalance}, updated_at = NOW() WHERE id = ${payerCard.id}
     `;
 
     // Add to creator
@@ -100,27 +125,49 @@ export async function payInvoice(invoiceId: number, payerCustomerId: number) {
     const creatorCard = creatorCardResult.rows?.[0];
 
     if (creatorCard) {
-      const newCreatorBalance = creatorCard.balance + invoice.amount;
+      const creatorBalance = parseFloat(creatorCard.balance);
+      const newCreatorBalance = creatorBalance + invoiceAmount;
+      
+      console.log(`[PayInvoiceAction] Updating creator balance:`, {
+        creatorId: invoice.creator_customer_id,
+        oldBalance: creatorBalance,
+        amount: invoiceAmount,
+        newBalance: newCreatorBalance
+      });
+
       await sql`
-        UPDATE user_cards SET balance = ${newCreatorBalance} WHERE id = ${creatorCard.id}
+        UPDATE user_cards SET balance = ${newCreatorBalance}, updated_at = NOW() WHERE id = ${creatorCard.id}
+      `;
+    } else {
+      console.log(`[PayInvoiceAction] Creating card for creator:`, invoice.creator_customer_id);
+      
+      await sql`
+        INSERT INTO user_cards (customer_id, card_type, balance, created_at, updated_at)
+        VALUES (${invoice.creator_customer_id}, 'black', ${invoiceAmount}, NOW(), NOW())
       `;
     }
 
     // Create transaction for payer
+    console.log(`[PayInvoiceAction] Creating payer transaction`);
     await sql`
       INSERT INTO transactions (customer_id, type, amount, invoice_id, description, created_at)
-      VALUES (${payerCustomerId}, 'payment_sent', ${invoice.amount}, ${invoiceId}, ${'Оплата за інвойс'}, NOW())
+      VALUES (${payerCustomerId}, 'payment_sent', ${invoiceAmount}, ${invoiceId}, ${'Оплата за інвойс'}, NOW())
     `;
 
     // Create transaction for creator
+    console.log(`[PayInvoiceAction] Creating creator transaction`);
     await sql`
       INSERT INTO transactions (customer_id, type, amount, invoice_id, description, created_at)
-      VALUES (${invoice.creator_customer_id}, 'payment_received', ${invoice.amount}, ${invoiceId}, ${'Отримано платіж'}, NOW())
+      VALUES (${invoice.creator_customer_id}, 'payment_received', ${invoiceAmount}, ${invoiceId}, ${'Отримано платіж'}, NOW())
     `;
+
+    console.log(`[PayInvoiceAction] ✅ Payment processed successfully`);
 
     return {
       success: true,
       message: 'Оплата успішно проведена',
+      payerNewBalance: newPayerBalance,
+      creatorNewBalance: creatorCard ? parseFloat(creatorCard.balance) + invoiceAmount : invoiceAmount,
     };
   } catch (error) {
     console.error('Error paying invoice:', error);

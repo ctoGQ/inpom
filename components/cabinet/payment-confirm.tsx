@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, CheckCircle2, Loader } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { formatAmount } from '@/lib/format-amount';
 
 interface PaymentConfirmProps {
   invoiceId: number;
@@ -51,7 +52,7 @@ export function PaymentConfirm({
     if (balance === null || balance < amount) {
       toast({
         title: 'Недостатньо коштів',
-        description: `Потрібно ${amount.toFixed(2)} inpom, а у вас ${balance?.toFixed(2) ?? '0.00'} inpom`,
+        description: `Потрібно ${formatAmount(amount)} inpom, а у вас ${balance !== null ? formatAmount(balance) : '0.00'} inpom`,
         variant: 'destructive',
       });
       return;
@@ -165,7 +166,7 @@ export function PaymentConfirm({
           <div className="flex justify-between items-center">
             <p className="text-sm text-muted-foreground">Сума платежу</p>
             <p className="text-lg font-semibold text-foreground">
-              {amount.toFixed(2)} inpom
+              {formatAmount(amount)} inpom
             </p>
           </div>
 
@@ -177,7 +178,7 @@ export function PaymentConfirm({
           <div className="flex justify-between items-center">
             <p className="text-sm text-muted-foreground">Ваш баланс</p>
             <p className={`text-sm font-medium ${balance !== null && balance >= amount ? 'text-green-500' : 'text-red-500'}`}>
-              {balance !== null ? `${balance.toFixed(2)} inpom` : 'Загрузка...'}
+              {balance !== null ? `${formatAmount(balance)} inpom` : 'Загрузка...'}
             </p>
           </div>
         </div>
@@ -188,7 +189,7 @@ export function PaymentConfirm({
             <div>
               <p className="text-sm font-medium text-red-600">Недостатньо коштів</p>
               <p className="text-xs text-red-500 mt-1">
-                Потрібно {(amount - balance).toFixed(2)} inpom більше
+                Потрібно {formatAmount(amount - balance)} inpom більше
               </p>
             </div>
           </div>

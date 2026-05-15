@@ -5,6 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { formatAmount } from '@/lib/format-amount';
 
 interface Transaction {
   id: number;
@@ -107,9 +108,7 @@ export function CabinetTabs({ transactions, invoices }: CabinetTabsProps) {
                         transaction.type.includes('payment_received')
                           ? '+'
                           : '-'}
-                        {typeof transaction.amount === 'number'
-                          ? transaction.amount.toFixed(2)
-                          : parseFloat(transaction.amount as string).toFixed(2)}
+                        {formatAmount(transaction.amount)}
                       </p>
                       <p className="text-xs text-muted-foreground mt-1">inpom</p>
                     </div>
@@ -168,9 +167,7 @@ export function CabinetTabs({ transactions, invoices }: CabinetTabsProps) {
                       </div>
                       <div className="text-right ml-4">
                         <p className="text-sm font-medium text-foreground">
-                          {typeof invoice.amount === 'number'
-                            ? invoice.amount.toFixed(2)
-                            : parseFloat(invoice.amount as string).toFixed(2)}
+                          {formatAmount(invoice.amount)}
                         </p>
                         <p className="text-xs text-muted-foreground mt-1">inpom</p>
                       </div>

@@ -5,6 +5,7 @@ import { InvoiceDisplay } from '@/components/cabinet/invoice-display';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, ExternalLink } from 'lucide-react';
 import { sql } from '@/lib/db';
+import { formatAmount, safeAmount } from '@/lib/format-amount';
 import Link from 'next/link';
 
 interface PageProps {

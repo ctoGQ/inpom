@@ -1,6 +1,7 @@
 'use client';
 
 import { CreditCard } from 'lucide-react';
+import { formatAmount } from '@/lib/format-amount';
 
 interface CardDisplayProps {
   cardType: string;
@@ -67,7 +68,7 @@ export function CardDisplay({
         <div className="space-y-2">
           <p className={`text-xs opacity-75 ${getCardTextColor(cardType)}`}>БАЛАНС</p>
           <p className={`text-3xl font-display ${getCardTextColor(cardType)}`}>
-            {typeof balance === 'number' ? balance.toFixed(2) : '0.00'}
+            {formatAmount(balance)}
           </p>
           <p className={`text-xs ${getCardTextColor(cardType)}`}>inpom</p>
         </div>

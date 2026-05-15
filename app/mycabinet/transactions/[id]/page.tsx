@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getSessionCustomer } from '@/lib/auth';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
 import { sql } from '@/lib/db';
+import { formatAmountWithSign, safeAmount, formatAmount } from '@/lib/format-amount';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, ExternalLink, ArrowRight } from 'lucide-react';
@@ -190,10 +191,7 @@ export default async function TransactionDetailPage({ params }: PageProps) {
                   isIncoming ? 'text-green-500' : 'text-red-500'
                 }`}
               >
-                {isIncoming ? '+' : '-'}
-                {typeof transaction.amount === 'number'
-                  ? transaction.amount.toFixed(2)
-                  : '0.00'}
+                {formatAmountWithSign(transaction.amount, isIncoming)}
               </p>
               <p className="text-sm text-muted-foreground mt-2">inpom</p>
             </div>
@@ -259,9 +257,7 @@ export default async function TransactionDetailPage({ params }: PageProps) {
                   СУМА ІНВОЙСА
                 </p>
                 <p className="text-sm text-foreground">
-                  {typeof invoice.amount === 'number'
-                    ? invoice.amount.toFixed(2)
-                    : '0.00'}{' '}
+                  {formatAmount(invoice.amount)}{' '}
                   inpom
                 </p>
               </div>

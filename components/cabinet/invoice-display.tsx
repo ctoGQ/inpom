@@ -5,6 +5,7 @@ import { QRCodeCanvas } from 'qrcode.react';
 import { Copy, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { formatAmount } from '@/lib/format-amount';
 import Link from 'next/link';
 
 interface InvoiceDisplayProps {
@@ -76,7 +77,7 @@ export function InvoiceDisplay({
         <div className="text-center space-y-3">
           <p className="text-xs font-medium text-muted-foreground">СУМА ІНВОЙСА</p>
           <p className="text-5xl font-display text-foreground">
-            {typeof amount === 'number' ? amount.toFixed(2) : '0.00'}
+            {formatAmount(amount)}
           </p>
           <p className="text-sm text-muted-foreground">inpom</p>
         </div>
