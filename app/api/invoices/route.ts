@@ -55,18 +55,6 @@ export async function POST(request: NextRequest) {
     }
 
     const invoice = result.rows[0];
-
-    // Create transaction for invoice creation
-    try {
-      await sql`
-        INSERT INTO transactions (customer_id, invoice_id, type, amount, description, created_at)
-        VALUES (${customerId}, ${invoice.id}, 'invoice_created', 0, ${`Створено інвойс на суму ${numAmount} inpom`}, NOW())
-      `;
-    } catch (transactionError) {
-      console.error('Error creating transaction:', transactionError);
-      // Don't fail the invoice creation if transaction fails
-    }
-
     const paymentUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://lummetra.com'}/mycabinet/pay-invoice/${invoice.id}`;
 
     return NextResponse.json({

@@ -23,12 +23,20 @@ interface PageProps {
 
 async function getTransaction(transactionId: number, customerId: number) {
   try {
+    console.log(`Fetching transaction ${transactionId} for customer ${customerId}`);
     const result = await sql`
       SELECT id, type, amount, description, created_at, invoice_id
       FROM transactions
       WHERE id = ${transactionId} AND customer_id = ${customerId}
     `;
-    return result.rows?.[0] || null;
+    
+    if (!result.rows?.length) {
+      console.warn(`Transaction ${transactionId} not found for customer ${customerId}`);
+      return null;
+    }
+    
+    console.log(`Found transaction:`, result.rows[0]);
+    return result.rows[0];
   } catch (error) {
     console.error('Error fetching transaction:', error);
     return null;
@@ -65,7 +73,24 @@ export default async function TransactionDetailPage({ params }: PageProps) {
     redirect('/auth/signin');
   }
 
-  const transaction = await getTransaction(parseInt(params.id), customer.id);
+  const transactionId = parseInt(params.id);
+  
+  if (isNaN(transactionId)) {
+    return (
+      <CabinetLayout title="Деталі транзакції" showBack>
+        <div className="space-y-6 pt-6">
+          <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
+            <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
+            <p className="text-sm text-muted-foreground">
+              Некоректний ID транзакції
+            </p>
+          </div>
+        </div>
+      </CabinetLayout>
+    );
+  }
+
+  const transaction = await getTransaction(transactionId, customer.id);
 
   if (!transaction) {
     return (

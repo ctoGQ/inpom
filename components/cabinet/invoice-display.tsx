@@ -145,7 +145,15 @@ export function InvoiceDisplay({
       {status === 'pending' && (
         <Link href={`/mycabinet/invoices/${invoiceId}`}>
           <Button className="w-full bg-foreground text-background hover:bg-foreground/90">
-            Переглянути у транзакціях
+            Переглянути інвойс
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </Link>
+      )}
+      {status === 'paid' && (
+        <Link href={`/mycabinet/invoices/${invoiceId}`}>
+          <Button variant="outline" className="w-full">
+            Переглянути інвойс (оплачено)
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </Link>
