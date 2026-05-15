@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef } from 'react';
-import QRCode from 'qrcode.react';
+import { QRCodeCanvas } from 'qrcode.react';
 import { Copy, CheckCircle2, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
@@ -100,7 +100,7 @@ export function InvoiceDisplay({
           QR-КОД ДЛЯ СКАНУВАННЯ
         </p>
         <div className="flex justify-center p-6 bg-white rounded-lg" ref={qrRef}>
-          <QRCode
+          <QRCodeCanvas
             value={paymentUrl}
             size={256}
             level="H"
