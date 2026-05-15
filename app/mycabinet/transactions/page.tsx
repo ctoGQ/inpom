@@ -82,7 +82,7 @@ export default async function TransactionsPage() {
                     transaction.type.includes('payment_received')
                       ? '+'
                       : '-'}
-                    {transaction.amount.toFixed(2)}
+                    {typeof transaction.amount === 'number' ? transaction.amount.toFixed(2) : '0.00'}
                   </p>
                   <p className="text-xs text-muted-foreground mt-1">inpom</p>
                 </div>

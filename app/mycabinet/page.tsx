@@ -131,7 +131,7 @@ export default async function MyCabinetPage() {
                         : 'text-red-500'
                     }`}>
                       {transaction.type.includes('deposit') || transaction.type.includes('payment') ? '+' : '-'}
-                      {transaction.amount.toFixed(2)}
+                      {typeof transaction.amount === 'number' ? transaction.amount.toFixed(2) : '0.00'}
                     </p>
                   </div>
                 </div>
