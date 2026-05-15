@@ -1,9 +1,10 @@
 import { redirect } from 'next/navigation';
 import { getSessionCustomer, logout } from '@/lib/auth';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
+import { CabinetTabs } from '@/components/cabinet/cabinet-tabs';
 import { CardDisplay } from '@/components/cabinet/card-display';
 import { Button } from '@/components/ui/button';
-import { Plus, QrCode, LogOut, ArrowRight } from 'lucide-react';
+import { Plus, QrCode, LogOut } from 'lucide-react';
 import Link from 'next/link';
 import { sql } from '@/lib/db';
 
@@ -14,6 +15,16 @@ interface Transaction {
   description: string;
   created_at: string;
   invoice_id?: number;
+}
+
+interface Invoice {
+  id: number;
+  creator_customer_id: number;
+  amount: number | string;
+  description: string;
+  status: string;
+  created_at: string;
+  expires_at: string;
 }
 
 async function getUserCard(customerId: number) {
@@ -44,6 +55,22 @@ async function getRecentTransactions(customerId: number) {
   }
 }
 
+async function getRecentInvoices(customerId: number) {
+  try {
+    const result = await sql`
+      SELECT id, creator_customer_id, amount, description, status, created_at, expires_at
+      FROM invoices
+      WHERE creator_customer_id = ${customerId}
+      ORDER BY created_at DESC
+      LIMIT 20
+    `;
+    return result.rows || [];
+  } catch (error) {
+    console.error('Error fetching invoices:', error);
+    return [];
+  }
+}
+
 async function handleLogout() {
   'use server';
   await logout();
@@ -59,6 +86,7 @@ export default async function MyCabinetPage() {
 
   const card = await getUserCard(customer.id);
   const transactions = await getRecentTransactions(customer.id);
+  const invoices = await getRecentInvoices(customer.id);
 
   return (
     <CabinetLayout title="Карта">
@@ -99,77 +127,8 @@ export default async function MyCabinetPage() {
           </Link>
         </div>
 
-        {/* Recent Transactions */}
-        <div className="pt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-display text-foreground">
-              Останні транзакції
-            </h2>
-            <Link href="/mycabinet/transactions">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-xs"
-              >
-                Все
-                <ArrowRight className="w-3 h-3 ml-1" />
-              </Button>
-            </Link>
-          </div>
-
-          {transactions.length > 0 ? (
-            <div className="space-y-3">
-              {transactions.map((transaction: Transaction) => (
-                <Link
-                  key={transaction.id}
-                  href={`/mycabinet/transactions/${transaction.id}`}
-                  className="block hover:opacity-80 transition-opacity"
-                >
-                  <div className="flex items-center justify-between p-4 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 hover:border-foreground/20 transition-colors">
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-foreground capitalize">
-                        {transaction.type.replace(/_/g, ' ')}
-                      </p>
-                      {transaction.description && (
-                        <p className="text-xs text-muted-foreground mt-1 truncate">
-                          {transaction.description}
-                        </p>
-                      )}
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {new Date(transaction.created_at).toLocaleDateString('uk-UA')}
-                      </p>
-                    </div>
-                    <div className="text-right ml-4">
-                      <p
-                        className={`text-sm font-medium ${
-                          transaction.type.includes('deposit') ||
-                          transaction.type.includes('payment_received')
-                            ? 'text-green-500'
-                            : 'text-red-500'
-                        }`}
-                      >
-                        {transaction.type.includes('deposit') ||
-                        transaction.type.includes('payment_received')
-                          ? '+'
-                          : '-'}
-                        {typeof transaction.amount === 'number'
-                          ? transaction.amount.toFixed(2)
-                          : '0.00'}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">inpom</p>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-8 bg-foreground/5 border border-foreground/10 rounded-lg">
-              <p className="text-sm text-muted-foreground">
-                Немає транзакцій
-              </p>
-            </div>
-          )}
-        </div>
+        {/* Transactions and Invoices Tabs */}
+        <CabinetTabs transactions={transactions} invoices={invoices} />
 
         {/* Logout Button */}
         <form action={handleLogout} className="pt-6 pb-6">

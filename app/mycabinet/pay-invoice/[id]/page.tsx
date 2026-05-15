@@ -95,6 +95,11 @@ export default async function PayInvoicePage({ params }: PageProps) {
 
   const isExpired = invoice.expires_at && new Date(invoice.expires_at) < new Date();
   const isAlreadyPaid = invoice.status === 'paid';
+  
+  // Convert amount to number (comes as string from DB)
+  const amountNumber = typeof invoice.amount === 'number' 
+    ? invoice.amount 
+    : parseFloat(invoice.amount as unknown as string);
 
   return (
     <CabinetLayout title="Платіж" showBack>
@@ -123,7 +128,7 @@ export default async function PayInvoicePage({ params }: PageProps) {
                 Сума до оплати
               </p>
               <p className="text-4xl font-display text-foreground">
-                {typeof invoice.amount === 'number' ? invoice.amount.toFixed(2) : '0.00'}
+                {amountNumber.toFixed(2)}
               </p>
               <p className="text-sm text-muted-foreground">inpom</p>
             </div>
@@ -155,7 +160,7 @@ export default async function PayInvoicePage({ params }: PageProps) {
         {/* Payment Confirmation */}
         <PaymentConfirm
           invoiceId={invoiceId}
-          amount={invoice.amount}
+          amount={amountNumber}
           creatorName={invoice.creator_name}
           customerId={customer.id}
           isExpired={isExpired}
