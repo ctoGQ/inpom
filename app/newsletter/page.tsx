@@ -2,7 +2,7 @@ import { Navigation } from "@/components/landing/navigation";
 import { FooterSection } from "@/components/landing/footer-section";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
-import { sql } from "@vercel/postgres";
+import { sql } from "@/lib/db";
 
 async function getNewsletterArticles() {
   try {
@@ -23,7 +23,7 @@ async function getNewsletterArticles() {
       LIMIT 12
     `;
     
-    return result.rows || [];
+    return result.rows;
   } catch (error) {
     console.error("[v0] Error fetching articles:", error);
     return [];
@@ -38,7 +38,7 @@ async function getCategories() {
       ORDER BY name
     `;
     
-    return result.rows || [];
+    return result.rows;
   } catch (error) {
     console.error("Error fetching categories:", error);
     return [];

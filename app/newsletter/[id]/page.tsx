@@ -3,7 +3,7 @@ import { FooterSection } from "@/components/landing/footer-section";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
-import { sql } from "@vercel/postgres";
+import { sql } from "@/lib/db";
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -31,7 +31,7 @@ async function getArticle(id: string) {
       WHERE na.id = ${numId} AND na.status = 'published'
     `;
 
-    return result.rows?.[0] || null;
+    return result.rows?.[0] ?? null;
   } catch (error) {
     console.error("[v0] Error fetching article:", error);
     return null;
@@ -57,7 +57,7 @@ async function getRelatedArticles(categoryId: number, currentId: string) {
       LIMIT 3
     `;
 
-    return result.rows || [];
+    return result.rows;
   } catch (error) {
     console.error("[v0] Error fetching related articles:", error);
     return [];
@@ -72,7 +72,7 @@ async function getSubscriptionStats() {
       WHERE is_active = true
     `;
 
-    return result.rows?.[0]?.total_subscribers || 0;
+    return result.rows?.[0]?.total_subscribers ?? 0;
   } catch (error) {
     console.error("Error fetching subscription stats:", error);
     return 0;
@@ -293,7 +293,7 @@ export async function generateStaticParams() {
       SELECT id FROM newsletter_articles WHERE status = 'published'
     `;
     
-    return (result.rows || []).map((row) => ({
+    return (result.rows).map((row) => ({
       id: String(row.id),
     }));
   } catch (error) {

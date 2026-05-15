@@ -1,7 +1,7 @@
 'use server';
 
 import { hashPassword, createSession, verifyPassword } from '@/lib/auth';
-import { sql } from '@vercel/postgres';
+import { sql } from '@/lib/db';
 
 export async function signUp(formData: FormData) {
   const email = formData.get('email') as string;
@@ -28,7 +28,7 @@ export async function signUp(formData: FormData) {
       SELECT id FROM customers WHERE email = ${email}
     `;
 
-    if (existingResult.rows?.length > 0) {
+    if (existingResult.rows.length > 0) {
       return { error: 'Користувач з таким email вже існує' };
     }
 
@@ -42,7 +42,7 @@ export async function signUp(formData: FormData) {
       RETURNING id
     `;
 
-    if (!result.rows?.length) {
+    if (!result.rows.length) {
       return { error: 'Помилка при створенні акаунту' };
     }
 

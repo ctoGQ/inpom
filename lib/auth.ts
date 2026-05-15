@@ -2,7 +2,7 @@
 
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
-import { sql } from '@vercel/postgres';
+import { sql } from '@/lib/db';
 
 export async function hashPassword(password: string): Promise<string> {
   return crypto
@@ -19,10 +19,15 @@ export async function createSession(customerId: number): Promise<string> {
   const sessionToken = crypto.randomBytes(32).toString('hex');
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
-  await sql`
-    INSERT INTO customer_sessions (customer_id, session_token, expires_at, created_at)
-    VALUES (${customerId}, ${sessionToken}, ${expiresAt}, NOW())
-  `;
+  try {
+    await sql`
+      INSERT INTO customer_sessions (customer_id, session_token, expires_at, created_at)
+      VALUES (${customerId}, ${sessionToken}, ${expiresAt}, NOW())
+    `;
+  } catch (error) {
+    console.error('Error creating session:', error);
+    throw error;
+  }
 
   const cookieStore = await cookies();
   cookieStore.set('session_token', sessionToken, {
