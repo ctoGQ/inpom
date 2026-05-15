@@ -58,6 +58,22 @@ export default async function PayInvoicePage({ params }: PageProps) {
     );
   }
 
+  // Check if user is trying to pay their own invoice
+  if (invoice.creator_customer_id === customer.id) {
+    return (
+      <CabinetLayout title="Платіж" showBack>
+        <div className="space-y-6 pt-6">
+          <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
+            <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
+            <p className="text-sm text-muted-foreground">
+              Ви не можете платити свій інвойс
+            </p>
+          </div>
+        </div>
+      </CabinetLayout>
+    );
+  }
+
   const isExpired = invoice.expires_at && new Date(invoice.expires_at) < new Date();
   const isAlreadyPaid = invoice.status === 'paid';
 

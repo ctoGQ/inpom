@@ -106,7 +106,7 @@ export default async function InvoiceViewPage({ params }: PageProps) {
               variant="outline"
               className="w-full"
             >
-              Открыть страницу оплаты
+              Переглянути сторінку оплати
               <ExternalLink className="w-4 h-4 ml-2" />
             </Button>
           </Link>
@@ -116,7 +116,7 @@ export default async function InvoiceViewPage({ params }: PageProps) {
               variant="outline"
               className="w-full"
             >
-              Вернуться к транзакциям
+              Повернутись до транзакцій
             </Button>
           </Link>
         </div>

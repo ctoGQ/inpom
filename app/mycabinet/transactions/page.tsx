@@ -31,6 +31,20 @@ async function getTransactions(customerId: number) {
   }
 }
 
+function getInvoiceLink(transaction: Transaction): string | null {
+  if (!transaction.invoice_id) return null;
+
+  // payment_sent = пользователь платил, может видеть статус оплаты
+  // payment_received = пользователь получал, может видеть инвойс
+  if (transaction.type === 'payment_sent') {
+    return `/mycabinet/pay-invoice/${transaction.invoice_id}`;
+  } else if (transaction.type === 'payment_received') {
+    return `/mycabinet/invoices/${transaction.invoice_id}`;
+  }
+
+  return null;
+}
+
 export default async function TransactionsPage() {
   const customer = await getSessionCustomer();
 
@@ -91,12 +105,17 @@ export default async function TransactionsPage() {
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">inpom</p>
                   </div>
-                  {transaction.invoice_id && (
-                    <Link href={`/mycabinet/invoices/${transaction.invoice_id}`}>
+                  {transaction.invoice_id && getInvoiceLink(transaction) && (
+                    <Link href={getInvoiceLink(transaction)!}>
                       <Button
                         variant="ghost"
                         size="sm"
                         className="flex-shrink-0"
+                        title={
+                          transaction.type === 'payment_sent'
+                            ? 'Переглянути статус оплати'
+                            : 'Переглянути інвойс'
+                        }
                       >
                         <ExternalLink className="w-4 h-4" />
                       </Button>
