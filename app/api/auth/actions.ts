@@ -47,6 +47,18 @@ export async function signUp(formData: FormData) {
     }
 
     const customerId = result.rows[0].id as number;
+
+    // Auto-create Black card for new user
+    try {
+      await sql`
+        INSERT INTO user_cards (customer_id, card_type, balance)
+        VALUES (${customerId}, 'black', 0.00)
+      `;
+    } catch (cardError) {
+      console.error('Error creating user card:', cardError);
+      // Don't fail signup if card creation fails
+    }
+
     await createSession(customerId);
 
     return { success: true };
