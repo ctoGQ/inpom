@@ -54,10 +54,10 @@ export function CardDisplay({
 
   return (
     <div className="w-full overflow-hidden rounded-2xl border border-foreground/10">
-      {/* Layout: Text on left, 3D Card on right */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 lg:gap-6 items-stretch">
+      {/* Layout: Text on left, 3D Card on right - Single block */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center p-6 lg:p-8 bg-foreground/[0.02]">
         {/* Left side: Balance Info */}
-        <div className="lg:col-span-2 p-6 lg:p-8 flex flex-col justify-between bg-foreground/[0.02]">
+        <div className="lg:col-span-2 flex flex-col justify-between">
           {/* Header */}
           <div className="flex items-start justify-between mb-8">
             <div>
@@ -86,20 +86,8 @@ export function CardDisplay({
         </div>
 
         {/* Right side: 3D Animated Card */}
-        <div className="lg:col-span-3 relative p-6 lg:p-8 flex items-center justify-center min-h-96 lg:min-h-auto overflow-hidden">
-          {/* Background gradient hint */}
-          <div className="absolute inset-0 opacity-5 pointer-events-none">
-            <div className="absolute -right-20 -top-20 w-60 h-60 bg-foreground rounded-full blur-3xl" />
-          </div>
-
-          {/* TierCard Component - Slides in from right */}
-          <div 
-            className="absolute w-full max-w-md z-10 slide-in-card"
-            style={{
-              top: '50%',
-              transform: 'translateY(-50%)',
-            }}
-          >
+        <div className="lg:col-span-3 flex items-center justify-center slide-in-card-container">
+          <div className="w-full max-w-md slide-in-card">
             <TierCard 
               variant={getTierVariant(cardType)} 
               imageUrl={getCardImageUrl(cardType)}
@@ -107,14 +95,31 @@ export function CardDisplay({
           </div>
 
           <style jsx>{`
-            .slide-in-card {
-              animation: slideInFromRight 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
-              right: -100%;
+            .slide-in-card-container {
+              opacity: 0;
+              animation: fadeIn 0.8s ease-out forwards;
+              animation-delay: 0.2s;
             }
 
-            @keyframes slideInFromRight {
+            .slide-in-card {
+              animation: slideInCard 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+              animation-delay: 0.2s;
+            }
+
+            @keyframes fadeIn {
               to {
-                right: -50%;
+                opacity: 1;
+              }
+            }
+
+            @keyframes slideInCard {
+              from {
+                transform: translateX(100px);
+                opacity: 0;
+              }
+              to {
+                transform: translateX(0);
+                opacity: 1;
               }
             }
           `}</style>
