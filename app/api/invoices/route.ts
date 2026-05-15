@@ -6,18 +6,44 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { customerId, amount, description, expiryMinutes } = body;
 
-    if (!customerId || !amount) {
+    // Validate required fields
+    if (!customerId || amount === undefined) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        { error: 'Missing required fields: customerId and amount' },
         { status: 400 }
       );
     }
 
-    const expiresAt = new Date(Date.now() + (expiryMinutes || 30) * 60 * 1000);
+    // Validate amount
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount) || numAmount <= 0) {
+      return NextResponse.json(
+        { error: 'Amount must be a positive number' },
+        { status: 400 }
+      );
+    }
+
+    if (numAmount > 999999.99) {
+      return NextResponse.json(
+        { error: 'Amount exceeds maximum limit' },
+        { status: 400 }
+      );
+    }
+
+    // Validate expiry minutes
+    const expiryMin = parseInt(expiryMinutes) || 30;
+    if (expiryMin < 1 || expiryMin > 43200) { // Max 30 days
+      return NextResponse.json(
+        { error: 'Expiry time must be between 1 minute and 30 days' },
+        { status: 400 }
+      );
+    }
+
+    const expiresAt = new Date(Date.now() + expiryMin * 60 * 1000);
 
     const result = await sql`
       INSERT INTO invoices (creator_customer_id, amount, description, status, expires_at)
-      VALUES (${customerId}, ${amount}, ${description || ''}, 'pending', ${expiresAt})
+      VALUES (${customerId}, ${numAmount}, ${description || ''}, 'pending', ${expiresAt})
       RETURNING id, creator_customer_id, amount, description, status, created_at, expires_at
     `;
 

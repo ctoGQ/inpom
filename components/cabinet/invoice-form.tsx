@@ -33,14 +33,46 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
     e.preventDefault();
     setLoading(true);
 
+    // Validate amount
+    const numAmount = parseFloat(amount);
+    if (isNaN(numAmount) || numAmount <= 0) {
+      toast({
+        title: 'Некоректна сума',
+        description: 'Сума повинна бути більша за 0',
+        variant: 'destructive',
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (numAmount > 999999.99) {
+      toast({
+        title: 'Сума завелика',
+        description: 'Максимальна сума для інвойса: 999999.99 inpom',
+        variant: 'destructive',
+      });
+      setLoading(false);
+      return;
+    }
+
+    if (!description.trim()) {
+      toast({
+        title: 'Опис обов\'язковий',
+        description: 'Будь ласка, додайте опис для інвойса',
+        variant: 'destructive',
+      });
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await fetch('/api/invoices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           customerId,
-          amount: parseFloat(amount),
-          description,
+          amount: numAmount,
+          description: description.trim(),
           expiryMinutes: parseInt(expiry),
         }),
       });
@@ -50,12 +82,16 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
       if (data.success) {
         setCreatedInvoice(data.invoice);
         toast({
-          title: 'Інвойс створено',
-          description: 'Ваш інвойс готовий до поширення',
+          title: 'Успіх',
+          description: 'Ваш інвойс створено. Тепер поділіться ним',
         });
+        // Reset form
+        setAmount('');
+        setDescription('');
+        setExpiry('30');
       } else {
         toast({
-          title: 'Помилка',
+          title: 'Помилка при створенні',
           description: data.error || 'Не вдалось створити інвойс',
           variant: 'destructive',
         });
@@ -64,7 +100,7 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
       console.error('Error creating invoice:', error);
       toast({
         title: 'Помилка',
-        description: 'Сталась помилка при створенні інвойса',
+        description: 'Сталась помилка при створенні інвойса. Спробуйте пізніше',
         variant: 'destructive',
       });
     } finally {
@@ -119,15 +155,19 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
       {/* Description */}
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground">
-          Опис (опціонально)
+          Опис *
         </label>
         <textarea
           placeholder="Опис платежу..."
           rows={3}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          required
           className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
         />
+        <p className="text-xs text-muted-foreground">
+          {description.length}/500 символів
+        </p>
       </div>
 
       {/* Expiry */}
@@ -151,7 +191,7 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
       {/* Create Button */}
       <Button
         type="submit"
-        disabled={!amount || loading}
+        disabled={!amount || !description.trim() || loading || parseFloat(amount) <= 0}
         className="w-full bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 rounded-lg py-3"
       >
         <QrCode className="w-4 h-4 mr-2" />

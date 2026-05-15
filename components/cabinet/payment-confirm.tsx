@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { AlertCircle, CheckCircle2, Loader } from 'lucide-react';
@@ -26,10 +26,37 @@ export function PaymentConfirm({
   const router = useRouter();
   const { toast } = useToast();
   const [step, setStep] = useState<'confirm' | 'confirming' | 'done'>('confirm');
-  const [balance, setBalance] = useState(0);
+  const [balance, setBalance] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
+  // Load user balance
+  useEffect(() => {
+    const loadBalance = async () => {
+      try {
+        const response = await fetch(`/api/balance?customerId=${customerId}`);
+        if (response.ok) {
+          const data = await response.json();
+          setBalance(data.balance ?? 0);
+        }
+      } catch (error) {
+        console.error('Error loading balance:', error);
+        setBalance(0);
+      }
+    };
+
+    loadBalance();
+  }, [customerId]);
+
   const handlePayment = async () => {
+    if (balance === null || balance < amount) {
+      toast({
+        title: 'Недостатньо коштів',
+        description: `Потрібно ${amount.toFixed(2)} inpom, а у вас ${balance?.toFixed(2) ?? '0.00'} inpom`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
     setStep('confirming');
     setLoading(true);
 
@@ -49,7 +76,7 @@ export function PaymentConfirm({
         setStep('done');
         toast({
           title: 'Оплата успішна',
-          description: 'Ваша оплата була обробленаф',
+          description: 'Ваша оплата була оброблена',
         });
 
         // Redirect to transactions after 2 seconds
@@ -58,9 +85,10 @@ export function PaymentConfirm({
         }, 2000);
       } else {
         setStep('confirm');
+        const errorMessage = data.error || 'Не вдалось обробити оплату';
         toast({
           title: 'Помилка при оплаті',
-          description: data.error || 'Не вдалось обробити оплату',
+          description: errorMessage,
           variant: 'destructive',
         });
       }
@@ -69,7 +97,7 @@ export function PaymentConfirm({
       console.error('Error processing payment:', error);
       toast({
         title: 'Помилка',
-        description: 'Сталась помилка при обробці платежу',
+        description: 'Сталась помилка при обробці платежу. Спробуйте пізніше',
         variant: 'destructive',
       });
     } finally {
@@ -135,7 +163,7 @@ export function PaymentConfirm({
 
         <div className="space-y-3 py-4 border-t border-b border-foreground/10">
           <div className="flex justify-between items-center">
-            <p className="text-sm text-muted-foreground">Сума оплати</p>
+            <p className="text-sm text-muted-foreground">Сума платежу</p>
             <p className="text-lg font-semibold text-foreground">
               {amount.toFixed(2)} inpom
             </p>
@@ -145,7 +173,26 @@ export function PaymentConfirm({
             <p className="text-sm text-muted-foreground">Кому</p>
             <p className="text-sm font-medium text-foreground">{creatorName}</p>
           </div>
+
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-muted-foreground">Ваш баланс</p>
+            <p className={`text-sm font-medium ${balance !== null && balance >= amount ? 'text-green-500' : 'text-red-500'}`}>
+              {balance !== null ? `${balance.toFixed(2)} inpom` : 'Загрузка...'}
+            </p>
+          </div>
         </div>
+
+        {balance !== null && balance < amount && (
+          <div className="flex items-start gap-3 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
+            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-sm font-medium text-red-600">Недостатньо коштів</p>
+              <p className="text-xs text-red-500 mt-1">
+                Потрібно {(amount - balance).toFixed(2)} inpom більше
+              </p>
+            </div>
+          </div>
+        )}
 
         <p className="text-xs text-muted-foreground">
           Після підтвердження оплати сума буде списана з вашого балансу та переведена отримувачу.
@@ -156,7 +203,7 @@ export function PaymentConfirm({
       <div className="space-y-2">
         <Button
           onClick={handlePayment}
-          disabled={loading}
+          disabled={loading || balance === null || balance < amount}
           className="w-full bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50"
         >
           {loading && <Loader className="w-4 h-4 mr-2 animate-spin" />}
