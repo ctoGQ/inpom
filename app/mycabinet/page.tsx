@@ -89,7 +89,12 @@ export default async function MyCabinetPage() {
   const invoices = await getRecentInvoices(customer.id);
 
   return (
-    <CabinetLayout title="Карта">
+    <CabinetLayout
+      title="Карта"
+      showAvatar={true}
+      avatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
+      userName={customer.name}
+    >
       <div className="space-y-6 pt-6">
         {/* Card Section */}
         {card ? (

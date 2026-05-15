@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSessionCustomer } from '@/lib/auth';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
+import { AvatarUpload } from '@/components/cabinet/avatar-upload';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, Mail, Lock, Smartphone } from 'lucide-react';
@@ -68,6 +69,14 @@ export default async function AccountPage() {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Avatar Upload */}
+        <div className="p-6 bg-foreground/5 border border-foreground/10 rounded-lg">
+          <AvatarUpload
+            currentAvatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
+            customerName={customer.name}
+          />
         </div>
 
         {/* Account Menu */}

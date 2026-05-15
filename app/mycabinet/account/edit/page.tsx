@@ -114,7 +114,7 @@ export default function EditAccountPage() {
 
   if (loading) {
     return (
-      <CabinetLayout title="Редагувати профіль" showBack>
+      <CabinetLayout title="Редагувати профіль" showBack showAvatar={false}>
         <div className="space-y-6 pt-6">
           <div className="text-center">
             <p className="text-sm text-muted-foreground">Завантаження...</p>
@@ -128,6 +128,7 @@ export default function EditAccountPage() {
     <CabinetLayout
       title="Редагувати профіль"
       showBack
+      showAvatar={false}
       showAvatar={false}
     >
       <div className="space-y-6 pt-6">

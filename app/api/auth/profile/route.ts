@@ -18,6 +18,7 @@ export async function GET(request: NextRequest) {
         id: customer.id,
         name: customer.name,
         email: customer.email,
+        avatar_url: customer.avatar_url || null,
       },
     });
   } catch (error) {
@@ -62,6 +63,7 @@ export async function PUT(request: NextRequest) {
         id: customer.id,
         name: name.trim(),
         email: customer.email,
+        avatar_url: customer.avatar_url || null,
       },
     });
   } catch (error) {

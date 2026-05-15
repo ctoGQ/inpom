@@ -2,6 +2,7 @@
 
 import { CreditCard } from 'lucide-react';
 import { formatAmount } from '@/lib/format-amount';
+import { TierCard } from '@/components/tier-card';
 
 interface CardDisplayProps {
   cardType: string;
@@ -14,24 +15,38 @@ export function CardDisplay({
   balance,
   customerName,
 }: CardDisplayProps) {
-  const getCardColor = (type: string) => {
+  const getCardImageUrl = (type: string): string => {
     switch (type.toLowerCase()) {
-      case 'black':
-        return 'bg-gradient-to-br from-foreground/90 to-foreground/70';
       case 'gold':
-        return 'bg-gradient-to-br from-amber-500 to-amber-700';
+        return "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/inpom-gold-vHG68mRIsgnDlRj8J1tHxKS6QprtDK.png";
       case 'business plus':
-        return 'bg-gradient-to-br from-purple-500 to-purple-700';
+      case 'business':
+        return "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/inpom-business-LSbBGlxtQ42dQC1ZITco7TuzkE9BMw.png";
+      case 'black':
       default:
-        return 'bg-gradient-to-br from-foreground/90 to-foreground/70';
+        return "https://hebbkx1anhila5yf.public.blob.vercel-storage.com/inpom-black-0aBd3LaMBBrIShqWZtY2IMJDaubFWn.png";
     }
   };
 
-  const getCardTextColor = (type: string) => {
+  const getTierVariant = (type: string): 'black' | 'gold' | 'business' => {
+    switch (type.toLowerCase()) {
+      case 'gold':
+        return 'gold';
+      case 'business plus':
+      case 'business':
+        return 'business';
+      case 'black':
+      default:
+        return 'black';
+    }
+  };
+
+  const getTextColor = (type: string) => {
     switch (type.toLowerCase()) {
       case 'gold':
         return 'text-foreground';
       case 'business plus':
+      case 'business':
         return 'text-foreground';
       default:
         return 'text-primary';
@@ -39,43 +54,53 @@ export function CardDisplay({
   };
 
   return (
-    <div
-      className={`relative rounded-2xl p-6 shadow-lg overflow-hidden ${getCardColor(
-        cardType
-      )}`}
-    >
-      {/* Card background pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute top-0 right-0 w-40 h-40 bg-white rounded-full blur-3xl" />
-      </div>
-
-      {/* Card content */}
-      <div className="relative z-10 flex flex-col justify-between h-48">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div>
-            <p className={`text-xs font-medium opacity-75 ${getCardTextColor(cardType)}`}>
-              INPOM CARD
-            </p>
-            <h3 className={`text-lg font-display mt-1 ${getCardTextColor(cardType)}`}>
-              {cardType.charAt(0).toUpperCase() + cardType.slice(1)}
-            </h3>
+    <div className="w-full overflow-hidden rounded-2xl border border-foreground/10">
+      {/* Layout: Text on left, 3D Card on right */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-0 lg:gap-6 items-stretch">
+        {/* Left side: Balance Info */}
+        <div className="lg:col-span-2 p-6 lg:p-8 flex flex-col justify-between bg-foreground/[0.02]">
+          {/* Header */}
+          <div className="flex items-start justify-between mb-8">
+            <div>
+              <p className={`text-xs font-medium opacity-75 ${getTextColor(cardType)}`}>
+                INPOM CARD
+              </p>
+              <h3 className={`text-lg font-display mt-1 ${getTextColor(cardType)}`}>
+                {cardType.charAt(0).toUpperCase() + cardType.slice(1)}
+              </h3>
+            </div>
+            <CreditCard className={`w-6 h-6 ${getTextColor(cardType)}`} />
           </div>
-          <CreditCard className={`w-6 h-6 ${getCardTextColor(cardType)}`} />
+
+          {/* Balance */}
+          <div className="space-y-2 mb-auto">
+            <p className={`text-xs opacity-75 ${getTextColor(cardType)}`}>БАЛАНС</p>
+            <p className={`text-4xl lg:text-5xl font-display font-bold ${getTextColor(cardType)}`}>
+              {formatAmount(balance)}
+            </p>
+            <p className={`text-xs font-mono tracking-wider ${getTextColor(cardType)}`}>inpom</p>
+          </div>
+
+          {/* Footer */}
+          <div className={`text-xs mt-8 ${getTextColor(cardType)}`}>
+            {customerName}
+          </div>
         </div>
 
-        {/* Balance */}
-        <div className="space-y-2">
-          <p className={`text-xs opacity-75 ${getCardTextColor(cardType)}`}>БАЛАНС</p>
-          <p className={`text-3xl font-display ${getCardTextColor(cardType)}`}>
-            {formatAmount(balance)}
-          </p>
-          <p className={`text-xs ${getCardTextColor(cardType)}`}>inpom</p>
-        </div>
+        {/* Right side: 3D Animated Card */}
+        <div className="lg:col-span-3 relative p-6 lg:p-8 flex items-center justify-center min-h-96 lg:min-h-auto overflow-hidden">
+          {/* Background gradient hint */}
+          <div className="absolute inset-0 opacity-5 pointer-events-none">
+            <div className="absolute -right-20 -top-20 w-60 h-60 bg-foreground rounded-full blur-3xl" />
+          </div>
 
-        {/* Footer */}
-        <div className={`text-xs ${getCardTextColor(cardType)}`}>
-          {customerName}
+          {/* TierCard Component */}
+          <div className="relative z-10 w-full max-w-md">
+            <TierCard 
+              variant={getTierVariant(cardType)} 
+              imageUrl={getCardImageUrl(cardType)}
+            />
+          </div>
         </div>
       </div>
     </div>

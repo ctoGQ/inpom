@@ -74,7 +74,12 @@ export default async function TransactionsPage() {
   console.log(`[TransactionsPage] Rendering with ${transactions.length} transactions and ${invoices.length} invoices`);
 
   return (
-    <CabinetLayout title="Трансакції та Інвойси">
+    <CabinetLayout
+      title="Трансакції та Інвойси"
+      showAvatar={true}
+      avatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
+      userName={customer.name}
+    >
       <div className="space-y-6 pt-6">
         <div>
           <h1 className="text-2xl font-display text-foreground mb-2">
