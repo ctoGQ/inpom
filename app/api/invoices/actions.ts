@@ -27,6 +27,17 @@ export async function createInvoice(
 
     const invoice = result.rows[0];
 
+    // Create transaction for invoice creation
+    try {
+      await sql`
+        INSERT INTO transactions (customer_id, invoice_id, type, amount, description, created_at)
+        VALUES (${customerId}, ${invoice.id}, 'invoice_created', 0, ${'Створено інвойс на суму ' + amount + ' inpom'}, NOW())
+      `;
+    } catch (transactionError) {
+      console.error('Error creating transaction:', transactionError);
+      // Don't fail the invoice creation if transaction fails
+    }
+
     // Generate QR code data with payment link
     const paymentUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://lummetra.com'}/mycabinet/pay-invoice/${invoice.id}`;
 

@@ -24,10 +24,16 @@ async function getInvoice(invoiceId: number) {
         i.expires_at,
         c.name as creator_name
       FROM invoices i
-      JOIN customers c ON i.creator_customer_id = c.id
+      LEFT JOIN customers c ON i.creator_customer_id = c.id
       WHERE i.id = ${invoiceId}
     `;
-    return result.rows?.[0] || null;
+    
+    if (result.rows?.length) {
+      return result.rows[0];
+    }
+    
+    console.warn(`Invoice ${invoiceId} not found in database`);
+    return null;
   } catch (error) {
     console.error('Error fetching invoice:', error);
     return null;
