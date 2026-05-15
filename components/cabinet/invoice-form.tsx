@@ -66,6 +66,13 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
     }
 
     try {
+      console.log(`[InvoiceForm] Submitting invoice creation:`, {
+        customerId,
+        amount: numAmount,
+        description: description.trim(),
+        expiryMinutes: parseInt(expiry),
+      });
+
       const response = await fetch('/api/invoices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -77,9 +84,13 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
         }),
       });
 
+      console.log(`[InvoiceForm] Response status: ${response.status}`);
+      
       const data = await response.json();
+      console.log(`[InvoiceForm] Response data:`, data);
 
       if (data.success) {
+        console.log(`[InvoiceForm] ✅ Invoice created successfully:`, data.invoice);
         setCreatedInvoice(data.invoice);
         toast({
           title: 'Успіх',
@@ -90,6 +101,7 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
         setDescription('');
         setExpiry('30');
       } else {
+        console.warn(`[InvoiceForm] ❌ API returned error:`, data.error);
         toast({
           title: 'Помилка при створенні',
           description: data.error || 'Не вдалось створити інвойс',
@@ -97,7 +109,7 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
         });
       }
     } catch (error) {
-      console.error('Error creating invoice:', error);
+      console.error('[InvoiceForm] ❌ Fetch error:', error);
       toast({
         title: 'Помилка',
         description: 'Сталась помилка при створенні інвойса. Спробуйте пізніше',

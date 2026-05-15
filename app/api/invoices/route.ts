@@ -3,11 +3,15 @@ import { sql } from '@/lib/db';
 
 export async function POST(request: NextRequest) {
   try {
+    console.log(`[POST /api/invoices] Request received`);
     const body = await request.json();
+    console.log(`[POST /api/invoices] Body:`, body);
+    
     const { customerId, amount, description, expiryMinutes } = body;
 
     // Validate required fields
     if (!customerId || amount === undefined) {
+      console.warn(`[POST /api/invoices] ❌ Missing fields - customerId: ${customerId}, amount: ${amount}`);
       return NextResponse.json(
         { error: 'Missing required fields: customerId and amount' },
         { status: 400 }
@@ -17,6 +21,7 @@ export async function POST(request: NextRequest) {
     // Validate amount
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount) || numAmount <= 0) {
+      console.warn(`[POST /api/invoices] ❌ Invalid amount: ${amount}`);
       return NextResponse.json(
         { error: 'Amount must be a positive number' },
         { status: 400 }
@@ -24,6 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (numAmount > 999999.99) {
+      console.warn(`[POST /api/invoices] ❌ Amount too large: ${numAmount}`);
       return NextResponse.json(
         { error: 'Amount exceeds maximum limit' },
         { status: 400 }
@@ -33,6 +39,7 @@ export async function POST(request: NextRequest) {
     // Validate expiry minutes
     const expiryMin = parseInt(expiryMinutes) || 30;
     if (expiryMin < 1 || expiryMin > 43200) { // Max 30 days
+      console.warn(`[POST /api/invoices] ❌ Invalid expiry: ${expiryMin}`);
       return NextResponse.json(
         { error: 'Expiry time must be between 1 minute and 30 days' },
         { status: 400 }
@@ -40,6 +47,7 @@ export async function POST(request: NextRequest) {
     }
 
     const expiresAt = new Date(Date.now() + expiryMin * 60 * 1000);
+    console.log(`[POST /api/invoices] Creating invoice with:`, { customerId, numAmount, description, expiresAt });
 
     const result = await sql`
       INSERT INTO invoices (creator_customer_id, amount, description, status, expires_at)
@@ -47,7 +55,10 @@ export async function POST(request: NextRequest) {
       RETURNING id, creator_customer_id, amount, description, status, created_at, expires_at
     `;
 
+    console.log(`[POST /api/invoices] INSERT result:`, result);
+
     if (!result.rows.length) {
+      console.error(`[POST /api/invoices] ❌ No rows returned after INSERT`);
       return NextResponse.json(
         { error: 'Failed to create invoice' },
         { status: 500 }
@@ -55,6 +66,8 @@ export async function POST(request: NextRequest) {
     }
 
     const invoice = result.rows[0];
+    console.log(`[POST /api/invoices] ✅ Invoice created:`, invoice);
+    
     const paymentUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://lummetra.com'}/mycabinet/pay-invoice/${invoice.id}`;
 
     return NextResponse.json({
@@ -65,7 +78,7 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error creating invoice:', error);
+    console.error('[POST /api/invoices] ❌ Error creating invoice:', error);
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

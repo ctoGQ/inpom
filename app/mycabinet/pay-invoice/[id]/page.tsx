@@ -13,6 +13,7 @@ interface PageProps {
 
 async function getInvoice(invoiceId: number) {
   try {
+    console.log(`[getInvoice] Fetching invoice with ID: ${invoiceId}`);
     const result = await sql`
       SELECT 
         i.id, 
@@ -28,26 +29,35 @@ async function getInvoice(invoiceId: number) {
       WHERE i.id = ${invoiceId}
     `;
     
+    console.log(`[getInvoice] Query result:`, result);
+    
     if (result.rows?.length) {
+      console.log(`[getInvoice] ✅ Found invoice:`, result.rows[0]);
       return result.rows[0];
     }
     
-    console.warn(`Invoice ${invoiceId} not found in database`);
+    console.warn(`[getInvoice] ❌ Invoice ${invoiceId} not found in database`);
     return null;
   } catch (error) {
-    console.error('Error fetching invoice:', error);
+    console.error('[getInvoice] ❌ Error fetching invoice:', error);
     return null;
   }
 }
 
 export default async function PayInvoicePage({ params }: PageProps) {
+  console.log(`[PayInvoicePage] Page loaded with params:`, params);
+  console.log(`[PayInvoicePage] params.id:`, params.id, `(type: ${typeof params.id})`);
+  
   const customer = await getSessionCustomer();
 
   if (!customer) {
     redirect('/auth/signin');
   }
 
-  const invoice = await getInvoice(parseInt(params.id));
+  const invoiceId = parseInt(params.id, 10);
+  console.log(`[PayInvoicePage] Parsed invoiceId:`, invoiceId, `(isNaN: ${isNaN(invoiceId)})`);
+  
+  const invoice = await getInvoice(invoiceId);
 
   if (!invoice) {
     return (
