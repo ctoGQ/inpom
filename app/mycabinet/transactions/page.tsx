@@ -60,6 +60,13 @@ export default async function TransactionsPage() {
   }
 
   const transactions = await getTransactions(customer.id);
+  
+  console.log(`[TransactionsPage] Rendering page with ${transactions.length} transactions`);
+  console.log(`[TransactionsPage] Customer ID: ${customer.id}`);
+  if (transactions.length > 0) {
+    console.log(`[TransactionsPage] First transaction:`, JSON.stringify(transactions[0]));
+    console.log(`[TransactionsPage] First transaction ID value:`, transactions[0].id, `(type: ${typeof transactions[0].id})`);
+  }
 
   return (
     <CabinetLayout title="Трансакції">
@@ -75,10 +82,19 @@ export default async function TransactionsPage() {
 
         {transactions.length > 0 ? (
           <div className="space-y-3">
-            {transactions.map((transaction: Transaction) => (
+            {transactions.map((transaction: Transaction) => {
+              const numId = Number(transaction.id);
+              const hasValidId = !isNaN(numId) && transaction.id !== undefined && transaction.id !== null;
+              
+              if (!hasValidId) {
+                console.warn(`[TransactionsPage] ⚠️ Transaction has invalid ID:`, transaction);
+                return null;
+              }
+              
+              return (
               <Link
                 key={transaction.id}
-                href={`/mycabinet/transactions/${Number(transaction.id)}`}
+                href={`/mycabinet/transactions/${numId}`}
                 className="block hover:opacity-80 transition-opacity"
               >
                 <div className="flex items-center justify-between p-4 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 hover:border-foreground/20 transition-colors">
@@ -135,7 +151,8 @@ export default async function TransactionsPage() {
                   </div>
                 </div>
               </Link>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
