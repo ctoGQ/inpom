@@ -45,7 +45,12 @@ export async function getSessionCustomer() {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get('session_token')?.value;
 
-  if (!sessionToken) return null;
+  console.log(`[getSessionCustomer] Checking session - token exists: ${!!sessionToken}`);
+
+  if (!sessionToken) {
+    console.warn(`[getSessionCustomer] ❌ No session token found`);
+    return null;
+  }
 
   try {
     const result = await sql`
@@ -54,9 +59,15 @@ export async function getSessionCustomer() {
       WHERE cs.session_token = ${sessionToken} AND cs.expires_at > NOW()
     `;
 
-    return result.rows?.[0] || null;
+    if (result.rows?.length) {
+      console.log(`[getSessionCustomer] ✅ Session valid for customer:`, result.rows[0].id);
+      return result.rows[0];
+    }
+
+    console.warn(`[getSessionCustomer] ❌ No valid session found for token`);
+    return null;
   } catch (error) {
-    console.error('Error getting session customer:', error);
+    console.error('[getSessionCustomer] ❌ Error getting session customer:', error);
     return null;
   }
 }

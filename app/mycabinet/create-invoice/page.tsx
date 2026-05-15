@@ -10,6 +10,8 @@ export default async function CreateInvoicePage() {
     redirect('/auth/signin');
   }
 
+  console.log(`[CreateInvoicePage] Page loaded for customer:`, { id: customer.id, email: customer.email });
+
   return (
     <CabinetLayout title="Invoice" showBack>
       <div className="space-y-6 pt-6">

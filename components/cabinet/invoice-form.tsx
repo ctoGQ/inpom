@@ -32,10 +32,14 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    console.log(`[InvoiceForm] Form submitted with values:`, { amount, description, expiry });
 
     // Validate amount
     const numAmount = parseFloat(amount);
+    console.log(`[InvoiceForm] Parsed amount: ${numAmount} (original: "${amount}")`);
+    
     if (isNaN(numAmount) || numAmount <= 0) {
+      console.warn(`[InvoiceForm] ❌ Invalid amount: ${numAmount}`);
       toast({
         title: 'Некоректна сума',
         description: 'Сума повинна бути більша за 0',
@@ -46,6 +50,7 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
     }
 
     if (numAmount > 999999.99) {
+      console.warn(`[InvoiceForm] ❌ Amount too large: ${numAmount}`);
       toast({
         title: 'Сума завелика',
         description: 'Максимальна сума для інвойса: 999999.99 inpom',
@@ -56,6 +61,7 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
     }
 
     if (!description.trim()) {
+      console.warn(`[InvoiceForm] ❌ Description is empty`);
       toast({
         title: 'Опис обов\'язковий',
         description: 'Будь ласка, додайте опис для інвойса',
@@ -64,6 +70,8 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
       setLoading(false);
       return;
     }
+
+    console.log(`[InvoiceForm] ✅ All validations passed, sending request...`);
 
     try {
       console.log(`[InvoiceForm] Submitting invoice creation:`, {
