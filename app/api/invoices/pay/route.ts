@@ -131,14 +131,14 @@ export async function POST(request: NextRequest) {
 
     // Create transaction for payer
     await sql`
-      INSERT INTO transactions (customer_id, type, amount, invoice_id, related_customer_id, description, status, created_at)
-      VALUES (${payerIdNum}, 'payment_sent', ${invoiceAmount}, ${invoiceIdNum}, ${invoice.creator_customer_id}, 'Payment sent for invoice', 'completed', NOW())
+      INSERT INTO transactions (customer_id, type, amount, invoice_id, description, created_at)
+      VALUES (${payerIdNum}, 'payment_sent', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment for invoice #${invoiceIdNum}`}, NOW())
     `;
 
     // Create transaction for creator
     await sql`
-      INSERT INTO transactions (customer_id, type, amount, invoice_id, related_customer_id, description, status, created_at)
-      VALUES (${invoice.creator_customer_id}, 'payment_received', ${invoiceAmount}, ${invoiceIdNum}, ${payerIdNum}, 'Payment received from invoice', 'completed', NOW())
+      INSERT INTO transactions (customer_id, type, amount, invoice_id, description, created_at)
+      VALUES (${invoice.creator_customer_id}, 'payment_received', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment received for invoice #${invoiceIdNum}`}, NOW())
     `;
 
     return NextResponse.json({

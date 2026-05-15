@@ -108,14 +108,14 @@ export async function payInvoice(invoiceId: number, payerCustomerId: number) {
 
     // Create transaction for payer
     await sql`
-      INSERT INTO transactions (customer_id, type, amount, invoice_id, related_customer_id, description)
-      VALUES (${payerCustomerId}, 'payment_sent', ${invoice.amount}, ${invoiceId}, ${invoice.creator_customer_id}, 'Оплата за інвойс')
+      INSERT INTO transactions (customer_id, type, amount, invoice_id, description, created_at)
+      VALUES (${payerCustomerId}, 'payment_sent', ${invoice.amount}, ${invoiceId}, ${'Оплата за інвойс'}, NOW())
     `;
 
     // Create transaction for creator
     await sql`
-      INSERT INTO transactions (customer_id, type, amount, invoice_id, related_customer_id, description)
-      VALUES (${invoice.creator_customer_id}, 'payment_received', ${invoice.amount}, ${invoiceId}, ${payerCustomerId}, 'Отримано платіж')
+      INSERT INTO transactions (customer_id, type, amount, invoice_id, description, created_at)
+      VALUES (${invoice.creator_customer_id}, 'payment_received', ${invoice.amount}, ${invoiceId}, ${'Отримано платіж'}, NOW())
     `;
 
     return {
