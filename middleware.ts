@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sql } from '@vercel/postgres';
+import { sql } from '@neondatabase/serverless';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -14,12 +14,12 @@ export async function middleware(request: NextRequest) {
 
     // Verify session is valid by checking database
     try {
-      const result = await sql`
+      const result = await sql(process.env.DATABASE_URL!)`
         SELECT id FROM customer_sessions 
         WHERE session_token = ${sessionToken} AND expires_at > NOW()
       `;
 
-      if (!result.rows?.length) {
+      if (!result?.length) {
         const redirectUrl = new URL('/auth/signin', request.url);
         const res = NextResponse.redirect(redirectUrl);
         res.cookies.delete('session_token');

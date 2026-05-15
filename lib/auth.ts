@@ -2,7 +2,7 @@
 
 import { cookies } from 'next/headers';
 import crypto from 'crypto';
-import { sql } from '@vercel/postgres';
+import { sql } from '@neondatabase/serverless';
 
 export async function hashPassword(password: string): Promise<string> {
   return crypto
@@ -19,10 +19,15 @@ export async function createSession(customerId: number): Promise<string> {
   const sessionToken = crypto.randomBytes(32).toString('hex');
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days
 
-  await sql`
-    INSERT INTO customer_sessions (customer_id, session_token, expires_at, created_at)
-    VALUES (${customerId}, ${sessionToken}, ${expiresAt}, NOW())
-  `;
+  try {
+    await sql(process.env.DATABASE_URL!)`
+      INSERT INTO customer_sessions (customer_id, session_token, expires_at, created_at)
+      VALUES (${customerId}, ${sessionToken}, ${expiresAt}, NOW())
+    `;
+  } catch (error) {
+    console.error('Error creating session:', error);
+    throw error;
+  }
 
   const cookieStore = await cookies();
   cookieStore.set('session_token', sessionToken, {
@@ -43,13 +48,13 @@ export async function getSessionCustomer() {
   if (!sessionToken) return null;
 
   try {
-    const result = await sql`
+    const result = await sql(process.env.DATABASE_URL!)`
       SELECT c.*, cs.expires_at FROM customers c
       JOIN customer_sessions cs ON c.id = cs.customer_id
       WHERE cs.session_token = ${sessionToken} AND cs.expires_at > NOW()
     `;
 
-    return result.rows?.[0] || null;
+    return result?.[0] || null;
   } catch (error) {
     console.error('Error getting session customer:', error);
     return null;
@@ -62,7 +67,7 @@ export async function logout() {
 
   if (sessionToken) {
     try {
-      await sql`
+      await sql(process.env.DATABASE_URL!)`
         DELETE FROM customer_sessions WHERE session_token = ${sessionToken}
       `;
     } catch (error) {
