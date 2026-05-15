@@ -2,6 +2,9 @@ import { redirect } from 'next/navigation';
 import { getSessionCustomer } from '@/lib/auth';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
 import { sql } from '@/lib/db';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { ExternalLink } from 'lucide-react';
 
 interface Transaction {
   id: number;
@@ -9,12 +12,13 @@ interface Transaction {
   amount: number;
   description: string;
   created_at: string;
+  invoice_id?: number;
 }
 
 async function getTransactions(customerId: number) {
   try {
     const result = await sql`
-      SELECT id, type, amount, description, created_at
+      SELECT id, type, amount, description, created_at, invoice_id
       FROM transactions
       WHERE customer_id = ${customerId}
       ORDER BY created_at DESC
@@ -69,22 +73,35 @@ export default async function TransactionsPage() {
                     {new Date(transaction.created_at).toLocaleTimeString('uk-UA')}
                   </p>
                 </div>
-                <div className="text-right">
-                  <p
-                    className={`text-sm font-medium ${
-                      transaction.type.includes('deposit') ||
+                <div className="flex items-end gap-3">
+                  <div className="text-right">
+                    <p
+                      className={`text-sm font-medium ${
+                        transaction.type.includes('deposit') ||
+                        transaction.type.includes('payment_received')
+                          ? 'text-green-500'
+                          : 'text-red-500'
+                      }`}
+                    >
+                      {transaction.type.includes('deposit') ||
                       transaction.type.includes('payment_received')
-                        ? 'text-green-500'
-                        : 'text-red-500'
-                    }`}
-                  >
-                    {transaction.type.includes('deposit') ||
-                    transaction.type.includes('payment_received')
-                      ? '+'
-                      : '-'}
-                    {typeof transaction.amount === 'number' ? transaction.amount.toFixed(2) : '0.00'}
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">inpom</p>
+                        ? '+'
+                        : '-'}
+                      {typeof transaction.amount === 'number' ? transaction.amount.toFixed(2) : '0.00'}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">inpom</p>
+                  </div>
+                  {transaction.invoice_id && (
+                    <Link href={`/mycabinet/invoices/${transaction.invoice_id}`}>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="flex-shrink-0"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </Button>
+                    </Link>
+                  )}
                 </div>
               </div>
             ))}

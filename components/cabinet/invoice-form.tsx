@@ -2,10 +2,23 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { QrCode } from 'lucide-react';
+import { QrCode, ArrowLeft } from 'lucide-react';
+import { InvoiceDisplay } from './invoice-display';
+import { useToast } from '@/hooks/use-toast';
 
 interface InvoiceFormProps {
   customerId: number;
+}
+
+interface Invoice {
+  id: number;
+  creator_customer_id: number;
+  amount: number;
+  description: string;
+  status: string;
+  created_at: string;
+  expires_at: string;
+  paymentUrl: string;
 }
 
 export function InvoiceForm({ customerId }: InvoiceFormProps) {
@@ -13,13 +26,14 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
   const [description, setDescription] = useState('');
   const [expiry, setExpiry] = useState('30');
   const [loading, setLoading] = useState(false);
+  const [createdInvoice, setCreatedInvoice] = useState<Invoice | null>(null);
+  const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // Call API to create invoice
       const response = await fetch('/api/invoices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -34,17 +48,54 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
       const data = await response.json();
 
       if (data.success) {
-        // Show QR code or success message
-        console.log('Invoice created:', data.invoice);
-        setAmount('');
-        setDescription('');
+        setCreatedInvoice(data.invoice);
+        toast({
+          title: 'Інвойс створено',
+          description: 'Ваш інвойс готовий до поширення',
+        });
+      } else {
+        toast({
+          title: 'Помилка',
+          description: data.error || 'Не вдалось створити інвойс',
+          variant: 'destructive',
+        });
       }
     } catch (error) {
       console.error('Error creating invoice:', error);
+      toast({
+        title: 'Помилка',
+        description: 'Сталась помилка при створенні інвойса',
+        variant: 'destructive',
+      });
     } finally {
       setLoading(false);
     }
   };
+
+  if (createdInvoice) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <button
+            onClick={() => setCreatedInvoice(null)}
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Створити новий інвойс
+          </button>
+        </div>
+
+        <InvoiceDisplay
+          invoiceId={createdInvoice.id}
+          amount={createdInvoice.amount}
+          description={createdInvoice.description}
+          creatorName="Ваш інвойс"
+          paymentUrl={createdInvoice.paymentUrl}
+          status={createdInvoice.status}
+        />
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

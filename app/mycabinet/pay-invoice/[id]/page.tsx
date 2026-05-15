@@ -1,7 +1,8 @@
 import { redirect } from 'next/navigation';
 import { getSessionCustomer } from '@/lib/auth';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
-import { AlertCircle, CheckCircle2 } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
+import { PaymentConfirm } from '@/components/cabinet/payment-confirm';
 import { sql } from '@/lib/db';
 
 interface PageProps {
@@ -63,28 +64,14 @@ export default async function PayInvoicePage({ params }: PageProps) {
   return (
     <CabinetLayout title="Платіж" showBack>
       <div className="space-y-6 pt-6">
-        {/* Status */}
-        {isAlreadyPaid ? (
-          <div className="flex items-start gap-3 p-4 bg-green-500/10 border border-green-500/20 rounded-lg">
-            <CheckCircle2 className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-green-500">Оплачено</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Цей інвойс уже оплачений
-              </p>
-            </div>
-          </div>
-        ) : isExpired ? (
-          <div className="flex items-start gap-3 p-4 bg-destructive/10 border border-destructive/20 rounded-lg">
-            <AlertCircle className="w-5 h-5 text-destructive flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-medium text-destructive">Термін закінчився</p>
-              <p className="text-xs text-muted-foreground mt-1">
-                Цей інвойс більше недійсний
-              </p>
-            </div>
-          </div>
-        ) : null}
+        <div>
+          <h1 className="text-2xl font-display text-foreground mb-2">
+            Оплата інвойса
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Перевірте деталі та підтвердьте оплату
+          </p>
+        </div>
 
         {/* Invoice Details */}
         <div className="p-6 bg-foreground/5 border border-foreground/10 rounded-lg">
@@ -130,29 +117,15 @@ export default async function PayInvoicePage({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Payment Section */}
-        {!isAlreadyPaid && !isExpired && (
-          <>
-            <div>
-              <p className="text-sm font-medium text-foreground mb-3">
-                Ваш поточний баланс
-              </p>
-              <div className="p-4 bg-foreground/5 border border-foreground/10 rounded-lg">
-                <p className="text-2xl font-display text-foreground">
-                  0.00
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">inpom</p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              className="w-full px-4 py-3 bg-foreground text-background hover:bg-foreground/90 rounded-lg font-medium transition-colors"
-            >
-              Підтвердити оплату
-            </button>
-          </>
-        )}
+        {/* Payment Confirmation */}
+        <PaymentConfirm
+          invoiceId={parseInt(params.id)}
+          amount={invoice.amount}
+          creatorName={invoice.creator_name}
+          customerId={customer.id}
+          isExpired={isExpired}
+          isAlreadyPaid={isAlreadyPaid}
+        />
 
         {/* Info */}
         <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg">
