@@ -17,7 +17,7 @@ interface Transaction {
 
 async function getTransactions(customerId: number) {
   try {
-    console.log(`[getTransactions] Fetching transactions for customer ID: ${customerId}`);
+    console.log(`[getTransactions] Starting query for customer ID: ${customerId}`);
     const result = await sql`
       SELECT id, type, amount, description, created_at, invoice_id
       FROM transactions
@@ -26,14 +26,19 @@ async function getTransactions(customerId: number) {
       LIMIT 100
     `;
     
-    console.log(`[getTransactions] Found ${result.rows?.length || 0} transactions`);
-    if (result.rows?.length) {
-      console.log(`[getTransactions] Transaction IDs:`, result.rows.map(t => `${t.id} (${typeof t.id})`).join(', '));
+    console.log(`[getTransactions] Query complete. Result object:`, result);
+    console.log(`[getTransactions] Result.rows:`, result.rows);
+    console.log(`[getTransactions] Number of rows:`, result.rows?.length || 0);
+    
+    if (result.rows && result.rows.length > 0) {
+      console.log(`[getTransactions] First row object keys:`, Object.keys(result.rows[0]));
+      console.log(`[getTransactions] First row full object:`, result.rows[0]);
+      console.log(`[getTransactions] First row ID specifically:`, result.rows[0].id, `(type: ${typeof result.rows[0].id})`);
     }
     
     return result.rows || [];
   } catch (error) {
-    console.error('[getTransactions] Error fetching transactions:', error);
+    console.error('[getTransactions] ❌ ERROR fetching transactions:', error);
     return [];
   }
 }
