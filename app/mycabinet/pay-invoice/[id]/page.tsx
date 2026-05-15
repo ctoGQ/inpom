@@ -101,7 +101,7 @@ export default async function PayInvoicePage({ params }: PageProps) {
                 Сума до оплати
               </p>
               <p className="text-4xl font-display text-foreground">
-                {invoice.amount.toFixed(2)}
+                {typeof invoice.amount === 'number' ? invoice.amount.toFixed(2) : '0.00'}
               </p>
               <p className="text-sm text-muted-foreground">inpom</p>
             </div>
