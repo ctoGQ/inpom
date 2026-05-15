@@ -28,7 +28,7 @@ export async function createInvoice(
     const invoice = result.rows[0];
 
     // Generate QR code data with payment link
-    const paymentUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/mycabinet/pay-invoice/${invoice.id}`;
+    const paymentUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://lummetra.com'}/mycabinet/pay-invoice/${invoice.id}`;
 
     return {
       success: true,
