@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getSessionCustomer } from '@/lib/auth';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
 import { AvatarUpload } from '@/components/cabinet/avatar-upload';
+import { ThemeToggle } from '@/components/cabinet/theme-toggle';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, Mail, Lock, Smartphone } from 'lucide-react';
@@ -37,9 +38,7 @@ export default async function AccountPage() {
   return (
     <CabinetLayout
       title="Акаунт"
-      showAvatar={true}
-      avatarUrl="/placeholder-user.jpg"
-      userName={customer.name}
+      showAvatar={false}
     >
       <div className="space-y-6 pt-6">
         {/* Profile Card */}
@@ -108,6 +107,11 @@ export default async function AccountPage() {
               </div>
             </Link>
           ))}
+        </div>
+
+        {/* Theme Settings */}
+        <div className="p-6 bg-foreground/5 border border-foreground/10 rounded-lg">
+          <ThemeToggle />
         </div>
 
         {/* Danger Zone */}
