@@ -1,6 +1,5 @@
 'use client';
 
-import { CreditCard } from 'lucide-react';
 import { formatAmount } from '@/lib/format-amount';
 import { TierCard } from '@/components/tier-card';
 
@@ -69,7 +68,6 @@ export function CardDisplay({
                 {cardType.charAt(0).toUpperCase() + cardType.slice(1)}
               </h3>
             </div>
-            <CreditCard className={`w-6 h-6 ${getTextColor(cardType)}`} />
           </div>
 
           {/* Balance */}
@@ -94,13 +92,32 @@ export function CardDisplay({
             <div className="absolute -right-20 -top-20 w-60 h-60 bg-foreground rounded-full blur-3xl" />
           </div>
 
-          {/* TierCard Component */}
-          <div className="relative z-10 w-full max-w-md">
+          {/* TierCard Component - Slides in from right */}
+          <div 
+            className="absolute w-full max-w-md z-10 slide-in-card"
+            style={{
+              top: '50%',
+              transform: 'translateY(-50%)',
+            }}
+          >
             <TierCard 
               variant={getTierVariant(cardType)} 
               imageUrl={getCardImageUrl(cardType)}
             />
           </div>
+
+          <style jsx>{`
+            .slide-in-card {
+              animation: slideInFromRight 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+              right: -100%;
+            }
+
+            @keyframes slideInFromRight {
+              to {
+                right: -50%;
+              }
+            }
+          `}</style>
         </div>
       </div>
     </div>
