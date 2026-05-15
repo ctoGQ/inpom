@@ -1,7 +1,7 @@
 'use server';
 
 import { hashPassword, createSession, verifyPassword } from '@/lib/auth';
-import { sql } from '@neondatabase/serverless';
+import { sql } from '@/lib/db';
 
 export async function signUp(formData: FormData) {
   const email = formData.get('email') as string;
@@ -24,11 +24,11 @@ export async function signUp(formData: FormData) {
 
   try {
     // Check if email exists
-    const existingResult = await sql(process.env.DATABASE_URL!)`
+    const existingResult = await sql`
       SELECT id FROM customers WHERE email = ${email}
     `;
 
-    if (existingResult?.length > 0) {
+    if (existingResult.rows.length > 0) {
       return { error: 'Користувач з таким email вже існує' };
     }
 
@@ -36,17 +36,17 @@ export async function signUp(formData: FormData) {
     const passwordHash = await hashPassword(password);
 
     // Create customer
-    const result = await sql(process.env.DATABASE_URL!)`
+    const result = await sql`
       INSERT INTO customers (email, name, password_hash, is_active, created_at, updated_at)
       VALUES (${email}, ${name}, ${passwordHash}, true, NOW(), NOW())
       RETURNING id
     `;
 
-    if (!result?.length) {
+    if (!result.rows.length) {
       return { error: 'Помилка при створенні акаунту' };
     }
 
-    const customerId = result[0].id as number;
+    const customerId = result.rows[0].id as number;
     await createSession(customerId);
 
     return { success: true };
@@ -65,11 +65,11 @@ export async function signIn(formData: FormData) {
   }
 
   try {
-    const result = await sql(process.env.DATABASE_URL!)`
+    const result = await sql`
       SELECT id, password_hash FROM customers WHERE email = ${email} AND is_active = true
     `;
 
-    const customer = result?.[0];
+    const customer = result.rows?.[0];
     if (!customer) {
       return { error: 'Невірний email або пароль' };
     }
