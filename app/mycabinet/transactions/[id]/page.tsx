@@ -86,14 +86,17 @@ async function getInvoiceDetails(invoiceId: number) {
 }
 
 export default async function TransactionDetailPage({ params }: PageProps) {
+  // In Next.js 16+, params is a Promise - must await it
+  const resolvedParams = await params;
+  
   const customer = await getSessionCustomer();
 
   if (!customer) {
     redirect('/auth/signin');
   }
 
-  // Get params.id (from URL)
-  const rawId = params.id;
+  // Get resolvedParams.id (from URL)
+  const rawId = resolvedParams.id;
   console.log(`[Transaction Detail] Raw params.id: "${rawId}" (type: ${typeof rawId})`);
   
   const transactionId = parseInt(rawId, 10);

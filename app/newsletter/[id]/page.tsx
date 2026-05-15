@@ -127,14 +127,17 @@ function renderBlockContent(blocks: any[]) {
 }
 
 export default async function ArticlePage({ params }: { params: { id: string } }) {
-  const article = await getArticle(params.id);
+  // In Next.js 16+, params is a Promise - must await it
+  const resolvedParams = await params;
+  
+  const article = await getArticle(resolvedParams.id);
 
   if (!article) {
     notFound();
   }
 
   const relatedArticles = article.category_id
-    ? await getRelatedArticles(article.category_id as number, params.id)
+    ? await getRelatedArticles(article.category_id as number, resolvedParams.id)
     : [];
   const subscriberCount = await getSubscriptionStats();
 

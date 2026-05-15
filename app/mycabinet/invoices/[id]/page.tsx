@@ -37,13 +37,16 @@ async function getInvoice(invoiceId: number) {
 }
 
 export default async function InvoiceViewPage({ params }: PageProps) {
+  // In Next.js 16+, params is a Promise - must await it
+  const resolvedParams = await params;
+  
   const customer = await getSessionCustomer();
 
   if (!customer) {
     redirect('/auth/signin');
   }
 
-  const invoice = await getInvoice(parseInt(params.id));
+  const invoice = await getInvoice(parseInt(resolvedParams.id));
 
   if (!invoice) {
     return (

@@ -45,8 +45,11 @@ async function getInvoice(invoiceId: number) {
 }
 
 export default async function PayInvoicePage({ params }: PageProps) {
-  console.log(`[PayInvoicePage] Page loaded with params:`, params);
-  console.log(`[PayInvoicePage] params.id:`, params.id, `(type: ${typeof params.id})`);
+  // In Next.js 16+, params is a Promise - must await it
+  const resolvedParams = await params;
+  
+  console.log(`[PayInvoicePage] Page loaded with resolved params:`, resolvedParams);
+  console.log(`[PayInvoicePage] params.id:`, resolvedParams.id, `(type: ${typeof resolvedParams.id})`);
   
   const customer = await getSessionCustomer();
 
@@ -54,7 +57,7 @@ export default async function PayInvoicePage({ params }: PageProps) {
     redirect('/auth/signin');
   }
 
-  const invoiceId = parseInt(params.id, 10);
+  const invoiceId = parseInt(resolvedParams.id, 10);
   console.log(`[PayInvoicePage] Parsed invoiceId:`, invoiceId, `(isNaN: ${isNaN(invoiceId)})`);
   
   const invoice = await getInvoice(invoiceId);
@@ -151,7 +154,7 @@ export default async function PayInvoicePage({ params }: PageProps) {
 
         {/* Payment Confirmation */}
         <PaymentConfirm
-          invoiceId={parseInt(params.id)}
+          invoiceId={invoiceId}
           amount={invoice.amount}
           creatorName={invoice.creator_name}
           customerId={customer.id}
