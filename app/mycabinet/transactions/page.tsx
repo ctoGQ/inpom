@@ -69,44 +69,45 @@ export default async function TransactionsPage() {
         {transactions.length > 0 ? (
           <div className="space-y-3">
             {transactions.map((transaction: Transaction) => (
-              <div
+              <Link
                 key={transaction.id}
-                className="flex items-center justify-between p-4 bg-foreground/5 border border-foreground/10 rounded-lg"
+                href={`/mycabinet/transactions/${transaction.id}`}
+                className="block hover:opacity-80 transition-opacity"
               >
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-foreground capitalize">
-                    {transaction.type.replace(/_/g, ' ')}
-                  </p>
-                  {transaction.description && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {transaction.description}
+                <div className="flex items-center justify-between p-4 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 hover:border-foreground/20 transition-colors">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-foreground capitalize">
+                      {transaction.type.replace(/_/g, ' ')}
                     </p>
-                  )}
-                  <p className="text-xs text-muted-foreground mt-2">
-                    {new Date(transaction.created_at).toLocaleDateString('uk-UA')} в{' '}
-                    {new Date(transaction.created_at).toLocaleTimeString('uk-UA')}
-                  </p>
-                </div>
-                <div className="flex items-end gap-3">
-                  <div className="text-right">
-                    <p
-                      className={`text-sm font-medium ${
-                        transaction.type.includes('deposit') ||
-                        transaction.type.includes('payment_received')
-                          ? 'text-green-500'
-                          : 'text-red-500'
-                      }`}
-                    >
-                      {transaction.type.includes('deposit') ||
-                      transaction.type.includes('payment_received')
-                        ? '+'
-                        : '-'}
-                      {typeof transaction.amount === 'number' ? transaction.amount.toFixed(2) : '0.00'}
+                    {transaction.description && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {transaction.description}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {new Date(transaction.created_at).toLocaleDateString('uk-UA')} в{' '}
+                      {new Date(transaction.created_at).toLocaleTimeString('uk-UA')}
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1">inpom</p>
                   </div>
-                  {transaction.invoice_id && getInvoiceLink(transaction) && (
-                    <Link href={getInvoiceLink(transaction)!}>
+                  <div className="flex items-end gap-3">
+                    <div className="text-right">
+                      <p
+                        className={`text-sm font-medium ${
+                          transaction.type.includes('deposit') ||
+                          transaction.type.includes('payment_received')
+                            ? 'text-green-500'
+                            : 'text-red-500'
+                        }`}
+                      >
+                        {transaction.type.includes('deposit') ||
+                        transaction.type.includes('payment_received')
+                          ? '+'
+                          : '-'}
+                        {typeof transaction.amount === 'number' ? transaction.amount.toFixed(2) : '0.00'}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-1">inpom</p>
+                    </div>
+                    {transaction.invoice_id && getInvoiceLink(transaction) && (
                       <Button
                         variant="ghost"
                         size="sm"
@@ -116,13 +117,17 @@ export default async function TransactionsPage() {
                             ? 'Переглянути статус оплати'
                             : 'Переглянути інвойс'
                         }
+                        onClick={(e) => {
+                          e.preventDefault();
+                          window.location.href = getInvoiceLink(transaction) || '';
+                        }}
                       >
                         <ExternalLink className="w-4 h-4" />
                       </Button>
-                    </Link>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (
