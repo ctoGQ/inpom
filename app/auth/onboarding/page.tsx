@@ -1,42 +1,61 @@
 // app/auth/onboarding/page.tsx
 // Onboarding questionnaire page shown after successful registration/signin
 
-import { redirect } from 'next/navigation';
+'use client';
+
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { getSessionCustomer } from '@/lib/auth';
 import { OnboardingQuestionnaire } from '@/components/cabinet/onboarding-questionnaire';
 
-export const metadata = {
-  title: 'Розпочніть з нами | inpom',
-  description: 'Допоможіть нам краще вас зрозуміти'
-};
+export default function OnboardingPage() {
+  const router = useRouter();
+  const [customer, setCustomer] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-export default async function OnboardingPage() {
-  // Verify user is authenticated
-  const customer = await getSessionCustomer();
+  useEffect(() => {
+    async function checkAuth() {
+      const customer = await getSessionCustomer();
+      
+      if (!customer) {
+        router.push('/auth/signin');
+        return;
+      }
+      
+      setCustomer(customer);
+      setLoading(false);
+    }
 
-  if (!customer) {
-    redirect('/auth/signin');
+    checkAuth();
+  }, [router]);
+
+  const handleComplete = () => {
+    router.push('/mycabinet');
+  };
+
+  const handleSkip = () => {
+    router.push('/mycabinet');
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
+        <p className="text-muted-foreground">Завантаження...</p>
+      </div>
+    );
   }
 
-  // Check if user already completed onboarding
-  // (Optional - can allow users to redo questionnaire)
-  // if (customer.onboarding_completed) {
-  //   redirect('/mycabinet');
-  // }
+  if (!customer) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
       <div className="w-full">
         <OnboardingQuestionnaire
           customerId={customer.id}
-          onComplete={() => {
-            // Redirect to mycabinet after completing
-            redirect('/mycabinet');
-          }}
-          onSkip={() => {
-            // Skip to mycabinet
-            redirect('/mycabinet');
-          }}
+          onComplete={handleComplete}
+          onSkip={handleSkip}
         />
       </div>
     </div>

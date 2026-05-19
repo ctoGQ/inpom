@@ -33,7 +33,7 @@ export default function SignUpPage() {
       setError(result.error);
       setLoading(false);
     } else if (result?.success) {
-      router.push('/mycabinet');
+      router.push('/auth/onboarding');
     }
   };
 
