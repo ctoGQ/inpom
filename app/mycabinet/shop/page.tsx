@@ -4,6 +4,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -15,8 +16,7 @@ import {
 } from '@/components/ui/select';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
 import { ShopProductCard } from '@/components/shop/shop-product-card';
-import { CreateProductForm } from '@/components/shop/create-product-form';
-import { Search, Filter } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 interface Product {
@@ -124,7 +124,12 @@ export default function ShopPage() {
             </p>
           </div>
 
-          <CreateProductForm />
+          <Link href="/mycabinet/shop/create">
+            <Button className="gap-2">
+              <Plus className="w-4 h-4" />
+              Додати товар
+            </Button>
+          </Link>
         </div>
 
         {/* Filters */}
