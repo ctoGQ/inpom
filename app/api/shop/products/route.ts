@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
       seller_id: searchParams.get('seller_id') || undefined
     };
 
-    console.log('[Shop Products API] Fetching with params:', params);
+    console.log('[Shop Products API] Fetching with params:', JSON.stringify(params));
 
     const limit = Math.min(parseInt(params.limit || '20'), 100);
     const page = Math.max(parseInt(params.page || '1'), 1);
@@ -116,7 +116,7 @@ export async function GET(request: NextRequest) {
     }
 
     const countResult = await sql.unsafe(countQuery, countParams);
-    const total = countResult.rows?.[0]?.total || 0;
+    const total = (countResult.rows && countResult.rows.length > 0) ? parseInt(countResult.rows[0].total) : 0;
 
     console.log(
       `[Shop Products API] ✅ Fetched ${result.rows?.length || 0} products, total: ${total}`
@@ -133,8 +133,22 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('[Shop Products API] ❌ Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to fetch products';
+    
+    // Check if it's a table not found error
+    if (errorMessage.includes('does not exist') || errorMessage.includes('shop_products')) {
+      console.error('[Shop Products API] Database tables not found. Run migration first.');
+      return NextResponse.json(
+        { 
+          error: 'Database not initialized. Please run migrations.',
+          details: errorMessage
+        },
+        { status: 503 }
+      );
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to fetch products' },
+      { error: 'Failed to fetch products', details: errorMessage },
       { status: 500 }
     );
   }

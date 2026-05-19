@@ -201,7 +201,7 @@ export default function ShopPage() {
             </div>
           ) : products.length === 0 ? (
             <div className="text-center py-16">
-              <Filter className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+              <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2">Товари не знайдені</h3>
               <p className="text-muted-foreground">
                 Спробуйте змінити фільтри або пошукові запити
