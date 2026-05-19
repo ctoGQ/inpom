@@ -23,16 +23,16 @@ export function MobileTopNav({
   const router = useRouter();
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-foreground/10">
-      <div className="flex items-center justify-between px-3 h-14">
+    <div className="cabinet-top-nav">
+      <div className="cabinet-top-nav-left">
         {/* Left: Back Button or Logo */}
         {showBack ? (
           <button
             onClick={() => router.back()}
-            className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-foreground/10 transition-colors"
+            className="cabinet-top-nav-back-btn"
             aria-label="Go back"
           >
-            <ChevronLeft className="w-5 h-5 text-foreground" />
+            <ChevronLeft className="w-6 h-6" />
           </button>
         ) : (
           <Link href="/" className="flex items-center justify-center">
@@ -45,19 +45,21 @@ export function MobileTopNav({
             />
           </Link>
         )}
+      </div>
 
-        {/* Center: Title */}
-        {title && (
-          <h1 className="text-sm font-medium text-foreground truncate flex-1 text-center">
-            {title}
-          </h1>
-        )}
+      {/* Center: Title */}
+      {title && (
+        <h1 className="cabinet-top-nav-title">
+          {title}
+        </h1>
+      )}
 
-        {/* Right: Avatar or Spacer */}
+      {/* Right: Avatar or Spacer */}
+      <div className="cabinet-top-nav-right">
         {showAvatar ? (
           <Link
             href="/mycabinet/account"
-            className="flex items-center justify-center w-10 h-10 rounded-full hover:ring-2 hover:ring-foreground/20 transition-all overflow-hidden"
+            className="flex items-center justify-center overflow-hidden"
             aria-label="Account"
           >
             <Image

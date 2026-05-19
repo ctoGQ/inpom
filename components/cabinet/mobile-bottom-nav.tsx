@@ -31,8 +31,8 @@ export function MobileBottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-foreground/10">
-      <div className="flex items-center justify-around px-3 h-16">
+    <nav className="cabinet-bottom-nav">
+      <div className="w-full flex items-center justify-around">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -43,15 +43,15 @@ export function MobileBottomNav() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-colors ${
+              className={`cabinet-nav-item ${
                 isActive
-                  ? 'text-primary bg-foreground/10'
-                  : 'text-muted-foreground hover:text-foreground'
+                  ? 'active'
+                  : ''
               }`}
               aria-label={item.label}
             >
-              <Icon className="w-5 h-5" />
-              <span className="text-xs font-medium">{item.label}</span>
+              <Icon className="cabinet-nav-item-icon" />
+              <span className="cabinet-nav-item-label">{item.label}</span>
             </Link>
           );
         })}

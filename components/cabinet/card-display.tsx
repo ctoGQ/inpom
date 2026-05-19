@@ -53,41 +53,38 @@ export function CardDisplay({
   };
 
   return (
-    <div className="w-full overflow-hidden rounded-2xl border border-foreground/10">
-      {/* Layout: Text on left, 3D Card on right - Single block */}
-      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center p-6 lg:p-8 bg-foreground/[0.02]">
+    <div className="cabinet-card mb-6">
+      <div className="flex flex-col lg:flex-row lg:gap-6 lg:items-center">
         {/* Left side: Balance Info */}
-        <div className="lg:col-span-2 flex flex-col justify-between">
+        <div className="flex-1">
           {/* Header */}
-          <div className="flex items-start justify-between mb-8">
-            <div>
-              <p className={`text-xs font-medium opacity-75 ${getTextColor(cardType)}`}>
-                INPOM CARD
-              </p>
-              <h3 className={`text-lg font-display mt-1 ${getTextColor(cardType)}`}>
-                {cardType.charAt(0).toUpperCase() + cardType.slice(1)}
-              </h3>
-            </div>
+          <div className="mb-lg">
+            <p className="text-tiny text-secondary mb-md">
+              INPOM CARD
+            </p>
+            <h3 className="text-h3">
+              {cardType.charAt(0).toUpperCase() + cardType.slice(1)}
+            </h3>
           </div>
 
           {/* Balance */}
-          <div className="space-y-2 mb-auto">
-            <p className={`text-xs opacity-75 ${getTextColor(cardType)}`}>БАЛАНС</p>
-            <p className={`text-4xl lg:text-5xl font-display font-bold ${getTextColor(cardType)}`}>
+          <div className="space-y-md mb-2xl">
+            <p className="text-small text-secondary">БАЛАНС</p>
+            <p className="text-h1 font-bold">
               {formatAmount(balance)}
             </p>
-            <p className={`text-xs font-mono tracking-wider ${getTextColor(cardType)}`}>inpom</p>
+            <p className="text-tiny font-mono tracking-wider text-secondary">inpom</p>
           </div>
 
           {/* Footer */}
-          <div className={`text-xs mt-8 ${getTextColor(cardType)}`}>
+          <div className="text-small text-secondary mt-2xl">
             {customerName}
           </div>
         </div>
 
         {/* Right side: 3D Animated Card */}
-        <div className="lg:col-span-3 flex items-center justify-center slide-in-card-container overflow-hidden">
-          <div className="w-full max-w-xs lg:max-w-md slide-in-card">
+        <div className="flex items-center justify-center mt-lg lg:mt-0 lg:flex-1">
+          <div className="w-full max-w-sm slide-in-card-container">
             <TierCard 
               variant={getTierVariant(cardType)} 
               imageUrl={getCardImageUrl(cardType)}
@@ -98,8 +95,6 @@ export function CardDisplay({
             .slide-in-card-container {
               opacity: 0;
               animation: fadeIn 0.8s ease-out forwards;
-              animation-delay: 0.2s;
-              min-h-[200px];
             }
 
             .slide-in-card {

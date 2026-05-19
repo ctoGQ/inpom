@@ -22,7 +22,7 @@ export function CabinetLayout({
   userName = '',
 }: CabinetLayoutProps) {
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="mycabinet-container">
       <MobileTopNav
         title={title}
         showBack={showBack}
@@ -30,7 +30,7 @@ export function CabinetLayout({
         avatarUrl={avatarUrl}
         userName={userName}
       />
-      <main className="pt-14 px-3">
+      <main className="mycabinet-main">
         {children}
       </main>
       <MobileBottomNav />

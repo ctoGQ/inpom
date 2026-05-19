@@ -95,7 +95,7 @@ export default async function MyCabinetPage() {
       avatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
       userName={customer.name}
     >
-      <div className="space-y-6 pt-6">
+      <div className="space-y-2xl pt-lg">
         {/* Card Section */}
         {card ? (
           <CardDisplay
@@ -104,29 +104,28 @@ export default async function MyCabinetPage() {
             customerName={customer.name}
           />
         ) : (
-          <div className="bg-foreground/5 border border-foreground/10 rounded-2xl p-6 text-center">
-            <p className="text-sm text-muted-foreground mb-4">
+          <div className="cabinet-card text-center">
+            <p className="text-caption text-secondary mb-lg">
               Карта не знайдена
             </p>
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-2 gap-md">
           <Link href="/mycabinet/deposit" className="flex-1">
             <Button
-              className="w-full bg-foreground text-background hover:bg-foreground/90 rounded-lg"
+              className="w-full cabinet-button cabinet-button-primary"
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-5 h-5 mr-2" />
               Депозит
             </Button>
           </Link>
           <Link href="/mycabinet/create-invoice" className="flex-1">
             <Button
-              variant="outline"
-              className="w-full border-foreground/20 hover:bg-foreground/5 rounded-lg"
+              className="w-full cabinet-button cabinet-button-outline"
             >
-              <QrCode className="w-4 h-4 mr-2" />
+              <QrCode className="w-5 h-5 mr-2" />
               Invoice
             </Button>
           </Link>
@@ -136,12 +135,12 @@ export default async function MyCabinetPage() {
         <CabinetTabs transactions={transactions} invoices={invoices} />
 
         {/* Logout Button */}
-        <form action={handleLogout} className="pt-6 pb-6">
+        <form action={handleLogout} className="p-lg">
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-destructive/10 hover:bg-destructive/20 text-destructive rounded-lg transition-colors"
+            className="w-full cabinet-button cabinet-button-destructive"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-5 h-5 mr-2" />
             Вихід
           </button>
         </form>

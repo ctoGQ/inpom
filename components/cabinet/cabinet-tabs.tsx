@@ -45,89 +45,84 @@ export function CabinetTabs({ transactions, invoices }: CabinetTabsProps) {
   };
 
   return (
-    <div className="pt-6">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-display text-foreground">
+    <div className="cabinet-section p-lg">
+      <div className="flex items-center justify-between mb-lg">
+        <h2 className="text-h3">
           Активність
         </h2>
         <Link href="/mycabinet/transactions">
           <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs"
+            className="cabinet-button cabinet-button-ghost text-small"
           >
             Більше
-            <ArrowRight className="w-3 h-3 ml-1" />
+            <ArrowRight className="w-4 h-4 ml-md" />
           </Button>
         </Link>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="transactions">
+        <TabsList className="cabinet-tabs">
+          <TabsTrigger value="transactions" className="cabinet-tab">
             Транзакції
           </TabsTrigger>
-          <TabsTrigger value="invoices">
+          <TabsTrigger value="invoices" className="cabinet-tab">
             Інвойси
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="transactions" className="mt-4">
+        <TabsContent value="transactions" className="mt-lg">
           {transactions.length > 0 ? (
-            <div className="space-y-3">
+            <div className="cabinet-list">
               {transactions.map((transaction: Transaction) => (
                 <Link
                   key={transaction.id}
                   href={`/mycabinet/transactions/${transaction.id}`}
-                  className="block hover:opacity-80 transition-opacity"
+                  className="cabinet-list-item"
                 >
-                  <div className="flex items-center justify-between p-4 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 hover:border-foreground/20 transition-colors">
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-foreground capitalize">
-                        {transaction.type.replace(/_/g, ' ')}
+                  <div className="cabinet-list-item-main">
+                    <p className="cabinet-list-item-title capitalize">
+                      {transaction.type.replace(/_/g, ' ')}
+                    </p>
+                    {transaction.description && (
+                      <p className="cabinet-list-item-subtitle truncate">
+                        {transaction.description}
                       </p>
-                      {transaction.description && (
-                        <p className="text-xs text-muted-foreground mt-1 truncate">
-                          {transaction.description}
-                        </p>
-                      )}
-                      <p className="text-xs text-muted-foreground mt-2">
-                        {new Date(transaction.created_at).toLocaleDateString('uk-UA')}
-                      </p>
-                    </div>
-                    <div className="text-right ml-4">
-                      <p
-                        className={`text-sm font-medium ${
-                          transaction.type.includes('deposit') ||
-                          transaction.type.includes('payment_received')
-                            ? 'text-green-500'
-                            : 'text-red-500'
-                        }`}
-                      >
-                        {transaction.type.includes('deposit') ||
+                    )}
+                    <p className="cabinet-list-item-subtitle mt-md">
+                      {new Date(transaction.created_at).toLocaleDateString('uk-UA')}
+                    </p>
+                  </div>
+                  <div className="cabinet-list-item-amount">
+                    <p
+                      className={`${
+                        transaction.type.includes('deposit') ||
                         transaction.type.includes('payment_received')
-                          ? '+'
-                          : '-'}
-                        {formatAmount(transaction.amount)}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">inpom</p>
-                    </div>
+                          ? 'text-success'
+                          : 'text-destructive'
+                      }`}
+                    >
+                      {transaction.type.includes('deposit') ||
+                      transaction.type.includes('payment_received')
+                        ? '+'
+                        : '-'}
+                      {formatAmount(transaction.amount)}
+                    </p>
                   </div>
                 </Link>
               ))}
             </div>
           ) : (
-            <div className="text-center py-8 bg-foreground/5 border border-foreground/10 rounded-lg">
-              <p className="text-sm text-muted-foreground">
+            <div className="cabinet-empty-state">
+              <p className="cabinet-empty-state-description">
                 Немає транзакцій
               </p>
             </div>
           )}
         </TabsContent>
 
-        <TabsContent value="invoices" className="mt-4">
+        <TabsContent value="invoices" className="mt-lg">
           {invoices.length > 0 ? (
-            <div className="space-y-3">
+            <div className="cabinet-list">
               {invoices.map((invoice: Invoice) => {
                 const isExpired = invoice.expires_at && new Date(invoice.expires_at) < new Date();
                 const isPaid = invoice.status === 'paid';
@@ -136,49 +131,46 @@ export function CabinetTabs({ transactions, invoices }: CabinetTabsProps) {
                   <Link
                     key={invoice.id}
                     href={`/mycabinet/invoices/${invoice.id}`}
-                    className="block hover:opacity-80 transition-opacity"
+                    className="cabinet-list-item"
                   >
-                    <div className="flex items-center justify-between p-4 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 hover:border-foreground/20 transition-colors">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium text-foreground">
-                            Invoice #{invoice.id}
-                          </p>
-                          <span
-                            className={`text-xs px-2 py-1 rounded ${
-                              isPaid
-                                ? 'bg-green-500/20 text-green-600'
-                                : isExpired
-                                ? 'bg-red-500/20 text-red-600'
-                                : 'bg-blue-500/20 text-blue-600'
-                            }`}
-                          >
-                            {isPaid ? 'Оплачено' : isExpired ? 'Закінчилось' : 'Очікує'}
-                          </span>
-                        </div>
-                        {invoice.description && (
-                          <p className="text-xs text-muted-foreground mt-1 truncate">
-                            {invoice.description}
-                          </p>
-                        )}
-                        <p className="text-xs text-muted-foreground mt-2">
-                          {new Date(invoice.created_at).toLocaleDateString('uk-UA')}
+                    <div className="cabinet-list-item-main">
+                      <div className="flex items-center gap-sm">
+                        <p className="cabinet-list-item-title">
+                          Invoice #{invoice.id}
                         </p>
+                        <span
+                          className={`cabinet-list-item-status ${
+                            isPaid
+                              ? 'completed'
+                              : isExpired
+                              ? 'failed'
+                              : 'pending'
+                          }`}
+                        >
+                          {isPaid ? 'Оплачено' : isExpired ? 'Закінчилось' : 'Очікує'}
+                        </span>
                       </div>
-                      <div className="text-right ml-4">
-                        <p className="text-sm font-medium text-foreground">
-                          {formatAmount(invoice.amount)}
+                      {invoice.description && (
+                        <p className="cabinet-list-item-subtitle truncate">
+                          {invoice.description}
                         </p>
-                        <p className="text-xs text-muted-foreground mt-1">inpom</p>
-                      </div>
+                      )}
+                      <p className="cabinet-list-item-subtitle mt-md">
+                        {new Date(invoice.created_at).toLocaleDateString('uk-UA')}
+                      </p>
+                    </div>
+                    <div className="cabinet-list-item-amount">
+                      <p className="font-medium">
+                        {formatAmount(invoice.amount)}
+                      </p>
                     </div>
                   </Link>
                 );
               })}
             </div>
           ) : (
-            <div className="text-center py-8 bg-foreground/5 border border-foreground/10 rounded-lg">
-              <p className="text-sm text-muted-foreground">
+            <div className="cabinet-empty-state">
+              <p className="cabinet-empty-state-description">
                 Немає інвойсів
               </p>
             </div>
