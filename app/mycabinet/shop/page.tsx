@@ -148,15 +148,15 @@ export default function ShopPage() {
           </form>
 
           {/* Category filter */}
-          <Select value={selectedCategory} onValueChange={(value) => {
-            setSelectedCategory(value);
+          <Select value={selectedCategory || "all"} onValueChange={(value) => {
+            setSelectedCategory(value === "all" ? "" : value);
             setPage(1);
           }}>
             <SelectTrigger>
               <SelectValue placeholder="Всі категорії" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Всі категорії</SelectItem>
+              <SelectItem value="all">Всі категорії</SelectItem>
               {categories.map(cat => (
                 <SelectItem key={cat.id} value={cat.slug}>
                   {cat.name}

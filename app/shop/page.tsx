@@ -135,15 +135,15 @@ export default function ShopPage() {
 
       {/* Filters */}
       <div className="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Select value={selectedCategory} onValueChange={(value) => {
-          setSelectedCategory(value);
+        <Select value={selectedCategory || "all"} onValueChange={(value) => {
+          setSelectedCategory(value === "all" ? "" : value);
           setPage(1);
         }}>
           <SelectTrigger>
             <SelectValue placeholder="Усі категорії" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">Усі категорії</SelectItem>
+            <SelectItem value="all">Усі категорії</SelectItem>
             {categories.map((cat) => (
               <SelectItem key={cat.id} value={cat.id.toString()}>
                 {cat.name}
