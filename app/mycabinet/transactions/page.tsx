@@ -82,7 +82,7 @@ export default async function TransactionsPage() {
     >
       <div className="space-y-6 pt-6">
         <div>
-          <h1 className="text-2xl font-display text-foreground mb-2">
+          <h1 className="text-2xl font-display text-slate-900 mb-2">
             Історія операцій
           </h1>
           <p className="text-sm text-muted-foreground">

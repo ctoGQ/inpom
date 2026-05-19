@@ -86,7 +86,7 @@ export default async function InvoiceViewPage({ params }: PageProps) {
     <CabinetLayout title="Інвойс" showBack>
       <div className="space-y-6 pt-6">
         <div>
-          <h1 className="text-2xl font-display text-foreground mb-2">
+          <h1 className="text-2xl font-display text-slate-900 mb-2">
             Ваш інвойс
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -127,7 +127,7 @@ export default async function InvoiceViewPage({ params }: PageProps) {
 
         {/* Info */}
         <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg space-y-2">
-          <p className="text-xs font-medium text-foreground">Інформація:</p>
+          <p className="text-xs font-medium text-slate-900">Інформація:</p>
           <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
             <li>Поділіться QR-кодом з іншим користувачем</li>
             <li>Користувач може відсканувати код або перейти за посиланням</li>

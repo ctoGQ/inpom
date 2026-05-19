@@ -134,7 +134,7 @@ export default function EditAccountPage() {
       <div className="space-y-6 pt-6">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-xs font-medium text-muted-foreground mb-2 block">
+            <label className="text-xs font-medium text-gray-700 mb-2 block">
               ІМ'Я
             </label>
             <Input
@@ -148,7 +148,7 @@ export default function EditAccountPage() {
           </div>
 
           <div>
-            <label className="text-xs font-medium text-muted-foreground mb-2 block">
+            <label className="text-xs font-medium text-gray-700 mb-2 block">
               EMAIL
             </label>
             <Input

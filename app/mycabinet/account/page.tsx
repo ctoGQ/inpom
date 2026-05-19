@@ -43,7 +43,7 @@ export default async function AccountPage() {
       <div className="space-y-6 pt-6">
         {/* Profile Card */}
         <div className="p-6 bg-foreground/5 border border-foreground/10 rounded-lg">
-          <h2 className="text-lg font-display text-foreground mb-4">
+          <h2 className="text-lg font-display text-slate-900 mb-4">
             Інформація профілю
           </h2>
           <div className="space-y-3">

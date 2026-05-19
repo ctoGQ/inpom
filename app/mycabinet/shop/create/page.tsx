@@ -318,7 +318,7 @@ export default function CreateProductPage() {
                   />
                 </div>
                 <div>
-                  <label className="text-sm font-medium mb-2 block">SKU</label>
+                  <label className="text-sm font-medium text-slate-900 mb-2 block">SKU</label>
                   <Input
                     placeholder="Артикул товару"
                     value={formData.sku}
@@ -331,7 +331,7 @@ export default function CreateProductPage() {
 
               {/* Images */}
               <div>
-                <label className="text-sm font-medium mb-2 block">Фото товару</label>
+                <label className="text-sm font-medium text-slate-900 mb-2 block">Фото товару</label>
                 <div className="border-2 border-dashed border-input rounded-lg p-6">
                   <label className="flex items-center justify-center gap-2 cursor-pointer hover:text-primary transition-colors">
                     <Upload className="w-4 h-4" />
@@ -370,7 +370,7 @@ export default function CreateProductPage() {
               {/* Attributes */}
               <div>
                 <div className="flex justify-between items-center mb-3">
-                  <label className="text-sm font-medium">Характеристики</label>
+                  <label className="text-sm font-medium text-slate-900">Характеристики</label>
                   <Button
                     type="button"
                     variant="outline"

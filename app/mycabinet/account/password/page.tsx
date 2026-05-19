@@ -140,7 +140,7 @@ export default function PasswordPage() {
     placeholder: string;
   }) => (
     <div>
-      <label className="text-xs font-medium text-muted-foreground mb-2 block">
+      <label className="text-xs font-medium text-gray-700 mb-2 block">
         {label}
       </label>
       <div className="relative">

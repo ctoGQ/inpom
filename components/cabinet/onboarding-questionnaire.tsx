@@ -134,9 +134,9 @@ export function OnboardingQuestionnaire({
 
   if (loading) {
     return (
-      <Card className="w-full max-w-2xl mx-auto p-8">
+      <Card className="w-full max-w-2xl mx-auto p-8 bg-white border-none rounded-3xl shadow-md">
         <div className="flex items-center justify-center h-64">
-          <p className="text-muted-foreground">Завантаження питань...</p>
+          <p className="text-gray-600 text-lg font-medium">Завантаження питань...</p>
         </div>
       </Card>
     );
@@ -144,9 +144,9 @@ export function OnboardingQuestionnaire({
 
   if (error) {
     return (
-      <Card className="w-full max-w-2xl mx-auto p-8 border-destructive">
-        <p className="text-destructive">{error}</p>
-        <Button onClick={onSkip} variant="outline" className="mt-4">
+      <Card className="w-full max-w-2xl mx-auto p-8 bg-white border-2 border-red-300 rounded-3xl shadow-md">
+        <p className="text-red-600 text-lg font-semibold mb-4">{error}</p>
+        <Button onClick={onSkip} className="h-12 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-base font-semibold transition-all border-none">
           Пропустити
         </Button>
       </Card>
@@ -160,13 +160,13 @@ export function OnboardingQuestionnaire({
   const isLastQuestion = currentQuestion === questions.length - 1;
 
   return (
-    <Card className="w-full max-w-2xl mx-auto p-8">
+    <Card className="w-full max-w-2xl mx-auto p-6 sm:p-8 bg-white border-none rounded-3xl shadow-md">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-display font-bold mb-2">
+        <h1 className="text-3xl font-bold mb-2 text-slate-900">
           Розпочніть з нас
         </h1>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-base text-gray-600">
           Допоможіть нам краще вас зрозуміти. Це займе близько 5 хвилин.
         </p>
       </div>
@@ -174,25 +174,25 @@ export function OnboardingQuestionnaire({
       {/* Progress Bar */}
       <div className="mb-6">
         <div className="flex justify-between items-center mb-2">
-          <span className="text-xs font-medium text-muted-foreground">
+          <span className="text-sm font-semibold text-gray-700">
             Питання {currentQuestion + 1} з {questions.length}
           </span>
-          <span className="text-xs font-medium text-muted-foreground">
+          <span className="text-sm font-semibold text-gray-700">
             {Math.round(progress)}%
           </span>
         </div>
-        <Progress value={progress} className="h-2" />
+        <Progress value={progress} className="h-3 bg-gray-200 rounded-full" />
       </div>
 
       {/* Category Badge */}
-      <div className="mb-6">
-        <span className="inline-block px-3 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full capitalize">
+      <div className="mb-8">
+        <span className="inline-block px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-600 text-sm font-semibold rounded-full capitalize border border-blue-200">
           {getCategoryLabel(question.category)}
         </span>
       </div>
 
       {/* Question */}
-      <h2 className="text-lg font-semibold mb-6 leading-tight">
+      <h2 className="text-2xl font-bold mb-8 leading-tight text-slate-900">
         {question.question_text}
       </h2>
 
@@ -203,7 +203,7 @@ export function OnboardingQuestionnaire({
           handleAnswer(question.question_number, value)
         }
       >
-        <div className="space-y-3">
+        <div className="space-y-4">
           {[
             question.answer_option_1,
             question.answer_option_2,
@@ -211,7 +211,7 @@ export function OnboardingQuestionnaire({
           ].map((option, idx) => (
             <div
               key={idx}
-              className="flex items-start space-x-3 p-4 rounded-lg border border-input hover:border-primary hover:bg-primary/5 cursor-pointer transition-colors"
+              className="flex items-start space-x-3 p-5 rounded-2xl border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 bg-white cursor-pointer transition-all"
               onClick={() =>
                 handleAnswer(question.question_number, option)
               }
@@ -219,11 +219,11 @@ export function OnboardingQuestionnaire({
               <RadioGroupItem
                 value={option}
                 id={`option-${idx}`}
-                className="mt-1"
+                className="mt-1.5 w-6 h-6"
               />
               <Label
                 htmlFor={`option-${idx}`}
-                className="text-sm cursor-pointer flex-1"
+                className="text-base font-medium cursor-pointer flex-1 text-gray-800 leading-relaxed"
               >
                 {option}
               </Label>
@@ -233,28 +233,29 @@ export function OnboardingQuestionnaire({
       </RadioGroup>
 
       {/* Navigation Buttons */}
-      <div className="mt-8 flex gap-3 justify-between">
-        <div className="flex gap-3">
+      <div className="mt-10 flex flex-col-reverse sm:flex-row gap-3 justify-between">
+        <div className="flex gap-3 w-full sm:w-auto">
           <Button
             onClick={handlePrevious}
             variant="outline"
             disabled={currentQuestion === 0}
+            className="flex-1 sm:flex-none h-12 rounded-xl border-2 text-base font-semibold"
           >
             Назад
           </Button>
           <Button
             onClick={handleNext}
             disabled={isLastQuestion || !answers[question.question_number]}
+            className="flex-1 sm:flex-none h-12 rounded-xl bg-blue-500 hover:bg-blue-600 text-white text-base font-semibold transition-all"
           >
             Далі
           </Button>
         </div>
 
-        <div className="flex gap-3">
+        <div className="flex gap-3 w-full sm:w-auto">
           <Button
             onClick={onSkip}
-            variant="ghost"
-            className="text-muted-foreground"
+            className="flex-1 sm:flex-none h-12 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-base font-semibold transition-all border-none"
           >
             Пропустити
           </Button>
@@ -262,7 +263,7 @@ export function OnboardingQuestionnaire({
             <Button
               onClick={handleSubmit}
               disabled={submitting || Object.keys(answers).length < 10}
-              className="min-w-[100px]"
+              className="flex-1 sm:flex-none h-12 rounded-xl bg-green-500 hover:bg-green-600 text-white text-base font-semibold transition-all min-w-[140px]"
             >
               {submitting ? 'Надсилання...' : 'Завершити'}
             </Button>
@@ -271,7 +272,7 @@ export function OnboardingQuestionnaire({
       </div>
 
       {/* Completed Questions Counter */}
-      <div className="mt-6 pt-6 border-t text-xs text-muted-foreground text-center">
+      <div className="mt-8 pt-6 border-t border-gray-200 text-sm font-semibold text-gray-700 text-center">
         Заповнено: {Object.keys(answers).length} / {questions.length}
       </div>
     </Card>

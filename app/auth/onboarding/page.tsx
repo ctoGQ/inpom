@@ -39,8 +39,8 @@ export default function OnboardingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
-        <p className="text-muted-foreground">Завантаження...</p>
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
+        <p className="text-gray-600 text-lg font-medium">Завантаження...</p>
       </div>
     );
   }
@@ -50,8 +50,8 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
-      <div className="w-full">
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
+      <div className="w-full max-w-2xl">
         <OnboardingQuestionnaire
           customerId={customer.id}
           onComplete={handleComplete}

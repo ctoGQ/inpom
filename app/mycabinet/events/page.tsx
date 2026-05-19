@@ -14,7 +14,7 @@ export default async function EventsPage() {
     <CabinetLayout title="Евенти">
       <div className="space-y-6 pt-6">
         <div>
-          <h1 className="text-2xl font-display text-foreground mb-2">
+          <h1 className="text-2xl font-display text-slate-900 mb-2">
             События і воркшопи
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -35,7 +35,7 @@ export default async function EventsPage() {
                   <Calendar className="w-6 h-6 text-muted-foreground" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-medium text-foreground">
+                  <h3 className="text-sm font-medium text-slate-900">
                     Событие {event}
                   </h3>
                   <p className="text-xs text-muted-foreground mt-1">

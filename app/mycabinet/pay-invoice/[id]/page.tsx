@@ -101,7 +101,7 @@ export default async function PayInvoicePage({ params }: PageProps) {
     <CabinetLayout title="Платіж" showBack>
       <div className="space-y-6 pt-6">
         <div>
-          <h1 className="text-2xl font-display text-foreground mb-2">
+          <h1 className="text-2xl font-display text-slate-900 mb-2">
             Оплата інвойса
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -114,7 +114,7 @@ export default async function PayInvoicePage({ params }: PageProps) {
           <p className="text-xs font-medium text-muted-foreground mb-2">
             ЗАПИТ ВІД
           </p>
-          <h2 className="text-2xl font-display text-foreground mb-6">
+          <h2 className="text-2xl font-display text-slate-900 mb-6">
             {invoice.creator_name}
           </h2>
 
@@ -142,7 +142,7 @@ export default async function PayInvoicePage({ params }: PageProps) {
 
             {invoice.expires_at && !isExpired && (
               <div className="pt-4 border-t border-foreground/10">
-                <p className="text-xs font-medium text-muted-foreground mb-1">
+                <p className="text-xs font-medium text-gray-700 mb-1">
                   ТЕРМІН ДІЇ
                 </p>
                 <p className="text-sm text-foreground">

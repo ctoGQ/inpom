@@ -157,7 +157,7 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Amount Input */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground">
+        <label className="text-sm font-medium text-slate-900">
           Сума (inpom) *
         </label>
         <input
@@ -174,7 +174,7 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
 
       {/* Description */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground">
+        <label className="text-sm font-medium text-slate-900">
           Опис *
         </label>
         <textarea
@@ -192,7 +192,7 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
 
       {/* Expiry */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground">
+        <label className="text-sm font-medium text-slate-900">
           Термін дії (хвилин)
         </label>
         <select

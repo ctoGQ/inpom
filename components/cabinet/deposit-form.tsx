@@ -26,7 +26,7 @@ export function DepositForm({ customerId }: DepositFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Amount Input */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground">
+        <label className="text-sm font-medium text-slate-900">
           Сума (inpom)
         </label>
         <input
