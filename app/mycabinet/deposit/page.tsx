@@ -17,7 +17,7 @@ export default async function DepositPage() {
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
             Поповнити баланс
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-700">
             Виберіть суму для поповнення карти
           </p>
         </div>

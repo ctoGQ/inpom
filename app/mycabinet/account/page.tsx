@@ -51,19 +51,19 @@ export default async function AccountPage() {
               <p className="text-xs font-medium text-gray-700 mb-1">
                 ІМ'Я
               </p>
-              <p className="text-sm text-foreground">{customer.name}</p>
+              <p className="text-sm text-slate-900">{customer.name}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">
+              <p className="text-xs font-medium text-gray-700 mb-1">
                 EMAIL
               </p>
-              <p className="text-sm text-foreground">{customer.email}</p>
+              <p className="text-sm text-slate-900">{customer.email}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">
+              <p className="text-xs font-medium text-gray-700 mb-1">
                 ID АКАУНТУ
               </p>
-              <p className="text-sm text-muted-foreground font-mono">
+              <p className="text-sm text-gray-700 font-mono">
                 {customer.id}
               </p>
             </div>

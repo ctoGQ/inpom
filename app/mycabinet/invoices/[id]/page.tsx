@@ -89,7 +89,7 @@ export default async function InvoiceViewPage({ params }: PageProps) {
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
             Ваш інвойс
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-700">
             Поділіться цим інвойсом з іншими користувачами, щоб вони могли його оплатити
           </p>
         </div>

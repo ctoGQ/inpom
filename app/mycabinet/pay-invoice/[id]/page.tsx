@@ -104,7 +104,7 @@ export default async function PayInvoicePage({ params }: PageProps) {
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
             Оплата інвойса
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-700">
             Перевірте деталі та підтвердьте оплату
           </p>
         </div>

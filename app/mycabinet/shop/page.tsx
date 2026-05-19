@@ -119,7 +119,7 @@ export default function ShopPage() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold mb-1">Магазин</h1>
-            <p className="text-gray-600">
+            <p className="text-gray-700">
               Знайдіть те, що вам потрібно, або створіть свій товар
             </p>
           </div>
@@ -203,7 +203,7 @@ export default function ShopPage() {
             <div className="text-center py-16">
               <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
               <h3 className="text-lg font-semibold mb-2 text-slate-900">Товари не знайдені</h3>
-              <p className="text-gray-600">
+              <p className="text-gray-700">
                 Спробуйте змінити фільтри або пошукові запити
               </p>
             </div>
@@ -266,7 +266,7 @@ export default function ShopPage() {
               )}
 
               {/* Results info */}
-              <p className="text-center text-sm text-gray-600 mt-4">
+              <p className="text-center text-sm text-gray-700 mt-4">
                 Показано {(page - 1) * limit + 1}-{Math.min(page * limit, total)} з {total} товарів
               </p>
             </>

@@ -19,7 +19,7 @@ export default async function CreateInvoicePage() {
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
             Створити інвойс
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-700">
             Інші користувачі зможуть відсканувати QR-код та оплатити
           </p>
         </div>

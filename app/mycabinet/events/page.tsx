@@ -17,7 +17,7 @@ export default async function EventsPage() {
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
             События і воркшопи
           </h1>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-700">
             Реєструйтеся на наші чудові знакомства та воркшопи
           </p>
         </div>
@@ -38,7 +38,7 @@ export default async function EventsPage() {
                   <h3 className="text-sm font-semibold text-slate-900">
                     Событие {event}
                   </h3>
-                  <p className="text-xs text-gray-600 mt-1">
+                  <p className="text-xs text-gray-700 mt-1">
                     Опис события...
                   </p>
                   <div className="mt-3 flex items-center justify-between">
@@ -57,7 +57,7 @@ export default async function EventsPage() {
 
         {/* Empty State */}
         <div className="text-center py-16 bg-white border border-gray-200 rounded-2xl shadow-sm">
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-gray-700">
             Жодних доступних подій
           </p>
         </div>
