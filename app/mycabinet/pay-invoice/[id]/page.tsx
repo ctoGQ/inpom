@@ -67,9 +67,9 @@ export default async function PayInvoicePage({ params }: PageProps) {
     return (
       <CabinetLayout title="Платіж" showBack>
         <div className="space-y-6 pt-6">
-          <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
-            <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">
+          <div className="text-center py-16 bg-white border border-gray-200 rounded-2xl shadow-sm">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
+            <p className="text-sm text-gray-600 font-medium">
               Інвойс не знайдено або більше недійсний
             </p>
           </div>
@@ -101,51 +101,51 @@ export default async function PayInvoicePage({ params }: PageProps) {
     <CabinetLayout title="Платіж" showBack>
       <div className="space-y-6 pt-6">
         <div>
-          <h1 className="text-2xl font-display text-slate-900 mb-2">
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">
             Оплата інвойса
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-600">
             Перевірте деталі та підтвердьте оплату
           </p>
         </div>
 
         {/* Invoice Details */}
-        <div className="p-6 bg-foreground/5 border border-foreground/10 rounded-lg">
-          <p className="text-xs font-medium text-muted-foreground mb-2">
+        <div className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
+          <p className="text-xs font-semibold text-gray-700 mb-2">
             ЗАПИТ ВІД
           </p>
-          <h2 className="text-2xl font-display text-slate-900 mb-6">
+          <h2 className="text-2xl font-bold text-slate-900 mb-6">
             {invoice.creator_name}
           </h2>
 
           <div className="space-y-4">
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">
+              <p className="text-xs font-semibold text-gray-700 mb-1">
                 Сума до оплати
               </p>
-              <p className="text-4xl font-display text-foreground">
+              <p className="text-4xl font-bold text-slate-900">
                 {formatAmount(invoice.amount)}
               </p>
-              <p className="text-sm text-muted-foreground">inpom</p>
+              <p className="text-sm text-gray-600">inpom</p>
             </div>
 
             {invoice.description && (
-              <div className="pt-4 border-t border-foreground/10">
-                <p className="text-xs font-medium text-muted-foreground mb-2">
+              <div className="pt-4 border-t border-gray-200">
+                <p className="text-xs font-semibold text-gray-700 mb-2">
                   ОПИС
                 </p>
-                <p className="text-sm text-foreground">
+                <p className="text-sm text-slate-900">
                   {invoice.description}
                 </p>
               </div>
             )}
 
             {invoice.expires_at && !isExpired && (
-              <div className="pt-4 border-t border-foreground/10">
-                <p className="text-xs font-medium text-gray-700 mb-1">
+              <div className="pt-4 border-t border-gray-200">
+                <p className="text-xs font-semibold text-gray-700 mb-1">
                   ТЕРМІН ДІЇ
                 </p>
-                <p className="text-sm text-foreground">
+                <p className="text-sm text-slate-900">
                   {new Date(invoice.expires_at).toLocaleDateString('uk-UA')}
                 </p>
               </div>
@@ -164,8 +164,8 @@ export default async function PayInvoicePage({ params }: PageProps) {
         />
 
         {/* Info */}
-        <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg">
-          <p className="text-xs text-muted-foreground">
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl shadow-sm">
+          <p className="text-xs text-gray-700 font-medium">
             При підтвердженні оплати, зазначена сума буде списана з вашого балансу та перерахована на рахунок автора інвойса.
           </p>
         </div>

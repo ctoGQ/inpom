@@ -14,10 +14,10 @@ export default async function EventsPage() {
     <CabinetLayout title="Евенти">
       <div className="space-y-6 pt-6">
         <div>
-          <h1 className="text-2xl font-display text-slate-900 mb-2">
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">
             События і воркшопи
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-600">
             Реєструйтеся на наші чудові знакомства та воркшопи
           </p>
         </div>
@@ -28,24 +28,24 @@ export default async function EventsPage() {
           {[1, 2, 3].map((event) => (
             <div
               key={event}
-              className="p-4 bg-foreground/5 border border-foreground/10 rounded-lg"
+              className="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex items-start gap-4">
                 <div className="flex-shrink-0">
-                  <Calendar className="w-6 h-6 text-muted-foreground" />
+                  <Calendar className="w-6 h-6 text-blue-500" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-medium text-slate-900">
+                  <h3 className="text-sm font-semibold text-slate-900">
                     Событие {event}
                   </h3>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="text-xs text-gray-600 mt-1">
                     Опис события...
                   </p>
                   <div className="mt-3 flex items-center justify-between">
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-gray-500">
                       25 бер, 2025
                     </p>
-                    <button className="text-xs px-3 py-1 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded transition-colors">
+                    <button className="text-xs px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-600 font-medium rounded-lg transition-colors">
                       Деталі
                     </button>
                   </div>
@@ -56,8 +56,8 @@ export default async function EventsPage() {
         </div>
 
         {/* Empty State */}
-        <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
-          <p className="text-sm text-muted-foreground">
+        <div className="text-center py-16 bg-white border border-gray-200 rounded-2xl shadow-sm">
+          <p className="text-sm text-gray-600">
             Жодних доступних подій
           </p>
         </div>

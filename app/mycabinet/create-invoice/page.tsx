@@ -16,10 +16,10 @@ export default async function CreateInvoicePage() {
     <CabinetLayout title="Invoice" showBack>
       <div className="space-y-6 pt-6">
         <div>
-          <h1 className="text-2xl font-display text-slate-900 mb-2">
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">
             Створити інвойс
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-600">
             Інші користувачі зможуть відсканувати QR-код та оплатити
           </p>
         </div>

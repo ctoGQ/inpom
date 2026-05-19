@@ -42,13 +42,13 @@ export default async function AccountPage() {
     >
       <div className="space-y-6 pt-6">
         {/* Profile Card */}
-        <div className="p-6 bg-foreground/5 border border-foreground/10 rounded-lg">
-          <h2 className="text-lg font-display text-slate-900 mb-4">
+        <div className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
+          <h2 className="text-lg font-semibold text-slate-900 mb-4">
             Інформація профілю
           </h2>
           <div className="space-y-3">
             <div>
-              <p className="text-xs font-medium text-muted-foreground mb-1">
+              <p className="text-xs font-medium text-gray-700 mb-1">
                 ІМ'Я
               </p>
               <p className="text-sm text-foreground">{customer.name}</p>
@@ -71,7 +71,7 @@ export default async function AccountPage() {
         </div>
 
         {/* Avatar Upload */}
-        <div className="p-6 bg-foreground/5 border border-foreground/10 rounded-lg">
+        <div className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
           <AvatarUpload
             currentAvatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
             customerName={customer.name}
@@ -80,7 +80,7 @@ export default async function AccountPage() {
 
         {/* Account Menu */}
         <div className="space-y-2">
-          <h3 className="text-sm font-medium text-foreground px-2">
+          <h3 className="text-sm font-semibold text-slate-900 px-2">
             Налаштування
           </h3>
           {accountMenuItems.map((item) => (
@@ -89,38 +89,38 @@ export default async function AccountPage() {
               href={item.href}
               className="block group"
             >
-              <div className="flex items-center justify-between p-4 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 hover:border-foreground/20 transition-colors">
+              <div className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl hover:bg-blue-50 hover:border-blue-300 transition-all shadow-sm">
                 <div className="flex items-start gap-3">
-                  <div className="text-muted-foreground group-hover:text-foreground transition-colors mt-0.5">
+                  <div className="text-gray-600 group-hover:text-blue-600 transition-colors mt-0.5">
                     {item.icon}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-foreground">
+                    <p className="text-sm font-semibold text-slate-900">
                       {item.title}
                     </p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-xs text-gray-600">
                       {item.description}
                     </p>
                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
               </div>
             </Link>
           ))}
         </div>
 
         {/* Theme Settings */}
-        <div className="p-6 bg-foreground/5 border border-foreground/10 rounded-lg">
+        <div className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
           <ThemeToggle />
         </div>
 
         {/* Danger Zone */}
         <div className="space-y-3">
-          <h3 className="text-sm font-medium text-foreground px-2">
+          <h3 className="text-sm font-semibold text-slate-900 px-2">
             Небезпечна зона
           </h3>
           <Link href="/auth/signout">
-            <Button variant="destructive" className="w-full">
+            <Button className="w-full h-12 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold transition-all">
               Вийти
             </Button>
           </Link>

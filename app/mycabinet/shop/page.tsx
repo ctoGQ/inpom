@@ -119,13 +119,13 @@ export default function ShopPage() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold mb-1">Магазин</h1>
-            <p className="text-muted-foreground">
+            <p className="text-gray-600">
               Знайдіть те, що вам потрібно, або створіть свій товар
             </p>
           </div>
 
           <Link href="/mycabinet/shop/create">
-            <Button className="gap-2">
+            <Button className="gap-2 h-12 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-all">
               <Plus className="w-4 h-4" />
               Додати товар
             </Button>
@@ -138,15 +138,15 @@ export default function ShopPage() {
           <form onSubmit={handleSearch} className="md:col-span-2">
             <div className="flex gap-2">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <Input
                   placeholder="Пошук товарів..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 h-12 rounded-xl border-2 border-gray-200 bg-white text-slate-900 placeholder:text-gray-500"
                 />
               </div>
-              <Button type="submit" variant="outline">
+              <Button type="submit" className="h-12 rounded-xl bg-white border-2 border-gray-200 text-slate-900 font-semibold hover:bg-gray-50 transition-all">
                 Пошук
               </Button>
             </div>
@@ -195,15 +195,15 @@ export default function ShopPage() {
               {Array.from({ length: 8 }).map((_, i) => (
                 <div
                   key={i}
-                  className="bg-muted rounded-lg aspect-square animate-pulse"
+                  className="bg-gray-200 rounded-2xl aspect-square animate-pulse"
                 />
               ))}
             </div>
           ) : products.length === 0 ? (
             <div className="text-center py-16">
-              <Search className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Товари не знайдені</h3>
-              <p className="text-muted-foreground">
+              <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2 text-slate-900">Товари не знайдені</h3>
+              <p className="text-gray-600">
                 Спробуйте змінити фільтри або пошукові запити
               </p>
             </div>
@@ -234,7 +234,7 @@ export default function ShopPage() {
               {totalPages > 1 && (
                 <div className="flex justify-center gap-2 mt-8">
                   <Button
-                    variant="outline"
+                    className="h-12 rounded-xl bg-white border-2 border-gray-200 text-slate-900 font-semibold hover:bg-gray-50 transition-all"
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
                   >
@@ -244,16 +244,19 @@ export default function ShopPage() {
                   {Array.from({ length: totalPages }).map((_, i) => (
                     <Button
                       key={i + 1}
-                      variant={page === i + 1 ? 'default' : 'outline'}
+                      className={`w-10 h-10 rounded-lg font-semibold transition-all ${
+                        page === i + 1 
+                          ? 'bg-blue-500 text-white' 
+                          : 'bg-white border-2 border-gray-200 text-slate-900 hover:bg-gray-50'
+                      }`}
                       onClick={() => setPage(i + 1)}
-                      className="w-10"
                     >
                       {i + 1}
                     </Button>
                   ))}
 
                   <Button
-                    variant="outline"
+                    className="h-12 rounded-xl bg-white border-2 border-gray-200 text-slate-900 font-semibold hover:bg-gray-50 transition-all"
                     onClick={() => setPage(Math.min(totalPages, page + 1))}
                     disabled={page === totalPages}
                   >
@@ -263,7 +266,7 @@ export default function ShopPage() {
               )}
 
               {/* Results info */}
-              <p className="text-center text-sm text-muted-foreground mt-4">
+              <p className="text-center text-sm text-gray-600 mt-4">
                 Показано {(page - 1) * limit + 1}-{Math.min(page * limit, total)} з {total} товарів
               </p>
             </>

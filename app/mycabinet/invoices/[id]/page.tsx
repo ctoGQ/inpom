@@ -53,9 +53,9 @@ export default async function InvoiceViewPage({ params }: PageProps) {
     return (
       <CabinetLayout title="Інвойс" showBack>
         <div className="space-y-6 pt-6">
-          <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
-            <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">
+          <div className="text-center py-16 bg-white border border-gray-200 rounded-2xl shadow-sm">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
+            <p className="text-sm text-gray-600 font-medium">
               Інвойс не знайдено
             </p>
           </div>
@@ -69,9 +69,9 @@ export default async function InvoiceViewPage({ params }: PageProps) {
     return (
       <CabinetLayout title="Інвойс" showBack>
         <div className="space-y-6 pt-6">
-          <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
-            <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">
+          <div className="text-center py-16 bg-white border border-gray-200 rounded-2xl shadow-sm">
+            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
+            <p className="text-sm text-gray-600 font-medium">
               Ви не маєте доступу до цього інвойса
             </p>
           </div>
@@ -86,10 +86,10 @@ export default async function InvoiceViewPage({ params }: PageProps) {
     <CabinetLayout title="Інвойс" showBack>
       <div className="space-y-6 pt-6">
         <div>
-          <h1 className="text-2xl font-display text-slate-900 mb-2">
+          <h1 className="text-2xl font-bold text-slate-900 mb-2">
             Ваш інвойс
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-gray-600">
             Поділіться цим інвойсом з іншими користувачами, щоб вони могли його оплатити
           </p>
         </div>
@@ -107,8 +107,7 @@ export default async function InvoiceViewPage({ params }: PageProps) {
         <div className="space-y-2">
           <Link href={`/mycabinet/pay-invoice/${invoice.id}`} className="block">
             <Button
-              variant="outline"
-              className="w-full"
+              className="w-full h-12 rounded-xl bg-white border border-gray-200 text-slate-900 font-semibold hover:bg-gray-50 transition-all"
             >
               Переглянути сторінку оплати
               <ExternalLink className="w-4 h-4 ml-2" />
@@ -117,8 +116,7 @@ export default async function InvoiceViewPage({ params }: PageProps) {
 
           <Link href="/mycabinet/transactions" className="block">
             <Button
-              variant="outline"
-              className="w-full"
+              className="w-full h-12 rounded-xl bg-white border border-gray-200 text-slate-900 font-semibold hover:bg-gray-50 transition-all"
             >
               Повернутись до транзакцій
             </Button>
@@ -126,9 +124,9 @@ export default async function InvoiceViewPage({ params }: PageProps) {
         </div>
 
         {/* Info */}
-        <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg space-y-2">
-          <p className="text-xs font-medium text-slate-900">Інформація:</p>
-          <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl shadow-sm space-y-2">
+          <p className="text-xs font-semibold text-slate-900">Інформація:</p>
+          <ul className="text-xs text-gray-700 space-y-1 list-disc list-inside">
             <li>Поділіться QR-кодом з іншим користувачем</li>
             <li>Користувач може відсканувати код або перейти за посиланням</li>
             <li>Після оплати інвойс буде позначено як оплачено</li>
