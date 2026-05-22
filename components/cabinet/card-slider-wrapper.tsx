@@ -24,12 +24,16 @@ interface CardSliderWrapperProps {
   cards: CardData[];
   customerId: number;
   initialTransactions: Transaction[];
+  customerAvatar?: string;
+  customerName?: string;
 }
 
 export function CardSliderWrapper({
   cards,
   customerId,
   initialTransactions,
+  customerAvatar,
+  customerName,
 }: CardSliderWrapperProps) {
   const [selectedCardId, setSelectedCardId] = useState(cards[0]?.id || 0);
   const [transactions, setTransactions] = useState<Transaction[]>(
@@ -57,7 +61,12 @@ export function CardSliderWrapper({
 
   return (
     <div className="space-y-lg px-sm">
-      <CardSlider cards={cards} onCardChange={handleCardChange} />
+      <CardSlider 
+        cards={cards} 
+        onCardChange={handleCardChange}
+        customerAvatar={customerAvatar}
+        customerName={customerName}
+      />
       {isLoading ? (
         <div className="space-y-md">
           {[1, 2, 3].map((i) => (
