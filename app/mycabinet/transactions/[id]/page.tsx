@@ -1,5 +1,3 @@
-'use client';
-
 import { redirect } from 'next/navigation';
 import { getSessionCustomer } from '@/lib/auth';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
@@ -7,7 +5,6 @@ import { sql } from '@/lib/db';
 import { formatAmountWithSign, formatAmount } from '@/lib/format-amount';
 import Link from 'next/link';
 import { AlertCircle, ArrowDown, ArrowUp, ExternalLink, Banknote } from 'lucide-react';
-import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { User } from 'lucide-react';
 
@@ -173,22 +170,14 @@ export default async function TransactionDetailPage({ params }: PageProps) {
       showAvatar={true}
       showNav={true}
     >
-      <motion.div 
-        className="px-4 pt-6 pb-24 space-y-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
+      <div className="px-4 pt-6 pb-24 space-y-6">
         {/* Amount Display Card */}
-        <motion.div 
+        <div 
           className={`p-8 rounded-3xl flex flex-col items-center justify-center text-center space-y-4 ${
             isIncoming 
               ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30' 
               : 'bg-gradient-to-br from-red-500/20 to-rose-500/20 border border-red-500/30'
           }`}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.1 }}
         >
           <div className={`p-4 rounded-2xl ${
             isIncoming 
@@ -211,15 +200,10 @@ export default async function TransactionDetailPage({ params }: PageProps) {
             </p>
             <p className="text-muted-foreground text-sm">INPOM</p>
           </div>
-        </motion.div>
+        </div>
 
         {/* Details */}
-        <motion.div 
-          className="space-y-3"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
+        <div className="space-y-3">
           {/* Date & Time */}
           <div className="cabinet-list-item">
             <div className="flex-1">
@@ -257,15 +241,12 @@ export default async function TransactionDetailPage({ params }: PageProps) {
               </p>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Invoice Details */}
         {invoice && (
-          <motion.div 
+          <div 
             className="p-5 rounded-2xl border border-green-500/30 bg-green-500/10 space-y-4"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
           >
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-green-500" />
@@ -332,22 +313,18 @@ export default async function TransactionDetailPage({ params }: PageProps) {
                 </button>
               </Link>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* Back Button */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
+        <div>
           <Link href="/mycabinet/transactions" className="block">
             <button className="w-full cabinet-button cabinet-button-secondary">
               Повернутись до історії
             </button>
           </Link>
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </CabinetLayout>
   );
 }
