@@ -80,12 +80,12 @@ export default async function TransactionsPage() {
       avatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
       userName={customer.name}
     >
-      <div className="space-y-6 pt-6">
+      <div className="space-y-2xl pt-lg">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">
+          <h1 className="text-h1 mb-sm">
             Історія операцій
           </h1>
-          <p className="text-sm text-gray-700">
+          <p className="text-body text-secondary">
             Ваші фінансові операції та інвойси
           </p>
         </div>

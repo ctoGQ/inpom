@@ -12,12 +12,12 @@ export default async function DepositPage() {
 
   return (
     <CabinetLayout title="Депозит" showBack>
-      <div className="space-y-6 pt-6">
+      <div className="space-y-2xl pt-lg">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">
+          <h1 className="text-h1 mb-sm">
             Поповнити баланс
           </h1>
-          <p className="text-sm text-gray-700">
+          <p className="text-body text-secondary">
             Виберіть суму для поповнення карти
           </p>
         </div>

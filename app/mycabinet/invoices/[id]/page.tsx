@@ -52,10 +52,10 @@ export default async function InvoiceViewPage({ params }: PageProps) {
   if (!invoice) {
     return (
       <CabinetLayout title="Інвойс" showBack>
-        <div className="space-y-6 pt-6">
-          <div className="text-center py-16 bg-white border border-gray-200 rounded-2xl shadow-sm">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
-            <p className="text-sm text-gray-600 font-medium">
+        <div className="space-y-2xl pt-lg">
+          <div className="cabinet-empty-state">
+            <AlertCircle className="cabinet-empty-state-icon text-destructive" />
+            <p className="cabinet-empty-state-title">
               Інвойс не знайдено
             </p>
           </div>
@@ -68,10 +68,10 @@ export default async function InvoiceViewPage({ params }: PageProps) {
   if (invoice.creator_customer_id !== customer.id) {
     return (
       <CabinetLayout title="Інвойс" showBack>
-        <div className="space-y-6 pt-6">
-          <div className="text-center py-16 bg-white border border-gray-200 rounded-2xl shadow-sm">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
-            <p className="text-sm text-gray-600 font-medium">
+        <div className="space-y-2xl pt-lg">
+          <div className="cabinet-empty-state">
+            <AlertCircle className="cabinet-empty-state-icon text-destructive" />
+            <p className="cabinet-empty-state-title">
               Ви не маєте доступу до цього інвойса
             </p>
           </div>
@@ -84,12 +84,12 @@ export default async function InvoiceViewPage({ params }: PageProps) {
 
   return (
     <CabinetLayout title="Інвойс" showBack>
-      <div className="space-y-6 pt-6">
+      <div className="space-y-2xl pt-lg">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">
+          <h1 className="text-h1 mb-sm">
             Ваш інвойс
           </h1>
-          <p className="text-sm text-gray-700">
+          <p className="text-body text-secondary">
             Поділіться цим інвойсом з іншими користувачами, щоб вони могли його оплатити
           </p>
         </div>
