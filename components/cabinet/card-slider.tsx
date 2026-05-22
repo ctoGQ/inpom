@@ -45,10 +45,10 @@ export function CardSlider({
 
   const getCardGradient = (type: string) => {
     const gradients: Record<string, string> = {
-      GOLD: 'from-amber-300 via-yellow-300 to-orange-200',
+      GOLD: 'from-pink-300 via-pink-200 to-pink-100',
       'BUSINESS PLUS': 'from-blue-400 via-purple-400 to-pink-400',
     };
-    return gradients[type] || 'from-amber-300 via-yellow-300 to-orange-200';
+    return gradients[type] || 'from-pink-300 via-pink-200 to-pink-100';
   };
 
   const getCardTypeLabel = (type: string): string => {
@@ -83,11 +83,11 @@ export function CardSlider({
         {/* Top Icons */}
         <div className="flex justify-between items-center mb-12">
           <motion.div
-            className="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm hover:bg-white/40 transition-colors"
+            className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
           >
-            <Bell className="w-6 h-6 text-white" />
+            <Bell className="w-6 h-6 text-black" />
           </motion.div>
           <Link href="/mycabinet/account">
             <motion.div
