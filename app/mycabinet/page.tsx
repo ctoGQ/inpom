@@ -125,6 +125,7 @@ export default async function MyCabinetPage() {
     <CabinetLayout
       title="Карта"
       showAvatar={true}
+      showHeader={false}
       avatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
       userName={customer.name}
     >
