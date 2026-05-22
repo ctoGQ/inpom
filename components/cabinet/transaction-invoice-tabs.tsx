@@ -31,6 +31,17 @@ interface TransactionInvoiceTabsProps {
   invoices: Invoice[];
 }
 
+const formatDateTime = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    const dateStr = date.toLocaleDateString('uk-UA');
+    const timeStr = date.toLocaleTimeString('uk-UA');
+    return `${dateStr} в ${timeStr}`;
+  } catch {
+    return dateString;
+  }
+};
+
 export function TransactionInvoiceTabs({ transactions, invoices }: TransactionInvoiceTabsProps) {
   const [activeTab, setActiveTab] = useState('transactions');
 
@@ -75,8 +86,7 @@ export function TransactionInvoiceTabs({ transactions, invoices }: TransactionIn
                       </p>
                     )}
                     <p className="text-xs text-muted-foreground mt-2">
-                      {new Date(transaction.created_at).toLocaleDateString('uk-UA')} в{' '}
-                      {new Date(transaction.created_at).toLocaleTimeString('uk-UA')}
+                      {formatDateTime(transaction.created_at)}
                     </p>
                   </div>
                   <div className="flex items-end gap-3">
@@ -133,53 +143,62 @@ export function TransactionInvoiceTabs({ transactions, invoices }: TransactionIn
       <TabsContent value="invoices" className="space-y-3">
         {invoices.length > 0 ? (
           <div className="space-y-3">
-            {invoices.map((invoice) => (
-              <Link
-                key={invoice.id}
-                href={`/mycabinet/invoices/${invoice.id}`}
-                className="block hover:opacity-80 transition-opacity"
-              >
-                <div className="flex items-center justify-between p-4 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 hover:border-foreground/20 transition-colors">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-foreground">
-                      Інвойс #{invoice.id}
-                    </p>
-                    {invoice.description && (
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {invoice.description}
-                      </p>
-                    )}
-                    <p className="text-xs text-muted-foreground mt-2">
-                      {new Date(invoice.created_at).toLocaleDateString('uk-UA')} в{' '}
-                      {new Date(invoice.created_at).toLocaleTimeString('uk-UA')}
-                    </p>
-                  </div>
-                  <div className="flex items-end gap-3">
-                    <div className="text-right">
+            {invoices.map((invoice) => {
+              const isExpired = (() => {
+                try {
+                  return new Date(invoice.expires_at) < new Date();
+                } catch {
+                  return false;
+                }
+              })();
+
+              return (
+                <Link
+                  key={invoice.id}
+                  href={`/mycabinet/invoices/${invoice.id}`}
+                  className="block hover:opacity-80 transition-opacity"
+                >
+                  <div className="flex items-center justify-between p-4 bg-foreground/5 border border-foreground/10 rounded-lg hover:bg-foreground/10 hover:border-foreground/20 transition-colors">
+                    <div className="flex-1">
                       <p className="text-sm font-medium text-foreground">
-                        {formatAmount(invoice.amount)}
+                        Інвойс #{invoice.id}
                       </p>
-                      <p
-                        className={`text-xs font-medium mt-1 ${
-                          invoice.status === 'paid'
-                            ? 'text-green-500'
+                      {invoice.description && (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {invoice.description}
+                        </p>
+                      )}
+                      <p className="text-xs text-muted-foreground mt-2">
+                        {formatDateTime(invoice.created_at)}
+                      </p>
+                    </div>
+                    <div className="flex items-end gap-3">
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-foreground">
+                          {formatAmount(invoice.amount)}
+                        </p>
+                        <p
+                          className={`text-xs font-medium mt-1 ${
+                            invoice.status === 'paid'
+                              ? 'text-green-500'
+                              : invoice.status === 'expired'
+                                ? 'text-red-500'
+                                : 'text-yellow-500'
+                          }`}
+                        >
+                          {invoice.status === 'paid'
+                            ? '✓ Оплачено'
                             : invoice.status === 'expired'
-                              ? 'text-red-500'
-                              : 'text-yellow-500'
-                        }`}
-                      >
-                        {invoice.status === 'paid'
-                          ? '✓ Оплачено'
-                          : invoice.status === 'expired'
-                            ? '✗ Закінчився'
-                            : '⏳ Очікує'}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5">inpom</p>
+                              ? '✗ Закінчився'
+                              : '⏳ Очікує'}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-0.5">inpom</p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
