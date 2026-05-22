@@ -53,8 +53,8 @@ export async function addDeposit(
 
     // Create transaction record
     await sql`
-      INSERT INTO transactions (customer_id, type, amount, description)
-      VALUES (${customerId}, 'deposit', ${amount}, 'Депозит через ${paymentMethod}')
+      INSERT INTO transactions (customer_id, card_id, type, amount, description, created_at)
+      VALUES (${customerId}, ${card.id}, 'deposit', ${amount}, 'Депозит через ${paymentMethod}', NOW())
     `;
 
     return {
@@ -88,8 +88,8 @@ export async function upgradeCard(customerId: number, newCardType: string) {
 
     // Create transaction record
     await sql`
-      INSERT INTO transactions (customer_id, type, amount, description)
-      VALUES (${customerId}, 'card_upgrade', 0, 'Оновлення карти на ${newCardType}')
+      INSERT INTO transactions (customer_id, card_id, type, amount, description, created_at)
+      VALUES (${customerId}, ${card.id}, 'card_upgrade', 0, 'Оновлення карти на ${newCardType}', NOW())
     `;
 
     return {
