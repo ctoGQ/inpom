@@ -44,7 +44,7 @@ export function TierCard({ variant, imageUrl }: TierCardProps) {
   const getColorAccent = () => {
     switch (variant) {
       case 'black':
-        return 'from-white/20 to-white/0';
+        return 'from-[#FFDC93]/40 via-[#FF978A]/40 to-[#EE46EA]/40';
       case 'gold':
         return 'from-yellow-300/30 to-yellow-300/0';
       case 'business':
