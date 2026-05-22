@@ -3,7 +3,8 @@
 import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { formatAmount } from '@/lib/format-amount';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowDown, ArrowUp, Banknote } from 'lucide-react';
+import Link from 'next/link';
 
 interface CardData {
   id: number;
@@ -131,6 +132,40 @@ export function CardSlider({ cards, onCardChange }: CardSliderProps) {
                 whileTap={{ scale: 0.9 }}
               />
             ))}
+          </div>
+
+          {/* Quick Actions Grid */}
+          <div className="grid grid-cols-3 gap-2 pt-4">
+            <Link href="/mycabinet/deposit">
+              <motion.button
+                className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-2xl flex flex-col items-center justify-center gap-1 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ArrowDown className="w-6 h-6" />
+                <span className="text-center px-1">ДЕПОЗ</span>
+              </motion.button>
+            </Link>
+            <Link href="/mycabinet/create-invoice">
+              <motion.button
+                className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-2xl flex flex-col items-center justify-center gap-1 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Banknote className="w-6 h-6" />
+                <span className="text-center px-1">ІНВОЙС</span>
+              </motion.button>
+            </Link>
+            <Link href="/mycabinet/withdraw">
+              <motion.button
+                className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-2xl flex flex-col items-center justify-center gap-1 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ArrowUp className="w-6 h-6" />
+                <span className="text-center px-1">ВИВОД</span>
+              </motion.button>
+            </Link>
           </div>
         </motion.div>
       </div>
