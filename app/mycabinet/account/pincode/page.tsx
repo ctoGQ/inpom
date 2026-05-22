@@ -142,7 +142,12 @@ export default function PincodePage() {
   );
 
   return (
-    <CabinetLayout title="PIN-код" showBack showAvatar={false}>
+    <CabinetLayout 
+      title="PIN-код"
+      showBack={true}
+      showAvatar={true}
+      showNav={true}
+    >
       <div className="space-y-6 pt-6">
         <div className="p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
           <p className="text-xs text-amber-600">

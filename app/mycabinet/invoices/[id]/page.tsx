@@ -51,7 +51,12 @@ export default async function InvoiceViewPage({ params }: PageProps) {
 
   if (!invoice) {
     return (
-      <CabinetLayout title="Інвойс" showBack>
+      <CabinetLayout 
+        title="Інвойс"
+        showBack={true}
+        showAvatar={true}
+        showNav={true}
+      >
         <div className="space-y-2xl pt-lg">
           <div className="cabinet-empty-state">
             <AlertCircle className="cabinet-empty-state-icon text-destructive" />
@@ -67,7 +72,12 @@ export default async function InvoiceViewPage({ params }: PageProps) {
   // Check if current user is the creator
   if (invoice.creator_customer_id !== customer.id) {
     return (
-      <CabinetLayout title="Інвойс" showBack>
+      <CabinetLayout 
+        title="Інвойс"
+        showBack={true}
+        showAvatar={true}
+        showNav={true}
+      >
         <div className="space-y-2xl pt-lg">
           <div className="cabinet-empty-state">
             <AlertCircle className="cabinet-empty-state-icon text-destructive" />
@@ -83,7 +93,12 @@ export default async function InvoiceViewPage({ params }: PageProps) {
   const paymentUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://lummetra.com'}/mycabinet/pay-invoice/${invoice.id}`;
 
   return (
-    <CabinetLayout title="Інвойс" showBack>
+    <CabinetLayout 
+      title="Інвойс"
+      showBack={true}
+      showAvatar={true}
+      showNav={true}
+    >
       <div className="space-y-2xl pt-lg">
         <div>
           <h1 className="text-h1 mb-sm">

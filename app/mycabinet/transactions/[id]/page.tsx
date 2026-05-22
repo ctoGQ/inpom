@@ -121,7 +121,12 @@ export default async function TransactionDetailPage({ params }: PageProps) {
   
   if (isNaN(transactionId)) {
     return (
-      <CabinetLayout title="Деталі транзакції" showBack>
+      <CabinetLayout 
+        title="Деталі"
+        showBack={true}
+        showAvatar={true}
+        showNav={true}
+      >
         <div className="space-y-6 pt-6">
           <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
             <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
@@ -138,7 +143,12 @@ export default async function TransactionDetailPage({ params }: PageProps) {
 
   if (!transaction) {
     return (
-      <CabinetLayout title="Деталі транзакції" showBack>
+      <CabinetLayout 
+        title="Деталі"
+        showBack={true}
+        showAvatar={true}
+        showNav={true}
+      >
         <div className="space-y-6 pt-6">
           <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
             <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
@@ -174,7 +184,12 @@ export default async function TransactionDetailPage({ params }: PageProps) {
   const dateTime = formatDateTime(transaction.created_at);
 
   return (
-    <CabinetLayout title="Деталі транзакції" showBack>
+    <CabinetLayout 
+      title="Деталі"
+      showBack={true}
+      showAvatar={true}
+      showNav={true}
+    >
       <div className="space-y-6 pt-6">
         <div>
           <h1 className="text-2xl font-display text-slate-900 mb-2">

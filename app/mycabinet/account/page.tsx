@@ -38,7 +38,11 @@ export default async function AccountPage() {
   return (
     <CabinetLayout
       title="Акаунт"
-      showAvatar={false}
+      showBack={true}
+      showAvatar={true}
+      avatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
+      userName={customer.name}
+      showNav={true}
     >
       <div className="space-y-space-y-2xl pt-lg">
         {/* Profile Card */}
