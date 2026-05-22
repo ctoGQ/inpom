@@ -40,30 +40,30 @@ export default async function AccountPage() {
       title="Акаунт"
       showAvatar={false}
     >
-      <div className="space-y-6 pt-6">
+      <div className="space-y-space-y-2xl pt-lg">
         {/* Profile Card */}
-        <div className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
-          <h2 className="text-lg font-semibold text-slate-900 mb-4">
+        <div className="cabinet-card">
+          <h2 className="text-h3 mb-lg">
             Інформація профілю
           </h2>
-          <div className="space-y-3">
+          <div className="space-y-md">
             <div>
-              <p className="text-xs font-medium text-gray-700 mb-1">
+              <p className="text-tiny text-muted-foreground mb-sm">
                 ІМ'Я
               </p>
-              <p className="text-sm text-slate-900">{customer.name}</p>
+              <p className="text-body">{customer.name}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-gray-700 mb-1">
+              <p className="text-tiny text-muted-foreground mb-sm">
                 EMAIL
               </p>
-              <p className="text-sm text-slate-900">{customer.email}</p>
+              <p className="text-body">{customer.email}</p>
             </div>
             <div>
-              <p className="text-xs font-medium text-gray-700 mb-1">
+              <p className="text-tiny text-muted-foreground mb-sm">
                 ID АКАУНТУ
               </p>
-              <p className="text-sm text-gray-700 font-mono">
+              <p className="text-caption font-mono">
                 {customer.id}
               </p>
             </div>
@@ -71,7 +71,7 @@ export default async function AccountPage() {
         </div>
 
         {/* Avatar Upload */}
-        <div className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
+        <div className="cabinet-card">
           <AvatarUpload
             currentAvatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
             customerName={customer.name}
@@ -79,8 +79,8 @@ export default async function AccountPage() {
         </div>
 
         {/* Account Menu */}
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold text-slate-900 px-2">
+        <div className="space-y-md">
+          <h3 className="text-small text-foreground px-sm">
             Налаштування
           </h3>
           {accountMenuItems.map((item) => (
@@ -89,40 +89,40 @@ export default async function AccountPage() {
               href={item.href}
               className="block group"
             >
-              <div className="flex items-center justify-between p-4 bg-white border border-gray-200 rounded-2xl hover:bg-blue-50 hover:border-blue-300 transition-all shadow-sm">
-                <div className="flex items-start gap-3">
-                  <div className="text-gray-600 group-hover:text-blue-600 transition-colors mt-0.5">
+              <div className="cabinet-list-item">
+                <div className="flex items-start gap-md">
+                  <div className="text-muted-foreground group-hover:text-primary transition-colors mt-xs">
                     {item.icon}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">
+                    <p className="cabinet-list-item-title">
                       {item.title}
                     </p>
-                    <p className="text-xs text-gray-600">
+                    <p className="text-small text-muted-foreground">
                       {item.description}
                     </p>
                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
             </Link>
           ))}
         </div>
 
         {/* Theme Settings */}
-        <div className="p-6 bg-white border border-gray-200 rounded-2xl shadow-sm">
+        <div className="cabinet-card">
           <ThemeToggle />
         </div>
 
         {/* Danger Zone */}
-        <div className="space-y-3">
-          <h3 className="text-sm font-semibold text-slate-900 px-2">
+        <div className="space-y-md">
+          <h3 className="text-small text-foreground px-sm">
             Небезпечна зона
           </h3>
           <Link href="/auth/signout">
-            <Button className="w-full h-12 rounded-xl bg-red-500 hover:bg-red-600 text-white font-semibold transition-all">
+            <button className="w-full cabinet-button cabinet-button-destructive">
               Вийти
-            </Button>
+            </button>
           </Link>
         </div>
       </div>

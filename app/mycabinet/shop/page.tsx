@@ -114,41 +114,41 @@ export default function ShopPage() {
 
   return (
     <CabinetLayout title="Магазин" showBack>
-      <div className="space-y-6 pt-6">
+      <div className="space-y-2xl pt-lg">
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold mb-1">Магазин</h1>
-            <p className="text-gray-700">
+            <h1 className="text-h1 mb-sm">Магазин</h1>
+            <p className="text-body text-secondary">
               Знайдіть те, що вам потрібно, або створіть свій товар
             </p>
           </div>
 
           <Link href="/mycabinet/shop/create">
-            <Button className="gap-2 h-12 rounded-xl bg-blue-500 hover:bg-blue-600 text-white font-semibold transition-all">
+            <button className="cabinet-button cabinet-button-primary gap-md">
               <Plus className="w-4 h-4" />
               Додати товар
-            </Button>
+            </button>
           </Link>
         </div>
 
         {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-md">
           {/* Search */}
           <form onSubmit={handleSearch} className="md:col-span-2">
-            <div className="flex gap-2">
+            <div className="flex gap-md">
               <div className="flex-1 relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <Search className="absolute left-sm top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                 <Input
                   placeholder="Пошук товарів..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10 h-12 rounded-xl border-2 border-gray-200 bg-white text-slate-900 placeholder:text-gray-500"
+                  className="cabinet-form-input pl-lg h-3xl"
                 />
               </div>
-              <Button type="submit" className="h-12 rounded-xl bg-white border-2 border-gray-200 text-slate-900 font-semibold hover:bg-gray-50 transition-all">
+              <button type="submit" className="cabinet-button cabinet-button-secondary">
                 Пошук
-              </Button>
+              </button>
             </div>
           </form>
 
@@ -191,25 +191,25 @@ export default function ShopPage() {
         {/* Products grid */}
         <div>
           {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-md">
               {Array.from({ length: 8 }).map((_, i) => (
                 <div
                   key={i}
-                  className="bg-gray-200 rounded-2xl aspect-square animate-pulse"
+                  className="cabinet-skeleton aspect-square rounded-2xl"
                 />
               ))}
             </div>
           ) : products.length === 0 ? (
-            <div className="text-center py-16">
-              <Search className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2 text-slate-900">Товари не знайдені</h3>
-              <p className="text-gray-700">
+            <div className="cabinet-empty-state">
+              <Search className="w-3xl h-3xl text-muted-foreground mx-auto mb-lg" />
+              <p className="cabinet-empty-state-title">Товари не знайдені</p>
+              <p className="cabinet-empty-state-description">
                 Спробуйте змінити фільтри або пошукові запити
               </p>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-md">
                 {products.map(product => (
                   <ShopProductCard
                     key={product.id}
@@ -232,41 +232,41 @@ export default function ShopPage() {
 
               {/* Pagination */}
               {totalPages > 1 && (
-                <div className="flex justify-center gap-2 mt-8">
-                  <Button
-                    className="h-12 rounded-xl bg-white border-2 border-gray-200 text-slate-900 font-semibold hover:bg-gray-50 transition-all"
+                <div className="flex justify-center gap-md mt-2xl">
+                  <button
+                    className="cabinet-button cabinet-button-secondary"
                     onClick={() => setPage(Math.max(1, page - 1))}
                     disabled={page === 1}
                   >
                     Попередня
-                  </Button>
+                  </button>
 
                   {Array.from({ length: totalPages }).map((_, i) => (
-                    <Button
+                    <button
                       key={i + 1}
-                      className={`w-10 h-10 rounded-lg font-semibold transition-all ${
+                      className={`w-2.5rem h-2.5rem rounded-lg font-semibold transition-all ${
                         page === i + 1 
-                          ? 'bg-blue-500 text-white' 
-                          : 'bg-white border-2 border-gray-200 text-slate-900 hover:bg-gray-50'
+                          ? 'cabinet-button-primary' 
+                          : 'cabinet-button-secondary'
                       }`}
                       onClick={() => setPage(i + 1)}
                     >
                       {i + 1}
-                    </Button>
+                    </button>
                   ))}
 
-                  <Button
-                    className="h-12 rounded-xl bg-white border-2 border-gray-200 text-slate-900 font-semibold hover:bg-gray-50 transition-all"
+                  <button
+                    className="cabinet-button cabinet-button-secondary"
                     onClick={() => setPage(Math.min(totalPages, page + 1))}
                     disabled={page === totalPages}
                   >
                     Наступна
-                  </Button>
+                  </button>
                 </div>
               )}
 
               {/* Results info */}
-              <p className="text-center text-sm text-gray-700 mt-4">
+              <p className="text-center text-small text-muted-foreground mt-md">
                 Показано {(page - 1) * limit + 1}-{Math.min(page * limit, total)} з {total} товарів
               </p>
             </>
