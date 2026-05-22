@@ -70,6 +70,7 @@ export function CardSlider({
           ? {
               style: {
                 background: 'linear-gradient(146deg, #FFDC93 10%, #FFCB7E 13%, #FFBE6C 26%, #FF978A 55%, #FF9488 65%, #F58D8B 78%, #F58A89 88%, #EE4E6A 100%)',
+                borderRadius: '8px 8px 40px 40px',
               },
               className: 'relative rounded-3xl p-6 shadow-2xl overflow-hidden',
             }
@@ -88,25 +89,27 @@ export function CardSlider({
           >
             <Bell className="w-6 h-6 text-white" />
           </motion.div>
-          <motion.div
-            className="w-12 h-12 rounded-full overflow-hidden bg-white/20 backdrop-blur-sm border-2 border-white/40 flex-shrink-0 hover:border-white/60 transition-colors"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            {customerAvatar ? (
-              <Image
-                src={customerAvatar}
-                alt={customerName || 'User'}
-                width={48}
-                height={48}
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-white/20">
-                <User className="w-6 h-6 text-white" />
-              </div>
-            )}
-          </motion.div>
+          <Link href="/mycabinet/account">
+            <motion.div
+              className="w-12 h-12 rounded-full overflow-hidden bg-white/20 backdrop-blur-sm border-2 border-white/40 flex-shrink-0 hover:border-white/60 transition-colors cursor-pointer"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {customerAvatar ? (
+                <Image
+                  src={customerAvatar}
+                  alt={customerName || 'User'}
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-white/20">
+                  <User className="w-6 h-6 text-white" />
+                </div>
+              )}
+            </motion.div>
+          </Link>
         </div>
 
         {/* Card Content */}
@@ -160,7 +163,7 @@ export function CardSlider({
           <Link href="/mycabinet/deposit">
             <motion.button
               className="w-full aspect-square bg-black flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
-              style={{ borderRadius: '8px 8px 26px 8px' }}
+              style={{ borderRadius: '8px 8px 8px 26px' }}
               whileHover={{ scale: 1.05, y: -4 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -171,6 +174,7 @@ export function CardSlider({
           <Link href="/mycabinet/create-invoice">
             <motion.button
               className="w-full aspect-square bg-black rounded-2xl flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+              style={{ borderRadius: '8px 8px 8px 8px' }}
               whileHover={{ scale: 1.05, y: -4 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -181,7 +185,7 @@ export function CardSlider({
           <Link href="/mycabinet/withdraw">
             <motion.button
               className="w-full aspect-square bg-black flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
-              style={{ borderRadius: '8px 26px 8px 8px' }}
+              style={{ borderRadius: '8px 8px 26px 8px' }}
               whileHover={{ scale: 1.05, y: -4 }}
               whileTap={{ scale: 0.95 }}
             >

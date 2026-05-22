@@ -94,9 +94,8 @@ export function ActivitySection({ transactions }: ActivitySectionProps) {
       transition={{ delay: 0.2 }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-sm">
+      <div className="flex items-center justify-between px-4">
         <h2 className="text-h3">Активність</h2>
-        <span className="text-sm text-muted-foreground">↗°</span>
       </div>
 
       {/* Transactions List */}

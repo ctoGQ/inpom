@@ -3,8 +3,6 @@ import React from 'react';
 import { getSessionCustomer, logout } from '@/lib/auth';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
 import { CardSliderWrapper } from '@/components/cabinet/card-slider-wrapper';
-import { Button } from '@/components/ui/button';
-import { LogOut } from 'lucide-react';
 import { sql } from '@/lib/db';
 
 interface CardData {
@@ -91,16 +89,7 @@ export default async function MyCabinetPage() {
           customerName={customer.name}
         />
 
-        {/* Logout Button */}
-        <form action={handleLogout} className="px-lg pb-lg">
-          <button
-            type="submit"
-            className="w-full cabinet-button cabinet-button-destructive"
-          >
-            <LogOut className="w-5 h-5 mr-2" />
-            Вихід
-          </button>
-        </form>
+
       </div>
     </CabinetLayout>
   );
