@@ -9,6 +9,7 @@ interface CabinetLayoutProps {
   title?: string;
   showBack?: boolean;
   showAvatar?: boolean;
+  showNav?: boolean;
   avatarUrl?: string;
   userName?: string;
 }
@@ -18,6 +19,7 @@ export function CabinetLayout({
   title,
   showBack = false,
   showAvatar = false,
+  showNav = true,
   avatarUrl = '/placeholder-user.jpg',
   userName = '',
 }: CabinetLayoutProps) {
@@ -33,7 +35,7 @@ export function CabinetLayout({
       <main className="mycabinet-main">
         {children}
       </main>
-      <MobileBottomNav />
+      {showNav && <MobileBottomNav />}
     </div>
   );
 }

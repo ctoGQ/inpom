@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSessionCustomer } from '@/lib/auth';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
-import { TransactionInvoiceTabs } from '@/components/cabinet/transaction-invoice-tabs';
+import { ActivitySection } from '@/components/cabinet/activity-section';
 import { sql } from '@/lib/db';
 
 interface Transaction {
@@ -11,52 +11,75 @@ interface Transaction {
   description: string;
   created_at: string;
   invoice_id?: number;
-}
-
-interface Invoice {
-  id: number;
-  creator_customer_id: number;
-  amount: number;
-  description: string;
-  status: string;
-  created_at: string;
-  expires_at: string;
+  other_customer_id?: number;
+  other_customer_name?: string;
+  other_customer_avatar?: string;
 }
 
 async function getTransactions(customerId: number) {
   try {
     console.log(`[getTransactions] Starting query for customer ID: ${customerId}`);
     const result = await sql`
-      SELECT id, type, amount, description, created_at, invoice_id
-      FROM transactions
-      WHERE customer_id = ${customerId}
-      ORDER BY created_at DESC
+      SELECT 
+        t.id, 
+        t.type, 
+        t.amount, 
+        t.description, 
+        t.created_at, 
+        t.invoice_id,
+        CASE 
+          WHEN t.type = 'payment_sent' THEN i.creator_customer_id
+          WHEN t.type = 'payment_received' THEN (
+            SELECT customer_id FROM transactions t2 
+            WHERE t2.invoice_id = t.invoice_id 
+            AND t2.type = 'payment_sent' 
+            LIMIT 1
+          )
+          ELSE NULL
+        END as other_customer_id
+      FROM transactions t
+      LEFT JOIN invoices i ON t.invoice_id = i.id
+      WHERE t.customer_id = ${customerId}
+      ORDER BY t.created_at DESC
       LIMIT 100
     `;
     
     console.log(`[getTransactions] Query complete. Rows:`, result.rows?.length || 0);
-    return result.rows || [];
+    
+    // Post-process to get other customer details
+    const enriched = await Promise.all(
+      (result.rows || []).map(async (transaction: any) => {
+        if (transaction.other_customer_id) {
+          try {
+            const customerResult = await sql`
+              SELECT name, avatar FROM customers WHERE id = ${transaction.other_customer_id}
+            `;
+            const customer = customerResult.rows?.[0];
+            return {
+              ...transaction,
+              other_customer_name: customer?.name || 'Unknown',
+              other_customer_avatar: customer?.avatar || null,
+            };
+          } catch (error) {
+            console.error('[getTransactions] Error fetching other customer:', error);
+            return {
+              ...transaction,
+              other_customer_name: 'Unknown',
+              other_customer_avatar: null,
+            };
+          }
+        }
+        return {
+          ...transaction,
+          other_customer_name: 'Unknown',
+          other_customer_avatar: null,
+        };
+      })
+    );
+    
+    return enriched;
   } catch (error) {
     console.error('[getTransactions] ❌ ERROR fetching transactions:', error);
-    return [];
-  }
-}
-
-async function getInvoices(customerId: number) {
-  try {
-    console.log(`[getInvoices] Starting query for customer ID: ${customerId}`);
-    const result = await sql`
-      SELECT id, creator_customer_id, amount, description, status, created_at, expires_at
-      FROM invoices
-      WHERE creator_customer_id = ${customerId}
-      ORDER BY created_at DESC
-      LIMIT 100
-    `;
-    
-    console.log(`[getInvoices] Query complete. Rows:`, result.rows?.length || 0);
-    return result.rows || [];
-  } catch (error) {
-    console.error('[getInvoices] ❌ ERROR fetching invoices:', error);
     return [];
   }
 }
@@ -69,16 +92,16 @@ export default async function TransactionsPage() {
   }
 
   const transactions = await getTransactions(customer.id);
-  const invoices = await getInvoices(customer.id);
   
-  console.log(`[TransactionsPage] Rendering with ${transactions.length} transactions and ${invoices.length} invoices`);
+  console.log(`[TransactionsPage] Rendering with ${transactions.length} transactions`);
 
   return (
     <CabinetLayout
-      title="Трансакції та Інвойси"
+      title="Трансакції"
       showAvatar={true}
       avatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
       userName={customer.name}
+      showNav={true}
     >
       <div className="space-y-2xl pt-lg">
         <div>
@@ -86,11 +109,11 @@ export default async function TransactionsPage() {
             Історія операцій
           </h1>
           <p className="text-body text-secondary">
-            Ваші фінансові операції та інвойси
+            Ваші фінансові операції
           </p>
         </div>
 
-        <TransactionInvoiceTabs transactions={transactions} invoices={invoices} />
+        <ActivitySection transactions={transactions} />
       </div>
     </CabinetLayout>
   );
