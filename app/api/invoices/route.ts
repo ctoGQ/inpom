@@ -79,8 +79,10 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     console.error('[POST /api/invoices] ❌ Error creating invoice:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('[POST /api/invoices] Error details:', errorMessage);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: `Internal server error: ${errorMessage}` },
       { status: 500 }
     );
   }
@@ -111,8 +113,9 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('Error fetching invoices:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: `Internal server error: ${errorMessage}` },
       { status: 500 }
     );
   }
