@@ -26,6 +26,9 @@ export function WithdrawForm({ customerId, cardId, cardBalance }: WithdrawFormPr
   const [accountHolder, setAccountHolder] = useState('');
   const [bankName, setBankName] = useState('');
 
+  // Ensure cardBalance is a number
+  const balance = Number(cardBalance) || 0;
+
   const amountNum = parseFloat(amount) || 0;
   const commission = amountNum * (COMMISSION_PERCENT / 100);
   const totalAmount = amountNum + commission;
@@ -50,7 +53,7 @@ export function WithdrawForm({ customerId, cardId, cardBalance }: WithdrawFormPr
   };
 
   const canSubmit = () => {
-    const baseCheck = amount && agreed && amountNum > 0 && amountNum <= cardBalance;
+    const baseCheck = amount && agreed && amountNum > 0 && amountNum <= balance;
     if (withdrawMethod === 'card') {
       return baseCheck && cardNumber && cardHolder && cardExpiry;
     } else {
@@ -66,7 +69,7 @@ export function WithdrawForm({ customerId, cardId, cardBalance }: WithdrawFormPr
           Доступний баланс
         </p>
         <p className="text-2xl font-bold text-foreground">
-          {cardBalance.toFixed(2)} INPOM
+          {balance.toFixed(2)} INPOM
         </p>
       </div>
 
@@ -81,7 +84,7 @@ export function WithdrawForm({ customerId, cardId, cardBalance }: WithdrawFormPr
             placeholder="0.00"
             step="0.01"
             min="0"
-            max={cardBalance}
+            max={balance}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             className="w-full mt-3 px-5 py-4 bg-foreground/5 border border-foreground/10 rounded-2xl text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
@@ -100,7 +103,7 @@ export function WithdrawForm({ customerId, cardId, cardBalance }: WithdrawFormPr
                 key={val}
                 type="button"
                 onClick={() => handleQuickAmount(val)}
-                disabled={val > cardBalance}
+                disabled={val > balance}
                 className="px-4 py-3 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 text-foreground rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {val} INPOM
