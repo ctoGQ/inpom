@@ -48,25 +48,55 @@ async function getRecentTransactionsByCard(cardId: number) {
         c.name as customer_name,
         c.avatar as customer_avatar,
         CASE 
-          WHEN t.type = 'payment_received' THEN i.creator_customer_id
           WHEN t.type = 'payment_sent' THEN i.creator_customer_id
+          WHEN t.type = 'payment_received' THEN (
+            SELECT customer_id FROM transactions t2 
+            WHERE t2.invoice_id = t.invoice_id 
+            AND t2.type = 'payment_sent' 
+            LIMIT 1
+          )
           ELSE NULL
-        END as other_customer_id,
-        c2.name as other_customer_name,
-        c2.avatar as other_customer_avatar
+        END as other_customer_id
       FROM transactions t
       LEFT JOIN customers c ON t.customer_id = c.id
       LEFT JOIN invoices i ON t.invoice_id = i.id
-      LEFT JOIN customers c2 ON CASE 
-        WHEN t.type = 'payment_received' THEN i.creator_customer_id
-        WHEN t.type = 'payment_sent' THEN i.creator_customer_id
-        ELSE NULL
-      END = c2.id
       WHERE t.card_id = ${cardId}
       ORDER BY t.created_at DESC
       LIMIT 20
     `;
-    return result.rows || [];
+    
+    // Post-process to get other customer details
+    const enriched = await Promise.all(
+      (result.rows || []).map(async (transaction: any) => {
+        if (transaction.other_customer_id) {
+          try {
+            const customerResult = await sql`
+              SELECT name, avatar FROM customers WHERE id = ${transaction.other_customer_id}
+            `;
+            const customer = customerResult.rows?.[0];
+            return {
+              ...transaction,
+              other_customer_name: customer?.name || 'Unknown',
+              other_customer_avatar: customer?.avatar || null,
+            };
+          } catch (error) {
+            console.error('Error fetching other customer:', error);
+            return {
+              ...transaction,
+              other_customer_name: 'Unknown',
+              other_customer_avatar: null,
+            };
+          }
+        }
+        return {
+          ...transaction,
+          other_customer_name: 'Unknown',
+          other_customer_avatar: null,
+        };
+      })
+    );
+    
+    return enriched;
   } catch (error) {
     console.error('Error fetching transactions:', error);
     return [];
