@@ -4,6 +4,19 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { sql } from "@/lib/db";
 
+const formatDate = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("uk-UA", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  } catch {
+    return dateString;
+  }
+};
+
 async function getNewsletterArticles() {
   try {
     const result = await sql`
@@ -142,11 +155,7 @@ export default async function NewsletterPage() {
 
                   {article.published_at && (
                     <div className="text-xs text-muted-foreground mt-4 pt-4 border-t border-foreground/10">
-                      {new Date(article.published_at).toLocaleDateString("uk-UA", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                      })}
+                      {formatDate(article.published_at)}
                     </div>
                   )}
                 </Link>
