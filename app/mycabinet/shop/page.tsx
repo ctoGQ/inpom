@@ -120,15 +120,8 @@ export default function ShopPage() {
       showNav={true}
     >
       <div className="space-y-2xl pt-lg">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-h1 mb-sm">Магазин</h1>
-            <p className="text-body text-secondary">
-              Знайдіть те, що вам потрібно, або створіть свій товар
-            </p>
-          </div>
-
+        {/* Filters */}
+        <div className="flex justify-end mb-lg">
           <Link href="/mycabinet/shop/create">
             <button className="cabinet-button cabinet-button-primary gap-md">
               <Plus className="w-4 h-4" />
@@ -136,8 +129,6 @@ export default function ShopPage() {
             </button>
           </Link>
         </div>
-
-        {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-md">
           {/* Search */}
           <form onSubmit={handleSearch} className="md:col-span-2">
