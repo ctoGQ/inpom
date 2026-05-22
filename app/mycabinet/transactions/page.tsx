@@ -35,6 +35,7 @@ async function getTransactions(customerId: number) {
             AND t2.type = 'payment_sent' 
             LIMIT 1
           )
+          WHEN t.type = 'deposit' THEN NULL
           ELSE NULL
         END as other_customer_id
       FROM transactions t
@@ -69,6 +70,16 @@ async function getTransactions(customerId: number) {
             };
           }
         }
+        
+        // For deposits, no other customer name
+        if (transaction.type === 'deposit') {
+          return {
+            ...transaction,
+            other_customer_name: 'Депозит',
+            other_customer_avatar: null,
+          };
+        }
+        
         return {
           ...transaction,
           other_customer_name: 'Unknown',
