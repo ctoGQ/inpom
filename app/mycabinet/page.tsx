@@ -44,6 +44,7 @@ async function getRecentTransactionsByCard(cardId: number) {
         t.description, 
         t.created_at, 
         t.invoice_id,
+        t.customer_id,
         CASE 
           WHEN t.type = 'payment_sent' THEN i.creator_customer_id
           WHEN t.type = 'payment_received' THEN (
@@ -62,28 +63,55 @@ async function getRecentTransactionsByCard(cardId: number) {
       LIMIT 20
     `;
     
+    console.log('[getRecentTransactionsByCard] Query result rows:', result.rows?.length);
+    
     // Post-process to get other customer details
     const enriched = await Promise.all(
       (result.rows || []).map(async (transaction: any) => {
+        if (transaction.type === 'deposit') {
+          return {
+            ...transaction,
+            other_customer_name: 'Депозит',
+            other_customer_avatar: null,
+          };
+        }
+        
         if (transaction.other_customer_id) {
           try {
             const customerResult = await sql`
-              SELECT name, avatar FROM customers WHERE id = ${transaction.other_customer_id}
+              SELECT name, avatar_url as avatar FROM customers WHERE id = ${transaction.other_customer_id}
             `;
             const customer = customerResult.rows?.[0];
+            console.log(`[getRecentTransactionsByCard] Customer ${transaction.other_customer_id}:`, customer?.name);
             return {
               ...transaction,
               other_customer_name: customer?.name || 'Unknown',
               other_customer_avatar: customer?.avatar || null,
             };
           } catch (error) {
-            console.error('Error fetching other customer:', error);
+            console.error('[getRecentTransactionsByCard] Error fetching customer:', error);
             return {
               ...transaction,
               other_customer_name: 'Unknown',
               other_customer_avatar: null,
             };
           }
+        }
+        
+        return {
+          ...transaction,
+          other_customer_name: 'Unknown',
+          other_customer_avatar: null,
+        };
+      })
+    );
+    
+    return enriched;
+  } catch (error) {
+    console.error('Error fetching transactions:', error);
+    return [];
+  }
+}
         }
         
         // For deposits, no other customer
