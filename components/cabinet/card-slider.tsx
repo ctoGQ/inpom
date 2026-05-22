@@ -45,11 +45,10 @@ export function CardSlider({
 
   const getCardGradient = (type: string) => {
     const gradients: Record<string, string> = {
-      BLACK: 'from-pink-400 via-orange-400 to-yellow-300',
       GOLD: 'from-amber-300 via-yellow-300 to-orange-200',
       'BUSINESS PLUS': 'from-blue-400 via-purple-400 to-pink-400',
     };
-    return gradients[type] || 'from-pink-400 via-orange-400 to-yellow-300';
+    return gradients[type] || 'from-amber-300 via-yellow-300 to-orange-200';
   };
 
   const getCardTypeLabel = (type: string): string => {
