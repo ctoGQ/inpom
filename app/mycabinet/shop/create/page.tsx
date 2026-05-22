@@ -3,20 +3,12 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
+import { MobileModal } from '@/components/mobile-modal';
 import { useToast } from '@/components/ui/use-toast';
-import { Upload, Plus, Trash2, ArrowLeft } from 'lucide-react';
-import { Card } from '@/components/ui/card';
+import { Upload, Plus, Trash2, ChevronRight } from 'lucide-react';
 
 interface Category {
   id: number;
@@ -34,10 +26,12 @@ export default function CreateProductPage() {
   const { toast } = useToast();
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
     categoryId: '',
+    categoryName: '',
     price: '',
     description: '',
     shortDescription: '',
@@ -68,6 +62,15 @@ export default function CreateProductPage() {
 
     fetchCategories();
   }, [toast]);
+
+  const handleSelectCategory = (categoryId: string, categoryName: string) => {
+    setFormData(prev => ({ 
+      ...prev, 
+      categoryId, 
+      categoryName 
+    }));
+    setIsCategoryModalOpen(false);
+  };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -156,7 +159,6 @@ export default function CreateProductPage() {
         description: data.message || 'Товар успішно створено'
       });
 
-      // Redirect back to shop
       router.push('/mycabinet/shop');
     } catch (error) {
       console.error('Error creating product:', error);
@@ -172,268 +174,291 @@ export default function CreateProductPage() {
 
   return (
     <CabinetLayout 
-      title="Товар"
+      title="Створити товар"
       showBack={true}
       showAvatar={true}
       showNav={true}
     >
-      <div className="py-6">
-        {/* Header */}
-        <div className="mb-6">
-          <Link href="/mycabinet/shop" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground mb-4">
-            <ArrowLeft className="w-4 h-4" />
-            Повернутися в магазин
-          </Link>
-          <h1 className="text-3xl font-bold mb-2">Створити новий товар</h1>
-          <p className="text-muted-foreground">Заповніть інформацію про ваш товар</p>
+      <form onSubmit={handleSubmit} className="px-4 pt-6 pb-24 space-y-6">
+        {/* Title */}
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Назва товару *
+          </label>
+          <input
+            type="text"
+            placeholder="Введіть назву товару"
+            value={formData.title}
+            onChange={(e) =>
+              setFormData(prev => ({ ...prev, title: e.target.value }))
+            }
+            required
+            className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          />
         </div>
 
-        {/* Form */}
-        <div className="max-w-2xl">
-          <Card className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Title */}
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  Назва товару *
-                </label>
-                <Input
-                  placeholder="Введіть назву товару"
-                  value={formData.title}
-                  onChange={(e) =>
-                    setFormData(prev => ({ ...prev, title: e.target.value }))
-                  }
-                  required
-                />
-              </div>
+        {/* Category */}
+        <div className="space-y-3">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Категорія *
+          </label>
+          <button
+            type="button"
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="w-full p-4 rounded-2xl border border-foreground/10 bg-foreground/5 hover:bg-foreground/10 transition-all flex items-center justify-between group"
+          >
+            <div className="text-left">
+              <p className="font-medium text-foreground text-sm">
+                {formData.categoryName || 'Оберіть категорію'}
+              </p>
+            </div>
+            <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          </button>
+        </div>
 
-              {/* Category */}
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  Категорія *
-                </label>
-                <Select
-                  value={formData.categoryId}
-                  onValueChange={(value) =>
-                    setFormData(prev => ({ ...prev, categoryId: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Оберіть категорію" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {categories.map(cat => (
-                      <SelectItem key={cat.id} value={cat.id.toString()}>
-                        {cat.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+        {/* Price */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Ціна (INPOM) *
+            </label>
+            <input
+              type="number"
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+              value={formData.price}
+              onChange={(e) =>
+                setFormData(prev => ({ ...prev, price: e.target.value }))
+              }
+              required
+              className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Оригінальна ціна
+            </label>
+            <input
+              type="number"
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+              value={formData.originalPrice}
+              onChange={(e) =>
+                setFormData(prev => ({
+                  ...prev,
+                  originalPrice: e.target.value
+                }))
+              }
+              className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </div>
 
-              {/* Price */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Ціна (UAH) *
-                  </label>
-                  <Input
-                    type="number"
-                    placeholder="0.00"
-                    step="0.01"
-                    min="0"
-                    value={formData.price}
-                    onChange={(e) =>
-                      setFormData(prev => ({ ...prev, price: e.target.value }))
-                    }
-                    required
+        {/* Description */}
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Опис товару *
+          </label>
+          <textarea
+            placeholder="Детальний опис товару"
+            value={formData.description}
+            onChange={(e) =>
+              setFormData(prev => ({ ...prev, description: e.target.value }))
+            }
+            rows={4}
+            required
+            className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+          />
+        </div>
+
+        {/* Short description */}
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Короткий опис
+          </label>
+          <input
+            type="text"
+            placeholder="Одна строка опису для переліку"
+            value={formData.shortDescription}
+            onChange={(e) =>
+              setFormData(prev => ({
+                ...prev,
+                shortDescription: e.target.value
+              }))
+            }
+            maxLength={500}
+            className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        {/* Stock and SKU */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Кількість в наявності
+            </label>
+            <input
+              type="number"
+              placeholder="0"
+              min="0"
+              value={formData.stockQuantity}
+              onChange={(e) =>
+                setFormData(prev => ({
+                  ...prev,
+                  stockQuantity: e.target.value
+                }))
+              }
+              className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <div className="space-y-2">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              SKU
+            </label>
+            <input
+              type="text"
+              placeholder="Артикул товару"
+              value={formData.sku}
+              onChange={(e) =>
+                setFormData(prev => ({ ...prev, sku: e.target.value }))
+              }
+              className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </div>
+
+        {/* Images */}
+        <div className="space-y-3">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Фото товару
+          </label>
+          <label className="flex items-center justify-center gap-2 p-6 border-2 border-dashed border-foreground/20 rounded-2xl cursor-pointer hover:border-primary/50 transition-colors">
+            <Upload className="w-5 h-5 text-muted-foreground" />
+            <span className="text-sm font-medium text-muted-foreground">
+              Завантажити фото
+            </span>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+          </label>
+
+          {formData.images.length > 0 && (
+            <div className="grid grid-cols-3 gap-3">
+              {formData.images.map((img, i) => (
+                <div key={i} className="relative group">
+                  <img
+                    src={img}
+                    alt={`Product ${i}`}
+                    className="w-full h-32 object-cover rounded-xl"
                   />
-                </div>
-                <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Оригінальна ціна
-                  </label>
-                  <Input
-                    type="number"
-                    placeholder="0.00"
-                    step="0.01"
-                    min="0"
-                    value={formData.originalPrice}
-                    onChange={(e) =>
-                      setFormData(prev => ({
-                        ...prev,
-                        originalPrice: e.target.value
-                      }))
-                    }
-                  />
-                </div>
-              </div>
-
-              {/* Description */}
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  Опис товару *
-                </label>
-                <Textarea
-                  placeholder="Детальний опис товару"
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData(prev => ({ ...prev, description: e.target.value }))
-                  }
-                  rows={5}
-                  required
-                />
-              </div>
-
-              {/* Short description */}
-              <div>
-                <label className="text-sm font-medium mb-2 block">
-                  Короткий опис
-                </label>
-                <Input
-                  placeholder="Одна строка опису для переліку"
-                  value={formData.shortDescription}
-                  onChange={(e) =>
-                    setFormData(prev => ({
-                      ...prev,
-                      shortDescription: e.target.value
-                    }))
-                  }
-                  maxLength={500}
-                />
-              </div>
-
-              {/* Stock and SKU */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">
-                    Кількість в наявності
-                  </label>
-                  <Input
-                    type="number"
-                    placeholder="0"
-                    min="0"
-                    value={formData.stockQuantity}
-                    onChange={(e) =>
-                      setFormData(prev => ({
-                        ...prev,
-                        stockQuantity: e.target.value
-                      }))
-                    }
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium text-slate-900 mb-2 block">SKU</label>
-                  <Input
-                    placeholder="Артикул товару"
-                    value={formData.sku}
-                    onChange={(e) =>
-                      setFormData(prev => ({ ...prev, sku: e.target.value }))
-                    }
-                  />
-                </div>
-              </div>
-
-              {/* Images */}
-              <div>
-                <label className="text-sm font-medium text-slate-900 mb-2 block">Фото товару</label>
-                <div className="border-2 border-dashed border-input rounded-lg p-6">
-                  <label className="flex items-center justify-center gap-2 cursor-pointer hover:text-primary transition-colors">
-                    <Upload className="w-4 h-4" />
-                    <span className="text-sm">Завантажити фото</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
-
-                {formData.images.length > 0 && (
-                  <div className="mt-3 grid grid-cols-4 gap-3">
-                    {formData.images.map((img, i) => (
-                      <div key={i} className="relative group">
-                        <img
-                          src={img}
-                          alt={`Product ${i}`}
-                          className="w-full h-24 object-cover rounded"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveImage(i)}
-                          className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Attributes */}
-              <div>
-                <div className="flex justify-between items-center mb-3">
-                  <label className="text-sm font-medium text-slate-900">Характеристики</label>
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleAddAttribute}
+                    onClick={() => handleRemoveImage(i)}
+                    className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity"
                   >
-                    <Plus className="w-3 h-3 mr-1" />
-                    Додати
-                  </Button>
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
-
-                {formData.attributes.length > 0 && (
-                  <div className="space-y-2">
-                    {formData.attributes.map((attr, i) => (
-                      <div key={i} className="flex gap-2">
-                        <Input
-                          placeholder="Назва характеристики"
-                          value={attr.name}
-                          onChange={(e) =>
-                            handleUpdateAttribute(i, 'name', e.target.value)
-                          }
-                        />
-                        <Input
-                          placeholder="Значення"
-                          value={attr.value}
-                          onChange={(e) =>
-                            handleUpdateAttribute(i, 'value', e.target.value)
-                          }
-                        />
-                        <Button
-                          type="button"
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleRemoveAttribute(i)}
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Buttons */}
-              <div className="flex gap-3 justify-end pt-4 border-t">
-                <Link href="/mycabinet/shop">
-                  <Button type="button" variant="outline">
-                    Скасувати
-                  </Button>
-                </Link>
-                <Button type="submit" disabled={loading}>
-                  {loading ? 'Створення...' : 'Створити товар'}
-                </Button>
-              </div>
-            </form>
-          </Card>
+              ))}
+            </div>
+          )}
         </div>
-      </div>
+
+        {/* Attributes */}
+        <div className="space-y-3">
+          <div className="flex justify-between items-center">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Характеристики
+            </label>
+            <button
+              type="button"
+              onClick={handleAddAttribute}
+              className="flex items-center gap-2 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              Додати
+            </button>
+          </div>
+
+          {formData.attributes.length > 0 && (
+            <div className="space-y-2">
+              {formData.attributes.map((attr, i) => (
+                <div key={i} className="flex gap-2">
+                  <input
+                    type="text"
+                    placeholder="Назва характеристики"
+                    value={attr.name}
+                    onChange={(e) =>
+                      handleUpdateAttribute(i, 'name', e.target.value)
+                    }
+                    className="flex-1 px-3 py-2 bg-foreground/5 border border-foreground/10 rounded-lg text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Значення"
+                    value={attr.value}
+                    onChange={(e) =>
+                      handleUpdateAttribute(i, 'value', e.target.value)
+                    }
+                    className="flex-1 px-3 py-2 bg-foreground/5 border border-foreground/10 rounded-lg text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAttribute(i)}
+                    className="px-3 py-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Buttons */}
+        <div className="flex gap-3 pt-6">
+          <Link href="/mycabinet/shop" className="flex-1">
+            <button type="button" className="w-full px-6 py-4 text-foreground font-semibold rounded-2xl border border-foreground/10 hover:bg-foreground/5 transition-all">
+              Скасувати
+            </button>
+          </Link>
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex-1 px-6 py-4 bg-primary text-primary-foreground font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg active:scale-95"
+          >
+            {loading ? 'Створення...' : 'Створити товар'}
+          </button>
+        </div>
+      </form>
+
+      {/* Category Modal */}
+      <MobileModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        title="Виберіть категорію"
+      >
+        <div className="px-4 py-6 space-y-2">
+          {categories.map((category) => (
+            <button
+              key={category.id}
+              onClick={() => handleSelectCategory(category.id.toString(), category.name)}
+              className={`w-full p-4 rounded-2xl border transition-all text-left font-medium ${
+                formData.categoryId === category.id.toString()
+                  ? 'bg-primary/10 border-primary/50 text-primary'
+                  : 'bg-foreground/5 border-foreground/10 text-foreground hover:bg-foreground/10'
+              }`}
+            >
+              {category.name}
+            </button>
+          ))}
+        </div>
+      </MobileModal>
     </CabinetLayout>
   );
 }

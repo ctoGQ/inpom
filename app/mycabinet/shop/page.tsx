@@ -6,17 +6,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
+import { MobileModal } from '@/components/mobile-modal';
 import { ShopProductCard } from '@/components/shop/shop-product-card';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, SlidersHorizontal } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 interface Product {
@@ -51,6 +44,8 @@ export default function ShopPage() {
   const [sortBy, setSortBy] = useState<'newest' | 'popular' | 'price-asc' | 'price-desc' | 'rating'>('newest');
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [isSortModalOpen, setIsSortModalOpen] = useState(false);
   const { toast } = useToast();
 
   const limit = 12;
@@ -78,20 +73,19 @@ export default function ShopPage() {
       setLoading(true);
       try {
         const params = new URLSearchParams({
+          search: search || '',
+          category: selectedCategory || '',
+          sort: sortBy,
           page: page.toString(),
-          limit: limit.toString(),
-          sortBy
+          limit: limit.toString()
         });
-
-        if (search) params.append('search', search);
-        if (selectedCategory) params.append('category', selectedCategory);
 
         const response = await fetch(`/api/shop/products?${params}`);
         if (!response.ok) throw new Error('Failed to fetch products');
-
         const data = await response.json();
+
         setProducts(data.products || []);
-        setTotal(data.pagination.total);
+        setTotal(data.total || 0);
       } catch (error) {
         console.error('Error fetching products:', error);
         toast({
@@ -112,6 +106,15 @@ export default function ShopPage() {
     setPage(1);
   };
 
+  const selectedCategoryName = categories.find(c => c.slug === selectedCategory)?.name;
+  const selectedSortName = {
+    'newest': 'Найновіші',
+    'popular': 'Популярні',
+    'price-asc': 'Ціна: від дешевих',
+    'price-desc': 'Ціна: від дорогих',
+    'rating': 'За рейтингом'
+  }[sortBy] || 'Сортування';
+
   return (
     <CabinetLayout 
       title="Магазин"
@@ -119,84 +122,229 @@ export default function ShopPage() {
       showAvatar={true}
       showNav={true}
     >
-      <div className="space-y-2xl pt-lg">
-        {/* Filters */}
-        <div className="flex justify-end mb-lg">
+      <div className="px-4 pt-6 pb-24 space-y-6">
+        {/* Top Bar with Add Button */}
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-foreground">Товари</h2>
           <Link href="/mycabinet/shop/create">
-            <button className="cabinet-button cabinet-button-primary gap-md">
+            <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:shadow-md transition-all active:scale-95">
               <Plus className="w-4 h-4" />
-              Додати товар
+              <span className="text-sm">Додати</span>
             </button>
           </Link>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-md">
-          {/* Search */}
-          <form onSubmit={handleSearch} className="md:col-span-2">
-            <div className="flex gap-md">
-              <div className="flex-1 relative">
-                <Search className="absolute left-sm top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  placeholder="Пошук товарів..."
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="cabinet-form-input pl-lg h-3xl"
-                />
-              </div>
-              <button type="submit" className="cabinet-button cabinet-button-secondary">
-                Пошук
-              </button>
-            </div>
-          </form>
 
-          {/* Category filter */}
-          <Select value={selectedCategory || "all"} onValueChange={(value) => {
-            setSelectedCategory(value === "all" ? "" : value);
-            setPage(1);
-          }}>
-            <SelectTrigger>
-              <SelectValue placeholder="Всі категорії" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Всі категорії</SelectItem>
-              {categories.map(cat => (
-                <SelectItem key={cat.id} value={cat.slug}>
-                  {cat.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        {/* Search Bar */}
+        <form onSubmit={handleSearch} className="flex gap-2">
+          <div className="flex-1 relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Пошук товарів..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 bg-foreground/5 border border-foreground/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <button 
+            type="submit" 
+            className="px-4 py-3 bg-foreground/10 hover:bg-foreground/20 text-foreground rounded-lg font-medium transition-all"
+          >
+            Пошук
+          </button>
+        </form>
 
-          {/* Sort */}
-          <Select value={sortBy} onValueChange={(value: any) => {
-            setSortBy(value);
-            setPage(1);
-          }}>
-            <SelectTrigger>
-              <SelectValue placeholder="Сортування" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="newest">Найновіші</SelectItem>
-              <SelectItem value="popular">Популярні</SelectItem>
-              <SelectItem value="price-asc">Ціна: від дешевих</SelectItem>
-              <SelectItem value="price-desc">Ціна: від дорогих</SelectItem>
-              <SelectItem value="rating">За рейтингом</SelectItem>
-            </SelectContent>
-          </Select>
+        {/* Filters */}
+        <div className="flex gap-2">
+          {/* Category Filter */}
+          <button
+            onClick={() => setIsCategoryModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 text-foreground rounded-lg text-sm font-medium transition-all"
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+            <span>{selectedCategoryName || 'Категорія'}</span>
+          </button>
+
+          {/* Sort Filter */}
+          <button
+            onClick={() => setIsSortModalOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 text-foreground rounded-lg text-sm font-medium transition-all"
+          >
+            <span>{selectedSortName}</span>
+          </button>
+
+          {/* Clear filters */}
+          {(selectedCategory || sortBy !== 'newest') && (
+            <button
+              onClick={() => {
+                setSelectedCategory('');
+                setSortBy('newest');
+                setPage(1);
+              }}
+              className="px-3 py-2 text-muted-foreground hover:text-foreground text-xs font-medium transition-colors"
+            >
+              Скинути
+            </button>
+          )}
         </div>
 
-        {/* Products grid */}
-        <div>
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-md">
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="cabinet-skeleton aspect-square rounded-2xl"
+        {/* Products Grid */}
+        {loading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-96 bg-foreground/5 rounded-2xl animate-pulse" />
+            ))}
+          </div>
+        ) : products.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16">
+            <Search className="w-16 h-16 text-muted-foreground/30 mb-4" />
+            <p className="text-foreground font-semibold text-center">Товари не знайдені</p>
+            <p className="text-muted-foreground text-sm text-center mt-2">Спробуйте змінити фільтри або пошукові запити</p>
+          </div>
+        ) : (
+          <>
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {products.map(product => (
+                <ShopProductCard
+                  key={product.id}
+                  id={product.id}
+                  title={product.title}
+                  slug={product.slug}
+                  price={product.price}
+                  originalPrice={product.original_price}
+                  currency={product.currency}
+                  rating={product.rating}
+                  reviewCount={product.review_count}
+                  primaryImage={product.primary_image}
+                  sellerName={product.seller_name}
+                  sellerId={product.seller_id}
+                  saleCount={product.sale_count}
+                  isFeatured={product.is_featured}
                 />
               ))}
             </div>
-          ) : products.length === 0 ? (
-            <div className="cabinet-empty-state">
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center gap-2 pt-6">
+                <button
+                  onClick={() => setPage(Math.max(1, page - 1))}
+                  disabled={page === 1}
+                  className="px-4 py-2 bg-foreground/10 hover:bg-foreground/20 disabled:opacity-50 disabled:cursor-not-allowed text-foreground rounded-lg font-medium transition-all"
+                >
+                  Попередня
+                </button>
+
+                {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
+                  const pageNum = Math.max(1, page - 2) + i;
+                  if (pageNum > totalPages) return null;
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setPage(pageNum)}
+                      className={`w-10 h-10 rounded-lg font-medium transition-all ${
+                        page === pageNum
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-foreground/10 hover:bg-foreground/20 text-foreground'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+
+                <button
+                  onClick={() => setPage(Math.min(totalPages, page + 1))}
+                  disabled={page === totalPages}
+                  className="px-4 py-2 bg-foreground/10 hover:bg-foreground/20 disabled:opacity-50 disabled:cursor-not-allowed text-foreground rounded-lg font-medium transition-all"
+                >
+                  Наступна
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      {/* Category Modal */}
+      <MobileModal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        title="Оберіть категорію"
+      >
+        <div className="px-4 py-6 space-y-2">
+          <button
+            onClick={() => {
+              setSelectedCategory('');
+              setIsCategoryModalOpen(false);
+              setPage(1);
+            }}
+            className={`w-full p-4 rounded-2xl border transition-all text-left font-medium ${
+              selectedCategory === ''
+                ? 'bg-primary/10 border-primary/50 text-primary'
+                : 'bg-foreground/5 border-foreground/10 text-foreground hover:bg-foreground/10'
+            }`}
+          >
+            Всі категорії
+          </button>
+          {categories.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => {
+                setSelectedCategory(cat.slug);
+                setIsCategoryModalOpen(false);
+                setPage(1);
+              }}
+              className={`w-full p-4 rounded-2xl border transition-all text-left font-medium ${
+                selectedCategory === cat.slug
+                  ? 'bg-primary/10 border-primary/50 text-primary'
+                  : 'bg-foreground/5 border-foreground/10 text-foreground hover:bg-foreground/10'
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
+        </div>
+      </MobileModal>
+
+      {/* Sort Modal */}
+      <MobileModal
+        isOpen={isSortModalOpen}
+        onClose={() => setIsSortModalOpen(false)}
+        title="Сортування"
+      >
+        <div className="px-4 py-6 space-y-2">
+          {(
+            [
+              { value: 'newest', label: 'Найновіші' },
+              { value: 'popular', label: 'Популярні' },
+              { value: 'price-asc', label: 'Ціна: від дешевих' },
+              { value: 'price-desc', label: 'Ціна: від дорогих' },
+              { value: 'rating', label: 'За рейтингом' }
+            ] as const
+          ).map(option => (
+            <button
+              key={option.value}
+              onClick={() => {
+                setSortBy(option.value);
+                setIsSortModalOpen(false);
+                setPage(1);
+              }}
+              className={`w-full p-4 rounded-2xl border transition-all text-left font-medium ${
+                sortBy === option.value
+                  ? 'bg-primary/10 border-primary/50 text-primary'
+                  : 'bg-foreground/5 border-foreground/10 text-foreground hover:bg-foreground/10'
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </MobileModal>
+    </CabinetLayout>
+  );
+}
               <Search className="w-3xl h-3xl text-muted-foreground mx-auto mb-lg" />
               <p className="cabinet-empty-state-title">Товари не знайдені</p>
               <p className="cabinet-empty-state-description">

@@ -156,7 +156,7 @@ export function ShopProductCard({
                 <Star
                   key={i}
                   className={`w-3 h-3 ${
-                    i < Math.round(rating)
+                    i < Math.round(Number(rating) || 0)
                       ? 'fill-yellow-400 text-yellow-400'
                       : 'text-muted-foreground'
                   }`}
@@ -164,18 +164,18 @@ export function ShopProductCard({
               ))}
             </div>
             <span className="text-xs text-muted-foreground">
-              {rating.toFixed(1)} ({reviewCount})
+              {(Number(rating) || 0).toFixed(1)} ({reviewCount})
             </span>
           </div>
 
           {/* Price */}
           <div className="flex items-baseline gap-2 mt-auto mb-3">
             <span className="text-lg font-bold">
-              {price.toLocaleString('uk-UA')} {currency}
+              {(Number(price) || 0).toLocaleString('uk-UA')} {currency}
             </span>
-            {originalPrice && originalPrice > price && (
+            {originalPrice && Number(originalPrice) > Number(price) && (
               <span className="text-xs text-muted-foreground line-through">
-                {originalPrice.toLocaleString('uk-UA')}
+                {(Number(originalPrice) || 0).toLocaleString('uk-UA')}
               </span>
             )}
           </div>
