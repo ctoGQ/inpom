@@ -112,31 +112,6 @@ async function getRecentTransactionsByCard(cardId: number) {
     return [];
   }
 }
-        }
-        
-        // For deposits, no other customer
-        if (transaction.type === 'deposit') {
-          return {
-            ...transaction,
-            other_customer_name: 'Депозит',
-            other_customer_avatar: null,
-          };
-        }
-        
-        return {
-          ...transaction,
-          other_customer_name: 'Unknown',
-          other_customer_avatar: null,
-        };
-      })
-    );
-    
-    return enriched;
-  } catch (error) {
-    console.error('Error fetching transactions:', error);
-    return [];
-  }
-}
 
 async function handleLogout() {
   'use server';

@@ -95,31 +95,6 @@ async function getTransactions(customerId: number) {
     return [];
   }
 }
-        }
-        
-        // For deposits, no other customer name
-        if (transaction.type === 'deposit') {
-          return {
-            ...transaction,
-            other_customer_name: 'Депозит',
-            other_customer_avatar: null,
-          };
-        }
-        
-        return {
-          ...transaction,
-          other_customer_name: 'Unknown',
-          other_customer_avatar: null,
-        };
-      })
-    );
-    
-    return enriched;
-  } catch (error) {
-    console.error('[getTransactions] ❌ ERROR fetching transactions:', error);
-    return [];
-  }
-}
 
 export default async function TransactionsPage() {
   const customer = await getSessionCustomer();
