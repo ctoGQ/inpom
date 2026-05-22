@@ -105,15 +105,6 @@ export default async function TransactionsPage() {
       showNav={true}
     >
       <div className="space-y-2xl pt-lg">
-        <div>
-          <h1 className="text-h1 mb-sm">
-            Історія операцій
-          </h1>
-          <p className="text-body text-secondary">
-            Ваші фінансові операції
-          </p>
-        </div>
-
         <ActivitySection transactions={transactions} />
       </div>
     </CabinetLayout>

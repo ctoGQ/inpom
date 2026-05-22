@@ -18,15 +18,6 @@ export default async function EventsPage() {
       showNav={true}
     >
       <div className="space-y-2xl pt-lg">
-        <div>
-          <h1 className="text-h1 mb-sm">
-            События і воркшопи
-          </h1>
-          <p className="text-body text-secondary">
-            Реєструйтеся на наші чудові знакомства та воркшопи
-          </p>
-        </div>
-
         {/* Events List */}
         <div className="space-y-md">
           {/* Placeholder events */}

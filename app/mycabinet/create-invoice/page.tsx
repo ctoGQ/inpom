@@ -34,15 +34,6 @@ export default async function CreateInvoicePage() {
       showNav={true}
     >
       <div className="space-y-2xl pt-lg">
-        <div>
-          <h1 className="text-h1 mb-sm">
-            Створити інвойс
-          </h1>
-          <p className="text-body text-secondary">
-            Інші користувачи зможуть відсканувати QR-код та оплатити
-          </p>
-        </div>
-
         <InvoiceForm customerId={customer.id} cardId={card.id} />
       </div>
     </CabinetLayout>

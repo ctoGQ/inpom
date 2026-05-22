@@ -100,15 +100,6 @@ export default async function InvoiceViewPage({ params }: PageProps) {
       showNav={true}
     >
       <div className="space-y-2xl pt-lg">
-        <div>
-          <h1 className="text-h1 mb-sm">
-            Ваш інвойс
-          </h1>
-          <p className="text-body text-secondary">
-            Поділіться цим інвойсом з іншими користувачами, щоб вони могли його оплатити
-          </p>
-        </div>
-
         <InvoiceDisplay
           invoiceId={invoice.id}
           amount={invoice.amount}
