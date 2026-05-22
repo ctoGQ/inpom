@@ -37,10 +37,33 @@ async function getUserCards(customerId: number): Promise<CardData[]> {
 async function getRecentTransactionsByCard(cardId: number) {
   try {
     const result = await sql`
-      SELECT id, type, amount, description, created_at, invoice_id
-      FROM transactions
-      WHERE card_id = ${cardId}
-      ORDER BY created_at DESC
+      SELECT 
+        t.id, 
+        t.type, 
+        t.amount, 
+        t.description, 
+        t.created_at, 
+        t.invoice_id,
+        t.customer_id,
+        c.name as customer_name,
+        c.avatar as customer_avatar,
+        CASE 
+          WHEN t.type = 'payment_received' THEN i.creator_customer_id
+          WHEN t.type = 'payment_sent' THEN i.creator_customer_id
+          ELSE NULL
+        END as other_customer_id,
+        c2.name as other_customer_name,
+        c2.avatar as other_customer_avatar
+      FROM transactions t
+      LEFT JOIN customers c ON t.customer_id = c.id
+      LEFT JOIN invoices i ON t.invoice_id = i.id
+      LEFT JOIN customers c2 ON CASE 
+        WHEN t.type = 'payment_received' THEN i.creator_customer_id
+        WHEN t.type = 'payment_sent' THEN i.creator_customer_id
+        ELSE NULL
+      END = c2.id
+      WHERE t.card_id = ${cardId}
+      ORDER BY t.created_at DESC
       LIMIT 20
     `;
     return result.rows || [];

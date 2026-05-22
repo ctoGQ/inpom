@@ -1,7 +1,8 @@
 'use client';
 
-import { ArrowDown, ArrowUp, Banknote, TrendingUp } from 'lucide-react';
+import { ArrowDown, ArrowUp, Banknote, TrendingUp, User } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { formatAmount } from '@/lib/format-amount';
 
@@ -12,6 +13,8 @@ interface Transaction {
   description: string;
   created_at: string;
   invoice_id?: number;
+  other_customer_name?: string;
+  other_customer_avatar?: string;
 }
 
 interface ActivitySectionProps {
@@ -112,12 +115,12 @@ export function ActivitySection({ transactions }: ActivitySectionProps) {
               transition={{ delay: index * 0.05 }}
             >
               <Link href={`/mycabinet/transactions/${transaction.id}`}>
-                <div className="group relative overflow-hidden rounded-2xl">
+                <div className="group relative overflow-hidden ">
                   {/* Background border effect */}
                   <div className="absolute inset-0 bg-gradient-to-r from-foreground/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   
                   {/* Card */}
-                  <div className="relative bg-card border border-foreground/10 rounded-2xl p-4 hover:border-foreground/20 transition-all duration-300">
+                  <div className="relative bg-card p-4 transition-all duration-300">
                     <div className="flex items-center gap-4">
                       {/* Icon Container */}
                       <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${
@@ -153,8 +156,26 @@ export function ActivitySection({ transactions }: ActivitySectionProps) {
                     </div>
 
                     {/* Bottom Date */}
-                    <div className="mt-3 pt-3 border-t border-foreground/5">
-                      <p className="text-xs text-muted-foreground text-right">
+                    <div className="mt-3 pt-3 border-t border-foreground/5 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {transaction.other_customer_avatar ? (
+                          <Image
+                            src={transaction.other_customer_avatar}
+                            alt={transaction.other_customer_name || 'User'}
+                            width={24}
+                            height={24}
+                            className="w-6 h-6 rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                            <User className="w-4 h-4 text-gray-600" />
+                          </div>
+                        )}
+                        <p className="text-xs text-muted-foreground truncate">
+                          {transaction.other_customer_name || 'Unknown'}
+                        </p>
+                      </div>
+                      <p className="text-xs text-muted-foreground">
                         {date}
                       </p>
                     </div>
