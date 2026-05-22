@@ -32,21 +32,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Fetch transactions for this card's customer (not just this card, since old transactions lack card_id)
-    // Get customer_id from card
-    const cardResult = await sql`
-      SELECT customer_id FROM user_cards WHERE id = ${parseInt(cardId)} AND customer_id = ${customer.id}
-    `;
-    
-    if (cardResult.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'Card not found' },
-        { status: 404 }
-      );
-    }
-    
-    const customerId = cardResult.rows[0].customer_id;
-    
+    // Fetch transactions for this card
     const result = await sql`
       SELECT 
         t.id, 
@@ -67,7 +53,7 @@ export async function GET(request: NextRequest) {
         END as other_customer_id
       FROM transactions t
       LEFT JOIN invoices i ON t.invoice_id = i.id
-      WHERE t.customer_id = ${customerId}
+      WHERE t.card_id = ${parseInt(cardId)}
       ORDER BY t.created_at DESC
       LIMIT ${parseInt(limit)}
     `;

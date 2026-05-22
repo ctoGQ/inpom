@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface InvoiceFormProps {
   customerId: number;
+  cardId: number;
 }
 
 interface Invoice {
@@ -21,7 +22,7 @@ interface Invoice {
   paymentUrl: string;
 }
 
-export function InvoiceForm({ customerId }: InvoiceFormProps) {
+export function InvoiceForm({ customerId, cardId }: InvoiceFormProps) {
   const [amount, setAmount] = useState('');
   const [description, setDescription] = useState('');
   const [expiry, setExpiry] = useState('30');
@@ -86,6 +87,7 @@ export function InvoiceForm({ customerId }: InvoiceFormProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           customerId,
+          cardId,
           amount: numAmount,
           description: description.trim(),
           expiryMinutes: parseInt(expiry),

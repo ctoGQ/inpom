@@ -6,7 +6,8 @@ export async function createInvoice(
   customerId: number,
   amount: number,
   description: string,
-  expiryMinutes: number
+  expiryMinutes: number,
+  cardId?: number
 ) {
   try {
     if (amount <= 0) {
@@ -16,9 +17,9 @@ export async function createInvoice(
     const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
 
     const result = await sql`
-      INSERT INTO invoices (creator_customer_id, amount, description, status, expires_at)
-      VALUES (${customerId}, ${amount}, ${description}, 'pending', ${expiresAt})
-      RETURNING id, creator_customer_id, amount, description, status, created_at, expires_at
+      INSERT INTO invoices (creator_customer_id, creator_card_id, amount, description, status, expires_at)
+      VALUES (${customerId}, ${cardId || null}, ${amount}, ${description}, 'pending', ${expiresAt})
+      RETURNING id, creator_customer_id, creator_card_id, amount, description, status, created_at, expires_at
     `;
 
     if (!result.rows.length) {
@@ -47,7 +48,7 @@ export async function payInvoice(invoiceId: number, payerCustomerId: number) {
   try {
     // Get invoice details
     const invoiceResult = await sql`
-      SELECT id, creator_customer_id, amount, status, expires_at
+      SELECT id, creator_customer_id, creator_card_id, amount, status, expires_at
       FROM invoices
       WHERE id = ${invoiceId}
     `;
@@ -66,9 +67,9 @@ export async function payInvoice(invoiceId: number, payerCustomerId: number) {
       return { error: 'Термін дії інвойса закінчився' };
     }
 
-    // Get payer's card balance
+    // Get payer's card balance - use the first card or create one
     const payerCardResult = await sql`
-      SELECT id, balance FROM user_cards WHERE customer_id = ${payerCustomerId}
+      SELECT id, balance FROM user_cards WHERE customer_id = ${payerCustomerId} LIMIT 1
     `;
 
     const payerCard = payerCardResult.rows?.[0];
@@ -118,11 +119,21 @@ export async function payInvoice(invoiceId: number, payerCustomerId: number) {
     `;
 
     // Add to creator
-    const creatorCardResult = await sql`
-      SELECT id, balance FROM user_cards WHERE customer_id = ${invoice.creator_customer_id}
-    `;
-
-    const creatorCard = creatorCardResult.rows?.[0];
+    let creatorCard = null;
+    
+    // If invoice has creator_card_id, use that specific card
+    if (invoice.creator_card_id) {
+      const creatorCardResult = await sql`
+        SELECT id, balance FROM user_cards WHERE id = ${invoice.creator_card_id}
+      `;
+      creatorCard = creatorCardResult.rows?.[0];
+    } else {
+      // Otherwise use the first card of the creator
+      const creatorCardResult = await sql`
+        SELECT id, balance FROM user_cards WHERE customer_id = ${invoice.creator_customer_id} LIMIT 1
+      `;
+      creatorCard = creatorCardResult.rows?.[0];
+    }
 
     if (creatorCard) {
       const creatorBalance = parseFloat(creatorCard.balance);
@@ -145,6 +156,12 @@ export async function payInvoice(invoiceId: number, payerCustomerId: number) {
         INSERT INTO user_cards (customer_id, card_type, balance, created_at, updated_at)
         VALUES (${invoice.creator_customer_id}, 'black', ${invoiceAmount}, NOW(), NOW())
       `;
+      
+      // Fetch the newly created card
+      const newCardResult = await sql`
+        SELECT id FROM user_cards WHERE customer_id = ${invoice.creator_customer_id} ORDER BY created_at DESC LIMIT 1
+      `;
+      creatorCard = newCardResult.rows?.[0];
     }
 
     // Create transaction for payer
@@ -156,20 +173,10 @@ export async function payInvoice(invoiceId: number, payerCustomerId: number) {
 
     // Create transaction for creator
     console.log(`[PayInvoiceAction] Creating creator transaction`);
-    let creatorCardId = creatorCard?.id;
-    
-    if (!creatorCardId) {
-      // If creator card was just created, fetch it
-      const newCardResult = await sql`
-        SELECT id FROM user_cards WHERE customer_id = ${invoice.creator_customer_id} ORDER BY created_at DESC LIMIT 1
-      `;
-      creatorCardId = newCardResult.rows?.[0]?.id;
-    }
-
-    if (creatorCardId) {
+    if (creatorCard) {
       await sql`
         INSERT INTO transactions (customer_id, card_id, type, amount, invoice_id, description, created_at)
-        VALUES (${invoice.creator_customer_id}, ${creatorCardId}, 'payment_received', ${invoiceAmount}, ${invoiceId}, ${'Отримано платіж'}, NOW())
+        VALUES (${invoice.creator_customer_id}, ${creatorCard.id}, 'payment_received', ${invoiceAmount}, ${invoiceId}, ${'Отримано платіж'}, NOW())
       `;
     }
 
