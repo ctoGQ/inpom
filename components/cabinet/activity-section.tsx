@@ -1,10 +1,9 @@
 'use client';
 
+import { ArrowDown, ArrowUp, Banknote, TrendingUp } from 'lucide-react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { formatAmount } from '@/lib/format-amount';
-import { ArrowDown, ArrowUp, Banknote } from 'lucide-react';
-import { formatDistanceToNow, parseISO } from 'date-fns';
-import { uk } from 'date-fns/locale';
 
 interface Transaction {
   id: number;
@@ -19,129 +18,154 @@ interface ActivitySectionProps {
   transactions: Transaction[];
 }
 
+const formatDateTime = (dateString: string) => {
+  try {
+    const date = new Date(dateString);
+    const time = date.toLocaleTimeString('uk-UA', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+    const dateStr = date.toLocaleDateString('uk-UA');
+    return { time, date: dateStr };
+  } catch {
+    return { time: '', date: dateString };
+  }
+};
+
+const getTransactionIcon = (type: string) => {
+  if (type.includes('deposit') || type.includes('payment_received')) {
+    return <ArrowDown className="w-6 h-6" />;
+  } else if (type.includes('invoice')) {
+    return <Banknote className="w-6 h-6" />;
+  } else if (type.includes('withdraw') || type.includes('payment_sent')) {
+    return <ArrowUp className="w-6 h-6" />;
+  }
+  return <TrendingUp className="w-6 h-6" />;
+};
+
+const getTransactionTitle = (type: string): string => {
+  const titles: Record<string, string> = {
+    deposit: 'Депозит балансу',
+    payment_received: 'Оплата Інвойсу',
+    payment_sent: 'Оплата Інвойсу',
+    invoice: 'Інвойс',
+    withdraw: 'Вивід',
+  };
+  
+  for (const [key, title] of Object.entries(titles)) {
+    if (type.includes(key)) return title;
+  }
+  return type.replace(/_/g, ' ');
+};
+
 export function ActivitySection({ transactions }: ActivitySectionProps) {
-  const getTransactionIcon = (type: string) => {
-    const lowerType = type.toLowerCase();
-    if (lowerType.includes('deposit') || lowerType.includes('in')) {
-      return ArrowDown;
-    } else if (lowerType.includes('invoice') || lowerType.includes('sent')) {
-      return Banknote;
-    } else {
-      return ArrowUp;
-    }
-  };
-
-  const getTransactionColor = (amount: number) => {
-    return amount >= 0 ? 'text-green-400' : 'text-red-400';
-  };
-
-  const formatDate = (dateString: string) => {
-    try {
-      return formatDistanceToNow(parseISO(dateString), {
-        addSuffix: true,
-        locale: uk,
-      });
-    } catch {
-      return dateString;
-    }
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0.4,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: {
-      opacity: 1,
-      x: 0,
-      transition: {
-        duration: 0.3,
-        ease: [0.34, 1.56, 0.64, 1],
-      },
-    },
-  };
+  const isIncome = (type: string) =>
+    type.includes('deposit') || type.includes('payment_received');
 
   if (transactions.length === 0) {
     return (
-      <div className="cabinet-empty-state">
-        <div className="cabinet-empty-state-icon mx-auto">
-          <Banknote className="w-12 h-12" />
+      <motion.div
+        className="space-y-lg"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
+        <div className="flex items-center justify-between px-sm">
+          <h2 className="text-h3">Активність</h2>
+          <span className="text-sm text-muted-foreground">↗°</span>
         </div>
-        <h3 className="cabinet-empty-state-title">Немає транзакцій</h3>
-        <p className="cabinet-empty-state-description">
-          Ваша історія транзакцій з&apos;явиться тут
-        </p>
-      </div>
+
+        <div className="text-center py-12 px-4">
+          <div className="w-16 h-16 rounded-2xl bg-foreground/5 flex items-center justify-center mx-auto mb-4">
+            <Banknote className="w-8 h-8 text-muted-foreground" />
+          </div>
+          <p className="text-foreground font-semibold mb-1">Немає транзакцій</p>
+          <p className="text-sm text-muted-foreground">Ваша історія операцій з'явиться тут</p>
+        </div>
+      </motion.div>
     );
   }
 
   return (
-    <div className="space-y-lg">
+    <motion.div
+      className="space-y-lg"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+    >
       {/* Header */}
-      <div className="flex items-center justify-between px-1">
-        <h3 className="text-h3 font-semibold">Активність</h3>
-        <motion.button
-          className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          whileHover={{ scale: 1.1 }}
-        >
-          сортування
-        </motion.button>
+      <div className="flex items-center justify-between px-sm">
+        <h2 className="text-h3">Активність</h2>
+        <span className="text-sm text-muted-foreground">↗°</span>
       </div>
 
       {/* Transactions List */}
-      <motion.div
-        className="space-y-md"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {transactions.map((transaction) => {
-          const Icon = getTransactionIcon(transaction.type);
-          const isIncoming = transaction.amount >= 0;
+      <div className="space-y-md px-sm">
+        {transactions.map((transaction, index) => {
+          const { time, date } = formatDateTime(transaction.created_at);
+          const income = isIncome(transaction.type);
 
           return (
             <motion.div
               key={transaction.id}
-              variants={itemVariants}
-              className="cabinet-list-item group"
-              whileHover={{ x: 4 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
             >
-              {/* Left: Icon */}
-              <div className="flex-shrink-0">
-                <div className={`w-10 h-10 rounded-full ${isIncoming ? 'bg-green-500/20' : 'bg-red-500/20'} flex items-center justify-center`}>
-                  <Icon className={`w-5 h-5 ${isIncoming ? 'text-green-400' : 'text-red-400'}`} />
+              <Link href={`/mycabinet/transactions/${transaction.id}`}>
+                <div className="group relative overflow-hidden rounded-2xl">
+                  {/* Background border effect */}
+                  <div className="absolute inset-0 bg-gradient-to-r from-foreground/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  
+                  {/* Card */}
+                  <div className="relative bg-card border border-foreground/10 rounded-2xl p-4 hover:border-foreground/20 transition-all duration-300">
+                    <div className="flex items-center gap-4">
+                      {/* Icon Container */}
+                      <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center ${
+                        income 
+                          ? 'bg-green-500/10 text-green-500' 
+                          : 'bg-red-500/10 text-red-500'
+                      }`}>
+                        {getTransactionIcon(transaction.type)}
+                      </div>
+
+                      {/* Content */}
+                      <div className="flex-1 min-w-0">
+                        <p className="text-foreground font-semibold text-sm truncate">
+                          {getTransactionTitle(transaction.type)}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {transaction.description || 'inpom'}
+                        </p>
+                      </div>
+
+                      {/* Right Content */}
+                      <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                        <p className={`font-bold text-sm ${
+                          income ? 'text-green-500' : 'text-red-500'
+                        }`}>
+                          {income ? '+' : '-'}
+                          {formatAmount(transaction.amount)}
+                        </p>
+                        <p className="text-xs text-muted-foreground whitespace-nowrap">
+                          {time}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Bottom Date */}
+                    <div className="mt-3 pt-3 border-t border-foreground/5">
+                      <p className="text-xs text-muted-foreground text-right">
+                        {date}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              {/* Middle: Transaction Info */}
-              <div className="flex-1 min-w-0 mx-3">
-                <h4 className="cabinet-list-item-title truncate">
-                  {transaction.description}
-                </h4>
-                <p className="cabinet-list-item-subtitle text-xs">
-                  {formatDate(transaction.created_at)}
-                </p>
-              </div>
-
-              {/* Right: Amount */}
-              <div className="flex-shrink-0 text-right">
-                <p className={`font-bold text-sm ${getTransactionColor(transaction.amount)}`}>
-                  {isIncoming ? '+' : '-'}{formatAmount(Math.abs(transaction.amount))}
-                </p>
-                <p className="text-xs text-muted-foreground">inpom</p>
-              </div>
+              </Link>
             </motion.div>
           );
         })}
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   );
 }

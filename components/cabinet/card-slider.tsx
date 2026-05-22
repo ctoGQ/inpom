@@ -1,10 +1,11 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { formatAmount } from '@/lib/format-amount';
-import { ChevronLeft, ChevronRight, ArrowDown, ArrowUp, Banknote } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowDown, ArrowUp, Banknote, Bell, User } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 interface CardData {
   id: number;
@@ -16,181 +17,195 @@ interface CardData {
 interface CardSliderProps {
   cards: CardData[];
   onCardChange: (cardId: number) => void;
+  customerAvatar?: string;
+  customerName?: string;
 }
 
-export function CardSlider({ cards, onCardChange }: CardSliderProps) {
+export function CardSlider({
+  cards,
+  onCardChange,
+  customerAvatar,
+  customerName,
+}: CardSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  const handlePrevious = useCallback(() => {
-    setCurrentIndex((prev) => (prev === 0 ? cards.length - 1 : prev - 1));
-  }, [cards.length]);
+  const goToPrevious = useCallback(() => {
+    const newIndex = (currentIndex - 1 + cards.length) % cards.length;
+    setCurrentIndex(newIndex);
+    onCardChange(cards[newIndex].id);
+  }, [currentIndex, cards, onCardChange]);
 
-  const handleNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev === cards.length - 1 ? 0 : prev + 1));
-  }, [cards.length]);
+  const goToNext = useCallback(() => {
+    const newIndex = (currentIndex + 1) % cards.length;
+    setCurrentIndex(newIndex);
+    onCardChange(cards[newIndex].id);
+  }, [currentIndex, cards, onCardChange]);
 
   const currentCard = cards[currentIndex];
 
-  const getCardGradient = (cardType: string): string => {
-    const type = cardType.toLowerCase();
-    if (type === 'gold') {
-      return 'from-orange-300 via-yellow-300 to-amber-300';
-    } else if (type.includes('business')) {
-      return 'from-purple-300 via-pink-300 to-rose-300';
-    } else {
-      return 'from-red-300 via-orange-300 to-yellow-300'; // Black card
-    }
+  const getCardGradient = (type: string) => {
+    const gradients: Record<string, string> = {
+      BLACK: 'from-pink-400 via-orange-400 to-yellow-300',
+      GOLD: 'from-amber-300 via-yellow-300 to-orange-200',
+      'BUSINESS PLUS': 'from-blue-400 via-purple-400 to-pink-400',
+    };
+    return gradients[type] || 'from-pink-400 via-orange-400 to-yellow-300';
   };
 
-  const getCardBackground = (cardType: string): string => {
-    const type = cardType.toLowerCase();
-    if (type === 'gold') {
-      return 'bg-gradient-to-br from-orange-300 via-yellow-300 to-amber-300';
-    } else if (type.includes('business')) {
-      return 'bg-gradient-to-br from-purple-300 via-pink-300 to-rose-300';
-    } else {
-      return 'bg-gradient-to-br from-red-300 via-orange-300 to-yellow-300';
-    }
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.4,
-        ease: [0.34, 1.56, 0.64, 1],
-      },
-    },
+  const getCardTypeLabel = (type: string): string => {
+    const labels: Record<string, string> = {
+      BLACK: 'BLACK CARD',
+      GOLD: 'GOLD CARD',
+      'BUSINESS PLUS': 'BUSINESS PLUS',
+    };
+    return labels[type] || type;
   };
 
   if (!currentCard) return null;
 
   return (
-    <motion.div
-      className="space-y-lg"
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-    >
-      {/* Card Display */}
-      <div className={`${getCardBackground(currentCard.card_type)} rounded-3xl p-6 relative overflow-hidden shadow-2xl`}>
-        {/* Decorative dots pattern */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="absolute inset-0 bg-repeat" style={{
-            backgroundImage: 'radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)',
-            backgroundSize: '50px 50px',
-          }} />
-        </div>
-
-        <motion.div className="relative z-10 space-y-4" variants={itemVariants}>
-          {/* Header with time and icons */}
-          <div className="flex justify-between items-start">
-            <div className="text-xl font-bold text-black">9:41</div>
-            <div className="w-6 h-6 rounded-full bg-black/20 flex items-center justify-center">
-              <svg className="w-4 h-4 text-black" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm0-12.5c-2.49 0-4.5 2.01-4.5 4.5S9.51 16.5 12 16.5s4.5-2.01 4.5-4.5-2.01-4.5-4.5-4.5z" />
-              </svg>
-            </div>
-          </div>
-
-          {/* Card Type and Balance */}
-          <div className="text-center pt-4">
-            <p className="text-sm font-bold text-black uppercase tracking-widest mb-2">
-              {currentCard.card_type}
-            </p>
-            <p className="text-5xl font-black text-black leading-tight">
-              {formatAmount(currentCard.balance).replace(/\s/g, '')}
-            </p>
-          </div>
-
-          {/* Pagination dots */}
-          <div className="flex justify-center gap-2 pt-4">
-            {cards.map((_, index) => (
-              <motion.button
-                key={index}
-                onClick={() => {
-                  setCurrentIndex(index);
-                  onCardChange(cards[index].id);
-                }}
-                className={`w-2 h-2 rounded-full transition-all ${
-                  index === currentIndex ? 'bg-black w-8' : 'bg-white/50'
-                }`}
-                whileHover={{ scale: 1.2 }}
-                whileTap={{ scale: 0.9 }}
+    <div className="space-y-4">
+      {/* Card Container */}
+      <motion.div
+        className={`relative bg-gradient-to-br ${getCardGradient(currentCard.card_type)} rounded-3xl p-6 shadow-2xl overflow-hidden`}
+        layoutId="card-slider"
+        transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      >
+        {/* Top Icons */}
+        <div className="flex justify-between items-center mb-12">
+          <motion.div
+            className="w-12 h-12 bg-white/30 rounded-full flex items-center justify-center backdrop-blur-sm hover:bg-white/40 transition-colors"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <Bell className="w-6 h-6 text-white" />
+          </motion.div>
+          <motion.div
+            className="w-12 h-12 rounded-full overflow-hidden bg-white/20 backdrop-blur-sm border-2 border-white/40 flex-shrink-0 hover:border-white/60 transition-colors"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {customerAvatar ? (
+              <Image
+                src={customerAvatar}
+                alt={customerName || 'User'}
+                width={48}
+                height={48}
+                className="w-full h-full object-cover"
               />
-            ))}
-          </div>
-
-          {/* Quick Actions Grid */}
-          <div className="grid grid-cols-3 gap-2 pt-4">
-            <Link href="/mycabinet/deposit">
-              <motion.button
-                className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-2xl flex flex-col items-center justify-center gap-1 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
-                whileHover={{ scale: 1.05, y: -4 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ArrowDown className="w-6 h-6" />
-                <span className="text-center px-1">ДЕПОЗ</span>
-              </motion.button>
-            </Link>
-            <Link href="/mycabinet/create-invoice">
-              <motion.button
-                className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-2xl flex flex-col items-center justify-center gap-1 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
-                whileHover={{ scale: 1.05, y: -4 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Banknote className="w-6 h-6" />
-                <span className="text-center px-1">ІНВОЙС</span>
-              </motion.button>
-            </Link>
-            <Link href="/mycabinet/withdraw">
-              <motion.button
-                className="w-full aspect-square bg-gradient-to-br from-gray-900 to-black rounded-2xl flex flex-col items-center justify-center gap-1 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
-                whileHover={{ scale: 1.05, y: -4 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <ArrowUp className="w-6 h-6" />
-                <span className="text-center px-1">ВИВОД</span>
-              </motion.button>
-            </Link>
-          </div>
-        </motion.div>
-      </div>
-
-      {/* Navigation Controls (Optional - for testing) */}
-      {cards.length > 1 && (
-        <div className="flex gap-2 justify-center">
-          <motion.button
-            onClick={handlePrevious}
-            className="p-2 rounded-full bg-card border border-border hover:bg-muted transition-colors"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </motion.button>
-          <motion.button
-            onClick={handleNext}
-            className="p-2 rounded-full bg-card border border-border hover:bg-muted transition-colors"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <ChevronRight className="w-5 h-5" />
-          </motion.button>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-white/20">
+                <User className="w-6 h-6 text-white" />
+              </div>
+            )}
+          </motion.div>
         </div>
-      )}
-    </motion.div>
+
+        {/* Card Content */}
+        <div className="text-center space-y-4">
+          {/* Card Type Label */}
+          <motion.p
+            className="text-sm font-bold text-black/70 tracking-widest"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.1 }}
+          >
+            {getCardTypeLabel(currentCard.card_type)}
+          </motion.p>
+
+          {/* Balance */}
+          <motion.div
+            key={currentCard.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="space-y-1"
+          >
+            <p className="text-6xl font-black text-black leading-tight">
+              {formatAmount(currentCard.balance)}
+            </p>
+          </motion.div>
+        </div>
+
+        {/* Pagination Dots */}
+        <div className="flex justify-center gap-2 mt-8 mb-8">
+          {cards.map((_, index) => (
+            <motion.button
+              key={index}
+              onClick={() => {
+                setCurrentIndex(index);
+                onCardChange(cards[index].id);
+              }}
+              className={`h-2 rounded-full transition-all ${
+                index === currentIndex
+                  ? 'w-8 bg-black/40'
+                  : 'w-2 bg-white/50 hover:bg-white/70'
+              }`}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            />
+          ))}
+        </div>
+
+        {/* Quick Actions Grid */}
+        <div className="grid grid-cols-3 gap-3 pt-6 border-t border-black/10">
+          <Link href="/mycabinet/deposit">
+            <motion.button
+              className="w-full aspect-square bg-black rounded-2xl flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+              whileHover={{ scale: 1.05, y: -4 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ArrowDown className="w-6 h-6" />
+              <span className="text-center">ДЕПОЗИТ</span>
+            </motion.button>
+          </Link>
+          <Link href="/mycabinet/create-invoice">
+            <motion.button
+              className="w-full aspect-square bg-black rounded-2xl flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+              whileHover={{ scale: 1.05, y: -4 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Banknote className="w-6 h-6" />
+              <span className="text-center">ІНВОЙС</span>
+            </motion.button>
+          </Link>
+          <Link href="/mycabinet/withdraw">
+            <motion.button
+              className="w-full aspect-square bg-black rounded-2xl flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+              whileHover={{ scale: 1.05, y: -4 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <ArrowUp className="w-6 h-6" />
+              <span className="text-center">ВИВЕСТИ</span>
+            </motion.button>
+          </Link>
+        </div>
+
+        {/* Navigation Arrows */}
+        {cards.length > 1 && (
+          <div className="flex justify-between items-center mt-4 px-2">
+            <motion.button
+              onClick={goToPrevious}
+              className="text-black/40 hover:text-black/60 transition-colors p-2"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </motion.button>
+            <div className="text-xs text-black/40 font-medium">
+              {currentIndex + 1} / {cards.length}
+            </div>
+            <motion.button
+              onClick={goToNext}
+              className="text-black/40 hover:text-black/60 transition-colors p-2"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              <ChevronRight className="w-6 h-6" />
+            </motion.button>
+          </div>
+        )}
+      </motion.div>
+    </div>
   );
 }

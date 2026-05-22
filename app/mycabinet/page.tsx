@@ -87,6 +87,8 @@ export default async function MyCabinetPage() {
           cards={cards}
           customerId={customer.id}
           initialTransactions={initialTransactions}
+          customerAvatar={customer.avatar_url || '/placeholder-user.jpg'}
+          customerName={customer.name}
         />
 
         {/* Logout Button */}
