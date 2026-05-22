@@ -7,13 +7,13 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log(`[POST /api/invoices] Body:`, body);
     
-    const { customerId, amount, description, expiryMinutes } = body;
+    const { customerId, cardId, amount, description, expiryMinutes } = body;
 
     // Validate required fields
-    if (!customerId || amount === undefined) {
-      console.warn(`[POST /api/invoices] ❌ Missing fields - customerId: ${customerId}, amount: ${amount}`);
+    if (!customerId || !cardId || amount === undefined) {
+      console.warn(`[POST /api/invoices] ❌ Missing fields - customerId: ${customerId}, cardId: ${cardId}, amount: ${amount}`);
       return NextResponse.json(
-        { error: 'Missing required fields: customerId and amount' },
+        { error: 'Missing required fields: customerId, cardId and amount' },
         { status: 400 }
       );
     }
@@ -47,12 +47,12 @@ export async function POST(request: NextRequest) {
     }
 
     const expiresAt = new Date(Date.now() + expiryMin * 60 * 1000);
-    console.log(`[POST /api/invoices] Creating invoice with:`, { customerId, numAmount, description, expiresAt });
+    console.log(`[POST /api/invoices] Creating invoice with:`, { customerId, cardId, numAmount, description, expiresAt });
 
     const result = await sql`
-      INSERT INTO invoices (creator_customer_id, amount, description, status, expires_at)
-      VALUES (${customerId}, ${numAmount}, ${description || ''}, 'pending', ${expiresAt})
-      RETURNING id, creator_customer_id, amount, description, status, created_at, expires_at
+      INSERT INTO invoices (creator_customer_id, creator_card_id, amount, description, status, expires_at)
+      VALUES (${customerId}, ${cardId}, ${numAmount}, ${description || ''}, 'pending', ${expiresAt})
+      RETURNING id, creator_customer_id, creator_card_id, amount, description, status, created_at, expires_at
     `;
 
     console.log(`[POST /api/invoices] INSERT result:`, result);

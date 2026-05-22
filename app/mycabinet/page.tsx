@@ -44,9 +44,6 @@ async function getRecentTransactionsByCard(cardId: number) {
         t.description, 
         t.created_at, 
         t.invoice_id,
-        t.customer_id,
-        c.name as customer_name,
-        c.avatar as customer_avatar,
         CASE 
           WHEN t.type = 'payment_sent' THEN i.creator_customer_id
           WHEN t.type = 'payment_received' THEN (
@@ -58,7 +55,6 @@ async function getRecentTransactionsByCard(cardId: number) {
           ELSE NULL
         END as other_customer_id
       FROM transactions t
-      LEFT JOIN customers c ON t.customer_id = c.id
       LEFT JOIN invoices i ON t.invoice_id = i.id
       WHERE t.card_id = ${cardId}
       ORDER BY t.created_at DESC

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getSessionCustomer } from '@/lib/auth';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
 import { InvoiceForm } from '@/components/cabinet/invoice-form';
+import { sql } from '@/lib/db';
 
 export default async function CreateInvoicePage() {
   const customer = await getSessionCustomer();
@@ -12,6 +13,17 @@ export default async function CreateInvoicePage() {
 
   console.log(`[CreateInvoicePage] Page loaded for customer:`, { id: customer.id, email: customer.email });
 
+  // Get first card (should exist from registration)
+  const cardResult = await sql`
+    SELECT id FROM user_cards WHERE customer_id = ${customer.id} LIMIT 1
+  `;
+
+  const card = cardResult.rows?.[0];
+
+  if (!card) {
+    redirect('/mycabinet');
+  }
+
   return (
     <CabinetLayout title="Invoice" showBack>
       <div className="space-y-2xl pt-lg">
@@ -20,11 +32,11 @@ export default async function CreateInvoicePage() {
             Створити інвойс
           </h1>
           <p className="text-body text-secondary">
-            Інші користувачі зможуть відсканувати QR-код та оплатити
+            Інші користувачи зможуть відсканувати QR-код та оплатити
           </p>
         </div>
 
-        <InvoiceForm customerId={customer.id} />
+        <InvoiceForm customerId={customer.id} cardId={card.id} />
       </div>
     </CabinetLayout>
   );
