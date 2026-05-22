@@ -31,6 +31,24 @@ interface CabinetTabsProps {
   invoices: Invoice[];
 }
 
+const formatDate = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('uk-UA');
+  } catch {
+    return dateString;
+  }
+};
+
+const isDateExpired = (dateString: string): boolean => {
+  try {
+    const date = new Date(dateString);
+    return date < new Date();
+  } catch {
+    return false;
+  }
+};
+
 export function CabinetTabs({ transactions, invoices }: CabinetTabsProps) {
   const [activeTab, setActiveTab] = useState('transactions');
 
@@ -89,7 +107,7 @@ export function CabinetTabs({ transactions, invoices }: CabinetTabsProps) {
                       </p>
                     )}
                     <p className="cabinet-list-item-subtitle mt-md">
-                      {new Date(transaction.created_at).toLocaleDateString('uk-UA')}
+                      {formatDate(transaction.created_at)}
                     </p>
                   </div>
                   <div className="cabinet-list-item-amount">
@@ -124,7 +142,7 @@ export function CabinetTabs({ transactions, invoices }: CabinetTabsProps) {
           {invoices.length > 0 ? (
             <div className="cabinet-list">
               {invoices.map((invoice: Invoice) => {
-                const isExpired = invoice.expires_at && new Date(invoice.expires_at) < new Date();
+                const isExpired = isDateExpired(invoice.expires_at);
                 const isPaid = invoice.status === 'paid';
 
                 return (
@@ -156,7 +174,7 @@ export function CabinetTabs({ transactions, invoices }: CabinetTabsProps) {
                         </p>
                       )}
                       <p className="cabinet-list-item-subtitle mt-md">
-                        {new Date(invoice.created_at).toLocaleDateString('uk-UA')}
+                        {formatDate(invoice.created_at)}
                       </p>
                     </div>
                     <div className="cabinet-list-item-amount">
