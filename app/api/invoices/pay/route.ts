@@ -122,11 +122,12 @@ export async function POST(request: NextRequest) {
     `;
 
     // Get creator's card
+    let creatorCard = null;
     const creatorCardResult = await sql`
       SELECT id, balance FROM user_cards WHERE customer_id = ${invoice.creator_customer_id}
     `;
 
-    const creatorCard = creatorCardResult.rows?.[0];
+    creatorCard = creatorCardResult.rows?.[0];
 
     if (creatorCard) {
       const creatorBalance = parseFloat(creatorCard.balance);
@@ -152,21 +153,29 @@ export async function POST(request: NextRequest) {
         INSERT INTO user_cards (customer_id, card_type, balance, created_at, updated_at)
         VALUES (${invoice.creator_customer_id}, 'black', ${invoiceAmount}, NOW(), NOW())
       `;
+
+      // Fetch the newly created card to get its ID
+      const newCardResult = await sql`
+        SELECT id, balance FROM user_cards WHERE customer_id = ${invoice.creator_customer_id} ORDER BY created_at DESC LIMIT 1
+      `;
+      creatorCard = newCardResult.rows?.[0];
     }
 
     // Create transaction for payer
     console.log(`[PayInvoice] Creating payer transaction`);
     await sql`
-      INSERT INTO transactions (customer_id, type, amount, invoice_id, description, created_at)
-      VALUES (${payerIdNum}, 'payment_sent', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment for invoice #${invoiceIdNum}`}, NOW())
+      INSERT INTO transactions (customer_id, card_id, type, amount, invoice_id, description, created_at)
+      VALUES (${payerIdNum}, ${payerCard.id}, 'payment_sent', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment for invoice #${invoiceIdNum}`}, NOW())
     `;
 
     // Create transaction for creator
     console.log(`[PayInvoice] Creating creator transaction`);
-    await sql`
-      INSERT INTO transactions (customer_id, type, amount, invoice_id, description, created_at)
-      VALUES (${invoice.creator_customer_id}, 'payment_received', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment received for invoice #${invoiceIdNum}`}, NOW())
-    `;
+    if (creatorCard) {
+      await sql`
+        INSERT INTO transactions (customer_id, card_id, type, amount, invoice_id, description, created_at)
+        VALUES (${invoice.creator_customer_id}, ${creatorCard.id}, 'payment_received', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment received for invoice #${invoiceIdNum}`}, NOW())
+      `;
+    }
 
     console.log(`[PayInvoice] ✅ Payment processed successfully`);
 
