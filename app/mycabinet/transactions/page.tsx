@@ -98,6 +98,7 @@ export default async function TransactionsPage() {
   return (
     <CabinetLayout
       title="Трансакції"
+      showBack={true}
       showAvatar={true}
       avatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
       userName={customer.name}
