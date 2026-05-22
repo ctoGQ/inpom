@@ -163,18 +163,44 @@ export async function POST(request: NextRequest) {
 
     // Create transaction for payer
     console.log(`[PayInvoice] Creating payer transaction`);
-    await sql`
-      INSERT INTO transactions (customer_id, card_id, type, amount, invoice_id, description, created_at, payer_customer_id)
-      VALUES (${payerIdNum}, ${payerCard.id}, 'payment_sent', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment for invoice #${invoiceIdNum}`}, NOW(), ${payerIdNum})
-    `;
+    try {
+      await sql`
+        INSERT INTO transactions (customer_id, card_id, type, amount, invoice_id, description, created_at, payer_customer_id)
+        VALUES (${payerIdNum}, ${payerCard.id}, 'payment_sent', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment for invoice #${invoiceIdNum}`}, NOW(), ${payerIdNum})
+      `;
+    } catch (txError: any) {
+      // If payer_customer_id column doesn't exist, insert without it
+      if (txError?.message?.includes('payer_customer_id')) {
+        console.log('[PayInvoice] Inserting without payer_customer_id column');
+        await sql`
+          INSERT INTO transactions (customer_id, card_id, type, amount, invoice_id, description, created_at)
+          VALUES (${payerIdNum}, ${payerCard.id}, 'payment_sent', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment for invoice #${invoiceIdNum}`}, NOW())
+        `;
+      } else {
+        throw txError;
+      }
+    }
 
     // Create transaction for creator
     console.log(`[PayInvoice] Creating creator transaction`);
     if (creatorCard) {
-      await sql`
-        INSERT INTO transactions (customer_id, card_id, type, amount, invoice_id, description, created_at, payer_customer_id)
-        VALUES (${invoice.creator_customer_id}, ${creatorCard.id}, 'payment_received', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment received for invoice #${invoiceIdNum}`}, NOW(), ${payerIdNum})
-      `;
+      try {
+        await sql`
+          INSERT INTO transactions (customer_id, card_id, type, amount, invoice_id, description, created_at, payer_customer_id)
+          VALUES (${invoice.creator_customer_id}, ${creatorCard.id}, 'payment_received', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment received for invoice #${invoiceIdNum}`}, NOW(), ${payerIdNum})
+        `;
+      } catch (txError: any) {
+        // If payer_customer_id column doesn't exist, insert without it
+        if (txError?.message?.includes('payer_customer_id')) {
+          console.log('[PayInvoice] Inserting without payer_customer_id column');
+          await sql`
+            INSERT INTO transactions (customer_id, card_id, type, amount, invoice_id, description, created_at)
+            VALUES (${invoice.creator_customer_id}, ${creatorCard.id}, 'payment_received', ${invoiceAmount}, ${invoiceIdNum}, ${`Payment received for invoice #${invoiceIdNum}`}, NOW())
+          `;
+        } else {
+          throw txError;
+        }
+      }
     }
 
     console.log(`[PayInvoice] ✅ Payment processed successfully`);
