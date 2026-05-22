@@ -12,40 +12,40 @@ export default async function EventsPage() {
 
   return (
     <CabinetLayout title="Евенти">
-      <div className="space-y-6 pt-6">
+      <div className="space-y-2xl pt-lg">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">
+          <h1 className="text-h1 mb-sm">
             События і воркшопи
           </h1>
-          <p className="text-sm text-gray-700">
+          <p className="text-body text-secondary">
             Реєструйтеся на наші чудові знакомства та воркшопи
           </p>
         </div>
 
         {/* Events List */}
-        <div className="space-y-4">
+        <div className="space-y-md">
           {/* Placeholder events */}
           {[1, 2, 3].map((event) => (
             <div
               key={event}
-              className="p-4 bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow"
+              className="cabinet-list-item"
             >
-              <div className="flex items-start gap-4">
+              <div className="flex items-start gap-md">
                 <div className="flex-shrink-0">
-                  <Calendar className="w-6 h-6 text-blue-500" />
+                  <Calendar className="w-6 h-6 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-semibold text-slate-900">
+                  <h3 className="cabinet-list-item-title">
                     Событие {event}
                   </h3>
-                  <p className="text-xs text-gray-700 mt-1">
+                  <p className="text-small text-muted-foreground mt-sm">
                     Опис события...
                   </p>
-                  <div className="mt-3 flex items-center justify-between">
-                    <p className="text-xs text-gray-500">
+                  <div className="mt-md flex items-center justify-between">
+                    <p className="text-tiny text-muted-foreground">
                       25 бер, 2025
                     </p>
-                    <button className="text-xs px-3 py-1.5 bg-blue-100 hover:bg-blue-200 text-blue-600 font-medium rounded-lg transition-colors">
+                    <button className="text-tiny px-sm py-xs bg-primary/10 hover:bg-primary/20 text-primary font-medium rounded-lg transition-colors">
                       Деталі
                     </button>
                   </div>
@@ -56,8 +56,8 @@ export default async function EventsPage() {
         </div>
 
         {/* Empty State */}
-        <div className="text-center py-16 bg-white border border-gray-200 rounded-2xl shadow-sm">
-          <p className="text-sm text-gray-700">
+        <div className="cabinet-empty-state">
+          <p className="cabinet-empty-state-description">
             Жодних доступних подій
           </p>
         </div>

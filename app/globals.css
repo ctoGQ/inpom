@@ -3,46 +3,119 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ============================================
+   LIGHT MODE - iOS/Material Design Colors
+   ============================================ */
 :root {
-  --background: oklch(0.06 0.008 260);
-  --foreground: oklch(0.94 0.005 90);
-  --card: oklch(0.09 0.008 260);
-  --card-foreground: oklch(0.94 0.005 90);
-  --popover: oklch(0.09 0.008 260);
-  --popover-foreground: oklch(0.94 0.005 90);
-  --primary: oklch(0.94 0.005 90);
-  --primary-foreground: oklch(0.06 0.008 260);
-  --secondary: oklch(0.12 0.008 260);
-  --secondary-foreground: oklch(0.94 0.005 90);
-  --muted: oklch(0.12 0.008 260);
-  --muted-foreground: oklch(0.55 0.015 90);
-  --accent: oklch(0.14 0.01 260);
-  --accent-foreground: oklch(0.94 0.005 90);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.94 0.005 90);
-  --border: oklch(0.18 0.008 260);
-  --input: oklch(0.14 0.008 260);
-  --ring: oklch(0.94 0.005 90);
-  --chart-1: oklch(0.94 0.005 90);
-  --chart-2: oklch(0.72 0.01 90);
-  --chart-3: oklch(0.52 0.015 90);
-  --chart-4: oklch(0.35 0.01 90);
-  --chart-5: oklch(0.20 0.008 90);
-  --radius: 0.25rem;
-  --sidebar: oklch(0.06 0.008 260);
-  --sidebar-foreground: oklch(0.94 0.005 90);
-  --sidebar-primary: oklch(0.94 0.005 90);
-  --sidebar-primary-foreground: oklch(0.06 0.008 260);
-  --sidebar-accent: oklch(0.12 0.008 260);
-  --sidebar-accent-foreground: oklch(0.94 0.005 90);
-  --sidebar-border: oklch(0.18 0.008 260);
-  --sidebar-ring: oklch(0.55 0.015 90);
+  /* Backgrounds & Surfaces */
+  --background: oklch(1 0 0);           /* #FFFFFF */
+  --foreground: oklch(0.145 0 0);       /* #242424 */
+  --card: oklch(1 0 0);                 /* #FFFFFF */
+  --card-foreground: oklch(0.145 0 0);  /* #242424 */
+  --popover: oklch(1 0 0);              /* #FFFFFF */
+  --popover-foreground: oklch(0.145 0 0); /* #242424 */
+  
+  /* Primary Brand Color */
+  --primary: oklch(0.205 0 0);          /* #3B82F6 - Blue */
+  --primary-foreground: oklch(0.985 0 0); /* #FFFFFF */
+  
+  /* Secondary & Accents */
+  --secondary: oklch(0.97 0 0);         /* #F5F5F5 */
+  --secondary-foreground: oklch(0.145 0 0); /* #242424 */
+  --muted: oklch(0.97 0 0);             /* #F5F5F5 */
+  --muted-foreground: oklch(0.556 0 0); /* #8E8E93 */
+  --accent: oklch(0.97 0 0);            /* #F5F5F5 */
+  --accent-foreground: oklch(0.145 0 0); /* #242424 */
+  
+  /* Semantic Colors */
+  --destructive: oklch(0.577 0.245 27.325); /* #EF4444 - Red */
+  --destructive-foreground: oklch(0.985 0 0); /* #FFFFFF */
+  --success: oklch(0.602 0.174 142.495); /* #22C55E - Green */
+  --warning: oklch(0.636 0.162 56.583);  /* #F4A460 - Orange */
+  
+  /* Borders & Dividers */
+  --border: oklch(0.922 0 0);           /* #EBEBF0 */
+  --input: oklch(0.97 0 0);             /* #F5F5F5 */
+  --ring: oklch(0.205 0 0);             /* #3B82F6 */
+  
+  /* Charts */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  
+  /* Spacing & Border Radius (iOS Base 4px) */
+  --radius: 0.625rem;                   /* 10px */
+  
+  /* Sidebar (Legacy) */
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.145 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+/* ============================================
+   DARK MODE - iOS/Material Design Colors
+   ============================================ */
+.dark {
+  /* Backgrounds & Surfaces */
+  --background: oklch(0.145 0 0);       /* #000000 */
+  --foreground: oklch(0.985 0 0);       /* #FFFFFF */
+  --card: oklch(0.145 0 0);             /* #242424 */
+  --card-foreground: oklch(0.985 0 0);  /* #FFFFFF */
+  --popover: oklch(0.145 0 0);          /* #242424 */
+  --popover-foreground: oklch(0.985 0 0); /* #FFFFFF */
+  
+  /* Primary Brand Color */
+  --primary: oklch(0.488 0.243 264.376); /* #60A5FA - Light Blue */
+  --primary-foreground: oklch(0.145 0 0); /* #000000 */
+  
+  /* Secondary & Accents */
+  --secondary: oklch(0.269 0 0);        /* #3F3F46 */
+  --secondary-foreground: oklch(0.985 0 0); /* #FFFFFF */
+  --muted: oklch(0.269 0 0);            /* #3F3F46 */
+  --muted-foreground: oklch(0.708 0 0); /* #B4B4B8 */
+  --accent: oklch(0.269 0 0);           /* #3F3F46 */
+  --accent-foreground: oklch(0.985 0 0); /* #FFFFFF */
+  
+  /* Semantic Colors */
+  --destructive: oklch(0.396 0.141 25.723); /* #F87171 - Light Red */
+  --destructive-foreground: oklch(0.985 0 0); /* #FFFFFF */
+  --success: oklch(0.673 0.157 142.495); /* #4ADE80 - Light Green */
+  --warning: oklch(0.67 0.184 56.583);   /* #FB923C - Light Orange */
+  
+  /* Borders & Dividers */
+  --border: oklch(0.269 0 0);           /* #454550 */
+  --input: oklch(0.269 0 0);            /* #3F3F46 */
+  --ring: oklch(0.488 0.243 264.376);   /* #60A5FA */
+  
+  /* Charts */
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  
+  /* Sidebar (Legacy) */
+  --sidebar: oklch(0.145 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.439 0 0);
 }
 
 @theme inline {
-  --font-sans: var(--font-instrument), 'Instrument Sans', system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), 'JetBrains Mono', monospace;
-  --font-display: var(--font-instrument-serif), 'Instrument Serif', Georgia, serif;
+  --font-sans: 'Instrument Sans', 'Instrument Sans Fallback', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'JetBrains Mono Fallback', monospace;
+  --font-serif: 'Instrument Serif', Georgia, serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -91,18 +164,190 @@
   html {
     scroll-behavior: smooth;
   }
+
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }
 
 @layer utilities {
+  /* ============================================
+     TYPOGRAPHY (iOS HIG Compliant)
+     ============================================ */
   .font-display {
-    font-family: var(--font-display);
+    font-family: 'Geist', system-ui, -apple-system, sans-serif;
   }
   
+  .text-h1 {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: -0.5px;
+  }
+  
+  .text-h2 {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.25px;
+  }
+  
+  .text-h3 {
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  
+  .text-body {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  
+  .text-caption {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.4;
+  }
+  
+  .text-small {
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  
+  .text-tiny {
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.2;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ============================================
+     iOS SPACING SYSTEM (8px Base Unit)
+     ============================================ */
+  .gap-xs { gap: 4px; }
+  .gap-sm { gap: 8px; }
+  .gap-md { gap: 12px; }
+  .gap-lg { gap: 16px; }
+  .gap-xl { gap: 20px; }
+  .gap-2xl { gap: 24px; }
+  
+  .space-y-xs > * + * { margin-top: 4px; }
+  .space-y-sm > * + * { margin-top: 8px; }
+  .space-y-md > * + * { margin-top: 12px; }
+  .space-y-lg > * + * { margin-top: 16px; }
+  .space-y-xl > * + * { margin-top: 20px; }
+  .space-y-2xl > * + * { margin-top: 24px; }
+
+  /* ============================================
+     FRAMER MOTION ANIMATIONS (iOS Optimized)
+     ============================================ */
+  
+  /* Page Transitions */
+  .animate-fade-in {
+    animation: framer-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+  
+  @keyframes framer-fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  /* Slide Up Animation */
+  .animate-slide-up {
+    animation: framer-slide-up 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  
+  @keyframes framer-slide-up {
+    0% {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Scale + Fade (Button/Card Press) */
+  .animate-scale-fade {
+    animation: framer-scale-fade 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  
+  @keyframes framer-scale-fade {
+    0% {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Bounce Animation (iOS Feel) */
+  .animate-bounce-soft {
+    animation: framer-bounce-soft 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  
+  @keyframes framer-bounce-soft {
+    0% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  /* Pulse Animation (Loading) */
+  .animate-pulse-soft {
+    animation: framer-pulse-soft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes framer-pulse-soft {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.6;
+    }
+  }
+
+  /* Hover Lift Effect */
+  .hover-lift {
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+                box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    @apply shadow-lg;
+  }
+
+  /* Text Stroke */
   .text-stroke {
     -webkit-text-stroke: 1.5px currentColor;
     -webkit-text-fill-color: transparent;
   }
-  
+
+  /* Marquee Animations */
   .marquee {
     animation: marquee 30s linear infinite;
   }
@@ -120,7 +365,8 @@
     0% { transform: translateX(-50%); }
     100% { transform: translateX(0); }
   }
-  
+
+  /* Line Reveal */
   .line-reveal {
     clip-path: inset(0 100% 0 0);
     animation: line-reveal 0.8s cubic-bezier(0.77, 0, 0.175, 1) forwards;
@@ -129,24 +375,8 @@
   @keyframes line-reveal {
     to { clip-path: inset(0 0 0 0); }
   }
-  
-  .hover-lift {
-    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  
-  .hover-lift:hover {
-    transform: translateY(-4px);
-  }
-  
-  .letter-spin {
-    display: inline-block;
-    transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  
-  .letter-spin:hover {
-    transform: rotateY(360deg);
-  }
-  
+
+  /* Character Animation */
   .animate-char-in {
     animation: char-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     opacity: 0;
@@ -164,6 +394,7 @@
     }
   }
 
+  /* Noise Overlay */
   .noise-overlay {
     position: relative;
   }
@@ -177,11 +408,8 @@
     pointer-events: none;
     z-index: 1;
   }
-  
-  .how-it-works-bg {
-    background-color: oklch(0.10 0.008 260);
-  }
 
+  /* Gradient Animation */
   .word-gradient {
     background: linear-gradient(
       45deg,
@@ -202,5 +430,10 @@
     0%   { background-position: 0% 50%; }
     50%  { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
+  }
+  
+  /* How It Works Background */
+  .how-it-works-bg {
+    background-color: var(--muted);
   }
 }

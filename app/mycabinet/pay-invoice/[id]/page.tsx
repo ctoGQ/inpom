@@ -66,10 +66,10 @@ export default async function PayInvoicePage({ params }: PageProps) {
   if (!invoice) {
     return (
       <CabinetLayout title="Платіж" showBack>
-        <div className="space-y-6 pt-6">
-          <div className="text-center py-16 bg-white border border-gray-200 rounded-2xl shadow-sm">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
-            <p className="text-sm text-gray-600 font-medium">
+        <div className="space-y-2xl pt-lg">
+          <div className="cabinet-empty-state">
+            <AlertCircle className="cabinet-empty-state-icon text-destructive" />
+            <p className="cabinet-empty-state-title">
               Інвойс не знайдено або більше недійсний
             </p>
           </div>
@@ -82,10 +82,10 @@ export default async function PayInvoicePage({ params }: PageProps) {
   if (invoice.creator_customer_id === customer.id) {
     return (
       <CabinetLayout title="Платіж" showBack>
-        <div className="space-y-6 pt-6">
-          <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
-            <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">
+        <div className="space-y-2xl pt-lg">
+          <div className="cabinet-empty-state">
+            <AlertCircle className="cabinet-empty-state-icon text-destructive" />
+            <p className="cabinet-empty-state-title">
               Ви не можете платити свій інвойс
             </p>
           </div>

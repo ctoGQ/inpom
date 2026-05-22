@@ -1,12 +1,18 @@
 import { redirect } from 'next/navigation';
+import React from 'react';
 import { getSessionCustomer, logout } from '@/lib/auth';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
-import { CabinetTabs } from '@/components/cabinet/cabinet-tabs';
-import { CardDisplay } from '@/components/cabinet/card-display';
+import { CardSliderWrapper } from '@/components/cabinet/card-slider-wrapper';
 import { Button } from '@/components/ui/button';
-import { Plus, QrCode, LogOut } from 'lucide-react';
-import Link from 'next/link';
+import { LogOut } from 'lucide-react';
 import { sql } from '@/lib/db';
+
+interface CardData {
+  id: number;
+  card_type: string;
+  balance: number;
+  customer_id: number;
+}
 
 interface Transaction {
   id: number;
@@ -17,56 +23,31 @@ interface Transaction {
   invoice_id?: number;
 }
 
-interface Invoice {
-  id: number;
-  creator_customer_id: number;
-  amount: number | string;
-  description: string;
-  status: string;
-  created_at: string;
-  expires_at: string;
-}
-
-async function getUserCard(customerId: number) {
+async function getUserCards(customerId: number): Promise<CardData[]> {
   try {
     const result = await sql`
-      SELECT id, card_type, balance FROM user_cards WHERE customer_id = ${customerId}
+      SELECT id, card_type, balance, customer_id FROM user_cards WHERE customer_id = ${customerId}
+      ORDER BY created_at ASC
     `;
-    return result.rows?.[0] || null;
+    return result.rows || [];
   } catch (error) {
-    console.error('Error fetching user card:', error);
-    return null;
+    console.error('Error fetching user cards:', error);
+    return [];
   }
 }
 
-async function getRecentTransactions(customerId: number) {
+async function getRecentTransactionsByCard(cardId: number) {
   try {
     const result = await sql`
       SELECT id, type, amount, description, created_at, invoice_id
       FROM transactions
-      WHERE customer_id = ${customerId}
+      WHERE card_id = ${cardId}
       ORDER BY created_at DESC
       LIMIT 20
     `;
     return result.rows || [];
   } catch (error) {
     console.error('Error fetching transactions:', error);
-    return [];
-  }
-}
-
-async function getRecentInvoices(customerId: number) {
-  try {
-    const result = await sql`
-      SELECT id, creator_customer_id, amount, description, status, created_at, expires_at
-      FROM invoices
-      WHERE creator_customer_id = ${customerId}
-      ORDER BY created_at DESC
-      LIMIT 20
-    `;
-    return result.rows || [];
-  } catch (error) {
-    console.error('Error fetching invoices:', error);
     return [];
   }
 }
@@ -84,9 +65,14 @@ export default async function MyCabinetPage() {
     redirect('/auth/signin');
   }
 
-  const card = await getUserCard(customer.id);
-  const transactions = await getRecentTransactions(customer.id);
-  const invoices = await getRecentInvoices(customer.id);
+  const cards = await getUserCards(customer.id);
+
+  if (cards.length === 0) {
+    redirect('/auth/signin');
+  }
+
+  const firstCard = cards[0];
+  const initialTransactions = await getRecentTransactionsByCard(firstCard.id);
 
   return (
     <CabinetLayout
@@ -96,46 +82,17 @@ export default async function MyCabinetPage() {
       userName={customer.name}
     >
       <div className="space-y-2xl pt-lg">
-        {/* Card Section */}
-        {card ? (
-          <CardDisplay
-            cardType={card.card_type}
-            balance={card.balance}
-            customerName={customer.name}
-          />
-        ) : (
-          <div className="cabinet-card text-center">
-            <p className="text-caption text-secondary mb-lg">
-              Карта не знайдена
-            </p>
-          </div>
-        )}
-
-        {/* Action Buttons */}
-        <div className="grid grid-cols-2 gap-md">
-          <Link href="/mycabinet/deposit" className="flex-1">
-            <Button
-              className="w-full cabinet-button cabinet-button-primary"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Депозит
-            </Button>
-          </Link>
-          <Link href="/mycabinet/create-invoice" className="flex-1">
-            <Button
-              className="w-full cabinet-button cabinet-button-outline"
-            >
-              <QrCode className="w-5 h-5 mr-2" />
-              Invoice
-            </Button>
-          </Link>
-        </div>
-
-        {/* Transactions and Invoices Tabs */}
-        <CabinetTabs transactions={transactions} invoices={invoices} />
+        {/* Card Slider */}
+        <CardSliderWrapper
+          cards={cards}
+          customerId={customer.id}
+          initialTransactions={initialTransactions}
+          customerAvatar={customer.avatar_url || '/placeholder-user.jpg'}
+          customerName={customer.name}
+        />
 
         {/* Logout Button */}
-        <form action={handleLogout} className="p-lg">
+        <form action={handleLogout} className="px-lg pb-lg">
           <button
             type="submit"
             className="w-full cabinet-button cabinet-button-destructive"
