@@ -67,7 +67,16 @@ export function CardSlider({
     <div className="space-y-4">
       {/* Card Container */}
       <motion.div
-        className={`relative bg-gradient-to-br ${getCardGradient(currentCard.card_type)} rounded-3xl p-6 shadow-2xl overflow-hidden`}
+        {...(currentCard.card_type === 'BLACK'
+          ? {
+              style: {
+                background: 'linear-gradient(146deg, #FFDC93 10%, #FFCB7E 13%, #FFBE6C 26%, #FF978A 55%, #FF9488 65%, #F58D8B 78%, #F58A89 88%, #EE4E6A 100%)',
+              },
+              className: 'relative rounded-3xl p-6 shadow-2xl overflow-hidden',
+            }
+          : {
+              className: `relative bg-gradient-to-br ${getCardGradient(currentCard.card_type)} rounded-3xl p-6 shadow-2xl overflow-hidden`,
+            })}
         layoutId="card-slider"
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
@@ -148,10 +157,11 @@ export function CardSlider({
         </div>
 
         {/* Quick Actions Grid */}
-        <div className="grid grid-cols-3 gap-3 pt-6 border-t border-black/10">
+        <div className="grid grid-cols-3 gap-1 pt-6">
           <Link href="/mycabinet/deposit">
             <motion.button
-              className="w-full aspect-square bg-black rounded-2xl flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+              className="w-full aspect-square bg-black flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+              style={{ borderRadius: '8px 8px 26px 8px' }}
               whileHover={{ scale: 1.05, y: -4 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -171,7 +181,8 @@ export function CardSlider({
           </Link>
           <Link href="/mycabinet/withdraw">
             <motion.button
-              className="w-full aspect-square bg-black rounded-2xl flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+              className="w-full aspect-square bg-black flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+              style={{ borderRadius: '8px 26px 8px 8px' }}
               whileHover={{ scale: 1.05, y: -4 }}
               whileTap={{ scale: 0.95 }}
             >
