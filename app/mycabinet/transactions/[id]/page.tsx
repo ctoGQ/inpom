@@ -1,11 +1,15 @@
+'use client';
+
 import { redirect } from 'next/navigation';
 import { getSessionCustomer } from '@/lib/auth';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
 import { sql } from '@/lib/db';
-import { formatAmountWithSign, safeAmount, formatAmount } from '@/lib/format-amount';
+import { formatAmountWithSign, formatAmount } from '@/lib/format-amount';
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { AlertCircle, ExternalLink, ArrowRight } from 'lucide-react';
+import { AlertCircle, ArrowDown, ArrowUp, ExternalLink, Banknote } from 'lucide-react';
+import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { User } from 'lucide-react';
 
 interface TransactionDetail {
   id: number;
@@ -24,38 +28,16 @@ interface PageProps {
 
 async function getTransaction(transactionId: number, customerId: number) {
   try {
-    console.log(`[getTransaction] Fetching transaction ID: ${transactionId} for customer ID: ${customerId}`);
-    
     const result = await sql`
       SELECT id, type, amount, description, created_at, invoice_id
       FROM transactions
       WHERE id = ${transactionId} AND customer_id = ${customerId}
     `;
     
-    console.log(`[getTransaction] Query result:`, result);
-    console.log(`[getTransaction] Number of rows:`, result.rows?.length || 0);
-    
     if (!result.rows?.length) {
-      console.warn(`[getTransaction] ❌ Transaction ${transactionId} not found for customer ${customerId}`);
-      
-      // Try to check if transaction exists at all (for debugging)
-      try {
-        const allTransResult = await sql`
-          SELECT id, customer_id FROM transactions WHERE id = ${transactionId}
-        `;
-        if (allTransResult.rows?.length) {
-          console.warn(`[getTransaction] ⚠️ Transaction ${transactionId} EXISTS but belongs to customer ${allTransResult.rows[0].customer_id}, not ${customerId}`);
-        } else {
-          console.warn(`[getTransaction] ⚠️ Transaction ${transactionId} does not exist at all in database`);
-        }
-      } catch (e) {
-        console.error(`[getTransaction] Error checking transaction existence:`, e);
-      }
-      
       return null;
     }
     
-    console.log(`[getTransaction] ✅ Found transaction:`, result.rows[0]);
     return result.rows[0];
   } catch (error) {
     console.error('[getTransaction] Error fetching transaction:', error);
@@ -67,14 +49,11 @@ const formatDateTime = (dateString: string): { date: string; time: string } => {
   try {
     const date = new Date(dateString);
     return {
-      date: date.toLocaleDateString('uk-UA'),
-      time: date.toLocaleTimeString('uk-UA'),
+      date: date.toLocaleDateString('uk-UA', { day: '2-digit', month: '2-digit', year: 'numeric' }),
+      time: date.toLocaleTimeString('uk-UA', { hour: '2-digit', minute: '2-digit' }),
     };
   } catch {
-    return {
-      date: dateString,
-      time: '',
-    };
+    return { date: dateString, time: '' };
   }
 };
 
@@ -101,8 +80,31 @@ async function getInvoiceDetails(invoiceId: number) {
   }
 }
 
+const getTransactionIcon = (type: string) => {
+  if (type.includes('deposit') || type.includes('payment_received')) {
+    return <ArrowDown className="w-8 h-8" />;
+  } else if (type.includes('withdraw') || type.includes('payment_sent')) {
+    return <ArrowUp className="w-8 h-8" />;
+  }
+  return <Banknote className="w-8 h-8" />;
+};
+
+const getTransactionTitle = (type: string): string => {
+  const titles: Record<string, string> = {
+    deposit: 'Депозит',
+    payment_received: 'Отримано',
+    payment_sent: 'Оплачено',
+    invoice: 'Інвойс',
+    withdraw: 'Вивід',
+  };
+  
+  for (const [key, title] of Object.entries(titles)) {
+    if (type.includes(key)) return title;
+  }
+  return type.replace(/_/g, ' ');
+};
+
 export default async function TransactionDetailPage({ params }: PageProps) {
-  // In Next.js 16+, params is a Promise - must await it
   const resolvedParams = await params;
   
   const customer = await getSessionCustomer();
@@ -111,13 +113,8 @@ export default async function TransactionDetailPage({ params }: PageProps) {
     redirect('/auth/signin');
   }
 
-  // Get resolvedParams.id (from URL)
   const rawId = resolvedParams.id;
-  console.log(`[Transaction Detail] Raw params.id: "${rawId}" (type: ${typeof rawId})`);
-  
   const transactionId = parseInt(rawId, 10);
-  console.log(`[Transaction Detail] Parsed transactionId: ${transactionId} (valid: ${!isNaN(transactionId)})`);
-  console.log(`[Transaction Detail] Customer ID: ${customer.id}`);
   
   if (isNaN(transactionId)) {
     return (
@@ -127,12 +124,10 @@ export default async function TransactionDetailPage({ params }: PageProps) {
         showAvatar={true}
         showNav={true}
       >
-        <div className="space-y-6 pt-6">
-          <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
-            <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">
-              Некоректний ID транзакції: "{rawId}"
-            </p>
+        <div className="px-4 pt-6 pb-16">
+          <div className="flex flex-col items-center justify-center py-16">
+            <AlertCircle className="w-16 h-16 text-destructive mb-4" />
+            <p className="text-foreground font-semibold text-center">Некоректний ID транзакції</p>
           </div>
         </div>
       </CabinetLayout>
@@ -149,12 +144,10 @@ export default async function TransactionDetailPage({ params }: PageProps) {
         showAvatar={true}
         showNav={true}
       >
-        <div className="space-y-6 pt-6">
-          <div className="text-center py-16 bg-foreground/5 border border-foreground/10 rounded-lg">
-            <AlertCircle className="w-12 h-12 text-destructive mx-auto mb-3" />
-            <p className="text-sm text-muted-foreground">
-              Транзакція не знайдена
-            </p>
+        <div className="px-4 pt-6 pb-16">
+          <div className="flex flex-col items-center justify-center py-16">
+            <AlertCircle className="w-16 h-16 text-destructive mb-4" />
+            <p className="text-foreground font-semibold text-center">Транзакція не знайдена</p>
           </div>
         </div>
       </CabinetLayout>
@@ -170,18 +163,8 @@ export default async function TransactionDetailPage({ params }: PageProps) {
     transaction.type.includes('deposit') || 
     transaction.type.includes('payment_received');
 
-  const formatTransactionType = (type: string) => {
-    const typeMap: { [key: string]: { label: string; icon: string } } = {
-      'deposit': { label: 'Депозит', icon: '💰' },
-      'payment_sent': { label: 'Відправлено', icon: '📤' },
-      'payment_received': { label: 'Отримано', icon: '📥' },
-      'withdrawal': { label: 'Виведення', icon: '🔄' },
-    };
-    return typeMap[type] || { label: type.replace(/_/g, ' '), icon: '💵' };
-  };
-
-  const typeInfo = formatTransactionType(transaction.type);
-  const dateTime = formatDateTime(transaction.created_at);
+  const typeTitle = getTransactionTitle(transaction.type);
+  const { date, time } = formatDateTime(transaction.created_at);
 
   return (
     <CabinetLayout 
@@ -190,164 +173,181 @@ export default async function TransactionDetailPage({ params }: PageProps) {
       showAvatar={true}
       showNav={true}
     >
-      <div className="space-y-6 pt-6">
-        <div>
-          <h1 className="text-2xl font-display text-slate-900 mb-2">
-            Деталі транзакції
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Інформація про вашу операцію
-          </p>
-        </div>
-
-        {/* Transaction Status */}
-        <div className="p-6 bg-foreground/5 border border-foreground/10 rounded-lg">
-          <div className="text-center space-y-4">
-            <div className="text-4xl">{typeInfo.icon}</div>
-            <div>
-              <p className="text-xs font-medium text-muted-foreground mb-2">
-                ТИП ОПЕРАЦІЇ
-              </p>
-              <p className="text-lg font-medium text-foreground">
-                {typeInfo.label}
-              </p>
-            </div>
-
-            <div className="pt-6 border-t border-foreground/10">
-              <p className="text-xs font-medium text-muted-foreground mb-2">
-                СУМА
-              </p>
-              <p
-                className={`text-4xl font-display ${
-                  isIncoming ? 'text-green-500' : 'text-red-500'
-                }`}
-              >
-                {formatAmountWithSign(transaction.amount, isIncoming)}
-              </p>
-              <p className="text-sm text-muted-foreground mt-2">inpom</p>
+      <motion.div 
+        className="px-4 pt-6 pb-24 space-y-6"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        {/* Amount Display Card */}
+        <motion.div 
+          className={`p-8 rounded-3xl flex flex-col items-center justify-center text-center space-y-4 ${
+            isIncoming 
+              ? 'bg-gradient-to-br from-green-500/20 to-emerald-500/20 border border-green-500/30' 
+              : 'bg-gradient-to-br from-red-500/20 to-rose-500/20 border border-red-500/30'
+          }`}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.1 }}
+        >
+          <div className={`p-4 rounded-2xl ${
+            isIncoming 
+              ? 'bg-green-500/20' 
+              : 'bg-red-500/20'
+          }`}>
+            <div className={isIncoming ? 'text-green-500' : 'text-red-500'}>
+              {getTransactionIcon(transaction.type)}
             </div>
           </div>
-        </div>
 
-        {/* Transaction Details */}
-        <div className="space-y-4">
+          <div className="space-y-1">
+            <p className="text-muted-foreground text-sm font-medium">
+              {typeTitle}
+            </p>
+            <p className={`text-5xl font-bold ${
+              isIncoming ? 'text-green-500' : 'text-red-500'
+            }`}>
+              {formatAmountWithSign(transaction.amount, isIncoming)}
+            </p>
+            <p className="text-muted-foreground text-sm">INPOM</p>
+          </div>
+        </motion.div>
+
+        {/* Details */}
+        <motion.div 
+          className="space-y-3"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          {/* Date & Time */}
+          <div className="cabinet-list-item">
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                Дата і час
+              </p>
+              <p className="text-foreground font-medium mt-1">
+                {date} о {time}
+              </p>
+            </div>
+          </div>
+
+          {/* Description */}
           {transaction.description && (
-            <div className="p-4 bg-foreground/5 border border-foreground/10 rounded-lg">
-              <p className="text-xs font-medium text-muted-foreground mb-2">
-                ОПИС
-              </p>
-              <p className="text-sm text-foreground">
-                {transaction.description}
-              </p>
+            <div className="cabinet-list-item">
+              <div className="flex-1">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  Опис
+                </p>
+                <p className="text-foreground font-medium mt-1">
+                  {transaction.description}
+                </p>
+              </div>
             </div>
           )}
 
-          <div className="p-4 bg-foreground/5 border border-foreground/10 rounded-lg">
-            <p className="text-xs font-medium text-muted-foreground mb-2">
-              ДАТА І ЧАС
-            </p>
-            <p className="text-sm text-foreground">
-              {dateTime.date} о {dateTime.time}
-            </p>
+          {/* Transaction ID */}
+          <div className="cabinet-list-item">
+            <div className="flex-1">
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                ID транзакції
+              </p>
+              <p className="text-foreground font-medium font-mono mt-1">
+                #{transaction.id}
+              </p>
+            </div>
           </div>
+        </motion.div>
 
-          <div className="p-4 bg-foreground/5 border border-foreground/10 rounded-lg">
-            <p className="text-xs font-medium text-muted-foreground mb-2">
-              ID ТРАНЗАКЦІЇ
-            </p>
-            <p className="text-sm font-mono text-foreground">
-              #{transaction.id}
-            </p>
-          </div>
-        </div>
-
-        {/* Invoice Details if exists */}
+        {/* Invoice Details */}
         {invoice && (
-          <div className="p-6 bg-green-500/10 border border-green-500/20 rounded-lg space-y-4">
+          <motion.div 
+            className="p-5 rounded-2xl border border-green-500/30 bg-green-500/10 space-y-4"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
             <div className="flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full" />
-              <p className="text-sm font-medium text-green-600">
+              <div className="w-2 h-2 rounded-full bg-green-500" />
+              <p className="text-sm font-semibold text-green-600">
                 Пов'язаний інвойс
               </p>
             </div>
 
             <div className="space-y-3">
               <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
-                  СТАТУС
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  Статус
                 </p>
-                <p className="text-sm text-foreground capitalize">
+                <p className={`text-sm font-medium mt-1 ${
+                  invoice.status === 'paid' ? 'text-green-600' : 'text-amber-600'
+                }`}>
                   {invoice.status === 'paid' ? '✓ Оплачено' : '⏳ Очікує'}
                 </p>
               </div>
 
               <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
-                  СУМА ІНВОЙСА
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  Сума інвойсу
                 </p>
-                <p className="text-sm text-foreground">
-                  {formatAmount(invoice.amount)}{' '}
-                  inpom
+                <p className="text-sm font-medium mt-1 text-foreground">
+                  {formatAmount(invoice.amount)} INPOM
                 </p>
               </div>
 
               {invoice.description && (
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground mb-1">
-                    ОПИС
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                    Опис
                   </p>
-                  <p className="text-sm text-foreground">
+                  <p className="text-sm font-medium mt-1 text-foreground">
                     {invoice.description}
                   </p>
                 </div>
               )}
 
               <div>
-                <p className="text-xs font-medium text-muted-foreground mb-1">
-                  АВТОР
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                  Автор
                 </p>
-                <p className="text-sm text-foreground">
+                <p className="text-sm font-medium mt-1 text-foreground">
                   {invoice.creator_name}
                 </p>
               </div>
 
               {/* Action Button */}
-              <div className="pt-3">
-                <Link
-                  href={
-                    transaction.type === 'payment_sent'
-                      ? `/mycabinet/pay-invoice/${invoice.id}`
-                      : `/mycabinet/invoices/${invoice.id}`
-                  }
-                >
-                  <Button className="w-full" variant="outline">
-                    {transaction.type === 'payment_sent'
-                      ? 'Переглянути статус оплати'
-                      : 'Переглянути інвойс'}
-                    <ExternalLink className="w-4 h-4 ml-2" />
-                  </Button>
-                </Link>
-              </div>
+              <Link
+                href={
+                  transaction.type === 'payment_sent'
+                    ? `/mycabinet/pay-invoice/${invoice.id}`
+                    : `/mycabinet/invoices/${invoice.id}`
+                }
+                className="block pt-2"
+              >
+                <button className="w-full cabinet-button cabinet-button-primary">
+                  {transaction.type === 'payment_sent'
+                    ? 'Переглянути статус'
+                    : 'Переглянути інвойс'}
+                  <ExternalLink className="w-4 h-4" />
+                </button>
+              </Link>
             </div>
-          </div>
+          </motion.div>
         )}
 
-        {/* Additional Info */}
-        <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg">
-          <p className="text-xs text-muted-foreground">
-            Всі транзакції записуються в історії вашого рахунку та можуть бути
-            переглянуті будь-коли. Якщо у вас є запитання, будь ласка,
-            зв'яжіться з нами.
-          </p>
-        </div>
-
         {/* Back Button */}
-        <Link href="/mycabinet/transactions">
-          <Button variant="outline" className="w-full">
-            Повернутись до історії
-          </Button>
-        </Link>
-      </div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <Link href="/mycabinet/transactions" className="block">
+            <button className="w-full cabinet-button cabinet-button-secondary">
+              Повернутись до історії
+            </button>
+          </Link>
+        </motion.div>
+      </motion.div>
     </CabinetLayout>
   );
 }
