@@ -64,6 +64,15 @@ interface Review {
   helpful_count: number;
 }
 
+const formatDate = (dateString: string): string => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('uk-UA');
+  } catch {
+    return dateString;
+  }
+};
+
 export default function ProductDetailPage() {
   const params = useParams();
   const slug = params.id as string;
@@ -582,7 +591,7 @@ export default function ProductDetailPage() {
                           <p className="text-sm text-muted-foreground">{review.reviewer_name}</p>
                         </div>
                         <span className="text-xs text-muted-foreground">
-                          {new Date(review.created_at).toLocaleDateString('uk-UA')}
+                          {formatDate(review.created_at)}
                         </span>
                       </div>
                       <p className="text-sm text-muted-foreground mb-2">{review.comment}</p>

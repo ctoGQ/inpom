@@ -7,6 +7,19 @@ import { sql } from "@/lib/db";
 
 export const revalidate = 3600; // Revalidate every hour
 
+const formatDate = (dateString: string, format: "long" | "short" = "long"): string => {
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString("uk-UA", {
+      year: "numeric",
+      month: format === "long" ? "long" : "short",
+      day: "numeric",
+    });
+  } catch {
+    return dateString;
+  }
+};
+
 async function getArticle(id: string) {
   try {
     const numId = parseInt(id, 10);
@@ -175,11 +188,7 @@ export default async function ArticlePage({ params }: { params: { id: string } }
           <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground pt-8 border-t border-foreground/10">
             {article.published_at && (
               <span>
-                {new Date(article.published_at).toLocaleDateString("uk-UA", {
-                  year: "numeric",
-                  month: "long",
-                  day: "numeric",
-                })}
+                {formatDate(article.published_at, "long")}
               </span>
             )}
             <span>•</span>
@@ -272,11 +281,7 @@ export default async function ArticlePage({ params }: { params: { id: string } }
                     {relArticle.title}
                   </h3>
                   <p className="text-sm text-muted-foreground">
-                    {new Date(relArticle.published_at).toLocaleDateString("uk-UA", {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
+                    {formatDate(relArticle.published_at, "short")}
                   </p>
                 </Link>
               ))}
