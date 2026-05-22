@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, MoreVertical } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -54,22 +54,15 @@ export function MobileTopNav({
         </h1>
       )}
 
-      {/* Right: Avatar or Spacer */}
+      {/* Right: More Menu Button or Spacer */}
       <div className="cabinet-top-nav-right">
         {showAvatar ? (
-          <Link
-            href="/mycabinet/account"
-            className="flex items-center justify-center overflow-hidden"
-            aria-label="Account"
+          <button
+            className="cabinet-top-nav-menu-btn"
+            aria-label="More options"
           >
-            <Image
-              src={avatarUrl}
-              alt={userName}
-              width={40}
-              height={40}
-              className="w-full h-full object-cover"
-            />
-          </Link>
+            <MoreVertical className="w-6 h-6" />
+          </button>
         ) : (
           <div className="w-10" />
         )}

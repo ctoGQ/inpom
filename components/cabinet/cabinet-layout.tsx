@@ -10,6 +10,7 @@ interface CabinetLayoutProps {
   showBack?: boolean;
   showAvatar?: boolean;
   showNav?: boolean;
+  showHeader?: boolean;
   avatarUrl?: string;
   userName?: string;
 }
@@ -20,18 +21,21 @@ export function CabinetLayout({
   showBack = false,
   showAvatar = false,
   showNav = true,
+  showHeader = true,
   avatarUrl = '/placeholder-user.jpg',
   userName = '',
 }: CabinetLayoutProps) {
   return (
     <div className="mycabinet-container">
-      <MobileTopNav
-        title={title}
-        showBack={showBack}
-        showAvatar={showAvatar}
-        avatarUrl={avatarUrl}
-        userName={userName}
-      />
+      {showHeader && (
+        <MobileTopNav
+          title={title}
+          showBack={showBack}
+          showAvatar={showAvatar}
+          avatarUrl={avatarUrl}
+          userName={userName}
+        />
+      )}
       <main className="mycabinet-main">
         {children}
       </main>
