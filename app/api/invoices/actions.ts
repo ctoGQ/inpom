@@ -150,16 +150,28 @@ export async function payInvoice(invoiceId: number, payerCustomerId: number) {
     // Create transaction for payer
     console.log(`[PayInvoiceAction] Creating payer transaction`);
     await sql`
-      INSERT INTO transactions (customer_id, type, amount, invoice_id, description, created_at)
-      VALUES (${payerCustomerId}, 'payment_sent', ${invoiceAmount}, ${invoiceId}, ${'Оплата за інвойс'}, NOW())
+      INSERT INTO transactions (customer_id, card_id, type, amount, invoice_id, description, created_at)
+      VALUES (${payerCustomerId}, ${payerCard.id}, 'payment_sent', ${invoiceAmount}, ${invoiceId}, ${'Оплата за інвойс'}, NOW())
     `;
 
     // Create transaction for creator
     console.log(`[PayInvoiceAction] Creating creator transaction`);
-    await sql`
-      INSERT INTO transactions (customer_id, type, amount, invoice_id, description, created_at)
-      VALUES (${invoice.creator_customer_id}, 'payment_received', ${invoiceAmount}, ${invoiceId}, ${'Отримано платіж'}, NOW())
-    `;
+    let creatorCardId = creatorCard?.id;
+    
+    if (!creatorCardId) {
+      // If creator card was just created, fetch it
+      const newCardResult = await sql`
+        SELECT id FROM user_cards WHERE customer_id = ${invoice.creator_customer_id} ORDER BY created_at DESC LIMIT 1
+      `;
+      creatorCardId = newCardResult.rows?.[0]?.id;
+    }
+
+    if (creatorCardId) {
+      await sql`
+        INSERT INTO transactions (customer_id, card_id, type, amount, invoice_id, description, created_at)
+        VALUES (${invoice.creator_customer_id}, ${creatorCardId}, 'payment_received', ${invoiceAmount}, ${invoiceId}, ${'Отримано платіж'}, NOW())
+      `;
+    }
 
     console.log(`[PayInvoiceAction] ✅ Payment processed successfully`);
 
