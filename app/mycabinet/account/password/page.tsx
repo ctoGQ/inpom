@@ -170,7 +170,12 @@ export default function PasswordPage() {
   );
 
   return (
-    <CabinetLayout title="Змінити пароль" showBack showAvatar={false}>
+    <CabinetLayout 
+      title="Пароль"
+      showBack={true}
+      showAvatar={true}
+      showNav={true}
+    >
       <div className="space-y-6 pt-6">
         <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
           <p className="text-xs text-blue-600">

@@ -171,7 +171,12 @@ export default function CreateProductPage() {
   };
 
   return (
-    <CabinetLayout title="Створити товар" showBack>
+    <CabinetLayout 
+      title="Товар"
+      showBack={true}
+      showAvatar={true}
+      showNav={true}
+    >
       <div className="py-6">
         {/* Header */}
         <div className="mb-6">

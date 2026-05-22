@@ -113,7 +113,12 @@ export default function ShopPage() {
   };
 
   return (
-    <CabinetLayout title="Магазин" showBack>
+    <CabinetLayout 
+      title="Магазин"
+      showBack={true}
+      showAvatar={true}
+      showNav={true}
+    >
       <div className="space-y-2xl pt-lg">
         {/* Header */}
         <div className="flex justify-between items-center">

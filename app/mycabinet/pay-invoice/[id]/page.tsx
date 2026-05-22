@@ -65,7 +65,12 @@ export default async function PayInvoicePage({ params }: PageProps) {
 
   if (!invoice) {
     return (
-      <CabinetLayout title="Платіж" showBack>
+      <CabinetLayout 
+        title="Платіж"
+        showBack={true}
+        showAvatar={true}
+        showNav={true}
+      >
         <div className="space-y-2xl pt-lg">
           <div className="cabinet-empty-state">
             <AlertCircle className="cabinet-empty-state-icon text-destructive" />
@@ -81,7 +86,12 @@ export default async function PayInvoicePage({ params }: PageProps) {
   // Check if user is trying to pay their own invoice
   if (invoice.creator_customer_id === customer.id) {
     return (
-      <CabinetLayout title="Платіж" showBack>
+      <CabinetLayout 
+        title="Платіж"
+        showBack={true}
+        showAvatar={true}
+        showNav={true}
+      >
         <div className="space-y-2xl pt-lg">
           <div className="cabinet-empty-state">
             <AlertCircle className="cabinet-empty-state-icon text-destructive" />
@@ -98,7 +108,12 @@ export default async function PayInvoicePage({ params }: PageProps) {
   const isAlreadyPaid = invoice.status === 'paid';
 
   return (
-    <CabinetLayout title="Платіж" showBack>
+    <CabinetLayout 
+      title="Платіж"
+      showBack={true}
+      showAvatar={true}
+      showNav={true}
+    >
       <div className="space-y-6 pt-6">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 mb-2">

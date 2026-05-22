@@ -11,7 +11,12 @@ export default async function EventsPage() {
   }
 
   return (
-    <CabinetLayout title="Евенти">
+    <CabinetLayout 
+      title="Евенти"
+      showBack={true}
+      showAvatar={true}
+      showNav={true}
+    >
       <div className="space-y-2xl pt-lg">
         <div>
           <h1 className="text-h1 mb-sm">

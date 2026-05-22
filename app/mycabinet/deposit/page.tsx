@@ -11,7 +11,14 @@ export default async function DepositPage() {
   }
 
   return (
-    <CabinetLayout title="Депозит" showBack>
+    <CabinetLayout 
+      title="Депозит"
+      showBack={true}
+      showAvatar={true}
+      avatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
+      userName={customer.name}
+      showNav={true}
+    >
       <div className="space-y-2xl pt-lg">
         <div>
           <h1 className="text-h1 mb-sm">
