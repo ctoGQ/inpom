@@ -63,6 +63,21 @@ async function getTransaction(transactionId: number, customerId: number) {
   }
 }
 
+const formatDateTime = (dateString: string): { date: string; time: string } => {
+  try {
+    const date = new Date(dateString);
+    return {
+      date: date.toLocaleDateString('uk-UA'),
+      time: date.toLocaleTimeString('uk-UA'),
+    };
+  } catch {
+    return {
+      date: dateString,
+      time: '',
+    };
+  }
+};
+
 async function getInvoiceDetails(invoiceId: number) {
   try {
     const result = await sql`
@@ -156,6 +171,7 @@ export default async function TransactionDetailPage({ params }: PageProps) {
   };
 
   const typeInfo = formatTransactionType(transaction.type);
+  const dateTime = formatDateTime(transaction.created_at);
 
   return (
     <CabinetLayout title="Деталі транзакції" showBack>
@@ -216,9 +232,7 @@ export default async function TransactionDetailPage({ params }: PageProps) {
               ДАТА І ЧАС
             </p>
             <p className="text-sm text-foreground">
-              {new Date(transaction.created_at).toLocaleDateString('uk-UA')}{' '}
-              о{' '}
-              {new Date(transaction.created_at).toLocaleTimeString('uk-UA')}
+              {dateTime.date} о {dateTime.time}
             </p>
           </div>
 
