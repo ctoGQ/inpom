@@ -18,6 +18,8 @@ interface Transaction {
   description: string;
   created_at: string;
   invoice_id?: number;
+  other_customer_name?: string;
+  other_customer_avatar?: string;
 }
 
 interface CardSliderWrapperProps {
