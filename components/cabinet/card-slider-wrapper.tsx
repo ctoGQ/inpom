@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { CardSlider } from './card-slider';
-import { QuickActions } from './quick-actions';
 import { ActivitySection } from './activity-section';
 
 interface CardData {
@@ -57,9 +56,8 @@ export function CardSliderWrapper({
   };
 
   return (
-    <>
+    <div className="space-y-lg px-sm">
       <CardSlider cards={cards} onCardChange={handleCardChange} />
-      <QuickActions cardId={selectedCardId} />
       {isLoading ? (
         <div className="space-y-md">
           {[1, 2, 3].map((i) => (
@@ -72,6 +70,6 @@ export function CardSliderWrapper({
       ) : (
         <ActivitySection transactions={transactions} />
       )}
-    </>
+    </div>
   );
 }
