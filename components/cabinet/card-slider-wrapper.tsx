@@ -55,7 +55,7 @@ export function CardSliderWrapper({
         setTransactions(data.transactions || []);
       }
     } catch (error) {
-      console.error('[v0] Error fetching transactions:', error);
+      console.error('Error fetching transactions:', error);
     } finally {
       setIsLoading(false);
     }
