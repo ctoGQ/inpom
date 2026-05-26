@@ -133,7 +133,7 @@ export default function CreateProductPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/shop/products/create', {
+      const response = await fetch('/api/shop/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -150,9 +150,16 @@ export default function CreateProductPage() {
         })
       });
 
-      if (!response.ok) throw new Error('Failed to create product');
+      console.log('[v0] API Response status:', response.status);
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('[v0] API Error:', errorData);
+        throw new Error(errorData.error || 'Failed to create product');
+      }
 
       const data = await response.json();
+      console.log('[v0] Product created successfully:', data);
 
       toast({
         title: 'Успіх!',
@@ -161,7 +168,7 @@ export default function CreateProductPage() {
 
       router.push('/mycabinet/shop');
     } catch (error) {
-      console.error('Error creating product:', error);
+      console.error('[v0] Error creating product:', error);
       toast({
         title: 'Помилка',
         description: error instanceof Error ? error.message : 'Не вдалось створити товар',
