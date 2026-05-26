@@ -134,7 +134,7 @@ export function CreateProductForm() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/shop/products/create', {
+      const response = await fetch('/api/shop/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

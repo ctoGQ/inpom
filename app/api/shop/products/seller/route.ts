@@ -21,47 +21,78 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit;
     const status = searchParams.get('status') || 'all';
 
-    let query = `
-      SELECT 
-        p.id, p.title, p.slug, p.price, p.original_price, p.currency,
-        p.stock_quantity, p.rating, p.review_count, p.sale_count,
-        p.status, p.created_at,
-        c.name as category_name,
-        spi.image_url as primary_image,
-        COUNT(spa.id) as attribute_count
-      FROM shop_products p
-      JOIN shop_categories c ON p.category_id = c.id
-      LEFT JOIN shop_product_images spi ON p.id = spi.product_id AND spi.is_primary = TRUE
-      LEFT JOIN shop_product_attributes spa ON p.id = spa.product_id
-      WHERE p.seller_id = ${customer.id}
-    `;
+    // Build parameterized query based on status filter
+    let products: any[] = [];
+    let total = 0;
 
-    if (status !== 'all') {
-      query += ` AND p.status = '${status}'`;
+    if (status === 'all') {
+      // Get all products
+      const result = await sql`
+        SELECT 
+          p.id, p.title, p.slug, p.price, p.original_price, p.currency,
+          p.stock_quantity, p.rating, p.review_count, p.sale_count,
+          p.status, p.created_at,
+          c.name as category_name,
+          spi.image_url as primary_image
+        FROM shop_products p
+        JOIN shop_categories c ON p.category_id = c.id
+        LEFT JOIN shop_product_images spi ON p.id = spi.product_id AND spi.is_primary = TRUE
+        WHERE p.seller_id = ${customer.id}
+        ORDER BY p.created_at DESC
+        LIMIT ${limit} OFFSET ${offset}
+      `;
+      products = result.rows || [];
+
+      // Get total count
+      const countResult = await sql`
+        SELECT COUNT(*) as total FROM shop_products WHERE seller_id = ${customer.id}
+      `;
+      total = countResult.rows?.[0]?.total || 0;
+    } else {
+      // Get products with specific status
+      const result = await sql`
+        SELECT 
+          p.id, p.title, p.slug, p.price, p.original_price, p.currency,
+          p.stock_quantity, p.rating, p.review_count, p.sale_count,
+          p.status, p.created_at,
+          c.name as category_name,
+          spi.image_url as primary_image
+        FROM shop_products p
+        JOIN shop_categories c ON p.category_id = c.id
+        LEFT JOIN shop_product_images spi ON p.id = spi.product_id AND spi.is_primary = TRUE
+        WHERE p.seller_id = ${customer.id} AND p.status = ${status}
+        ORDER BY p.created_at DESC
+        LIMIT ${limit} OFFSET ${offset}
+      `;
+      products = result.rows || [];
+
+      // Get total count for status
+      const countResult = await sql`
+        SELECT COUNT(*) as total FROM shop_products 
+        WHERE seller_id = ${customer.id} AND status = ${status}
+      `;
+      total = countResult.rows?.[0]?.total || 0;
     }
 
-    query += ` GROUP BY p.id, c.name, spi.image_url
-      ORDER BY p.created_at DESC
-      LIMIT ${limit} OFFSET ${offset}
-    `;
-
-    const result = await sql.unsafe(query);
-
-    // Get total count
-    let countQuery = `SELECT COUNT(*) as total FROM shop_products WHERE seller_id = ${customer.id}`;
-    if (status !== 'all') {
-      countQuery += ` AND status = '${status}'`;
-    }
-
-    const countResult = await sql.unsafe(countQuery);
-    const total = countResult.rows?.[0]?.total || 0;
+    // Count attributes for each product
+    const productsWithAttrs = await Promise.all(
+      products.map(async (product) => {
+        const attrResult = await sql`
+          SELECT COUNT(*) as count FROM shop_product_attributes WHERE product_id = ${product.id}
+        `;
+        return {
+          ...product,
+          attribute_count: attrResult.rows?.[0]?.count || 0
+        };
+      })
+    );
 
     console.log(
-      `[Seller Products API] ✅ Fetched ${result.rows?.length || 0} products for seller ${customer.id}`
+      `[Seller Products API] ✅ Fetched ${productsWithAttrs.length} products for seller ${customer.id}`
     );
 
     return NextResponse.json({
-      products: result.rows || [],
+      products: productsWithAttrs,
       pagination: {
         page,
         limit,
