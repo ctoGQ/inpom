@@ -251,7 +251,7 @@ export default function ProductDetailPage() {
           </div>
           <div className="p-4 rounded-2xl bg-foreground/5 border border-foreground/10">
             <p className="text-xs text-muted-foreground uppercase font-semibold">Рейтинг</p>
-            <p className="text-2xl font-bold text-foreground mt-1">{product.rating.toFixed(1)}</p>
+            <p className="text-2xl font-bold text-foreground mt-1">{(Number(product.rating) || 0).toFixed(1)}</p>
           </div>
           <div className="p-4 rounded-2xl bg-foreground/5 border border-foreground/10">
             <p className="text-xs text-muted-foreground uppercase font-semibold">Відгуки</p>
