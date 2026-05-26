@@ -116,7 +116,7 @@ export function SellerProductCard({
           </div>
           <div>
             <p className="text-xs text-muted-foreground">Рейтинг</p>
-            <p className="text-sm font-semibold">{rating.toFixed(1)} ⭐</p>
+            <p className="text-sm font-semibold">{(Number(rating) || 0).toFixed(1)} ⭐</p>
           </div>
         </div>
 
