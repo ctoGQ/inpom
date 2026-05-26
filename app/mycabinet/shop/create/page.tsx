@@ -76,16 +76,42 @@ export default function CreateProductPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const imageUrl = URL.createObjectURL(file);
-    setFormData(prev => ({
-      ...prev,
-      images: [...prev.images, imageUrl]
-    }));
+    console.log('[v0] Uploading image:', file.name, file.size);
 
-    toast({
-      title: 'Фото завантажено',
-      description: 'Фото додано до товару'
-    });
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/shop/products/upload-image', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to upload image');
+      }
+
+      const data = await response.json();
+      console.log('[v0] Image uploaded successfully:', data.imageUrl);
+
+      setFormData(prev => ({
+        ...prev,
+        images: [...prev.images, data.imageUrl]
+      }));
+
+      toast({
+        title: 'Фото завантажено',
+        description: 'Фото додано до товару'
+      });
+    } catch (error) {
+      console.error('[v0] Error uploading image:', error);
+      toast({
+        title: 'Помилка',
+        description: error instanceof Error ? error.message : 'Не вдалось завантажити фото',
+        variant: 'destructive'
+      });
+    }
   };
 
   const handleAddAttribute = () => {
@@ -121,10 +147,10 @@ export default function CreateProductPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.title || !formData.categoryId || !formData.price) {
+    if (!formData.title || !formData.categoryId || !formData.price || !formData.description) {
       toast({
         title: 'Помилка',
-        description: 'Заповніть всі обов\'язкові поля',
+        description: 'Заповніть усі обов\'язкові поля (назва, категорія, ціна, опис)',
         variant: 'destructive'
       });
       return;
@@ -133,6 +159,8 @@ export default function CreateProductPage() {
     setLoading(true);
 
     try {
+      console.log('[v0] Submitting product creation form');
+      
       const response = await fetch('/api/shop/products', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -143,7 +171,7 @@ export default function CreateProductPage() {
           description: formData.description,
           shortDescription: formData.shortDescription,
           originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
-          stockQuantity: parseInt(formData.stockQuantity),
+          stockQuantity: parseInt(formData.stockQuantity) || 0,
           sku: formData.sku,
           attributes: formData.attributes.filter(a => a.name && a.value),
           images: formData.images
@@ -164,6 +192,21 @@ export default function CreateProductPage() {
       toast({
         title: 'Успіх!',
         description: data.message || 'Товар успішно створено'
+      });
+
+      // Reset form
+      setFormData({
+        title: '',
+        categoryId: '',
+        categoryName: '',
+        price: '',
+        description: '',
+        shortDescription: '',
+        originalPrice: '',
+        stockQuantity: '1',
+        sku: '',
+        attributes: [],
+        images: []
       });
 
       router.push('/mycabinet/shop');
