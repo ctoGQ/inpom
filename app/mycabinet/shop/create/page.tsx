@@ -7,8 +7,9 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
 import { MobileModal } from '@/components/mobile-modal';
+import { CharacteristicSearch } from '@/components/shop/characteristic-search';
 import { useToast } from '@/components/ui/use-toast';
-import { Upload, Plus, Trash2, ChevronRight } from 'lucide-react';
+import { Upload, Trash2, ChevronRight } from 'lucide-react';
 
 interface Category {
   id: number;
@@ -112,29 +113,6 @@ export default function CreateProductPage() {
         variant: 'destructive'
       });
     }
-  };
-
-  const handleAddAttribute = () => {
-    setFormData(prev => ({
-      ...prev,
-      attributes: [...prev.attributes, { name: '', value: '' }]
-    }));
-  };
-
-  const handleUpdateAttribute = (index: number, field: string, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      attributes: prev.attributes.map((attr, i) =>
-        i === index ? { ...attr, [field]: value } : attr
-      )
-    }));
-  };
-
-  const handleRemoveAttribute = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      attributes: prev.attributes.filter((_, i) => i !== index)
-    }));
   };
 
   const handleRemoveImage = (index: number) => {
@@ -419,55 +397,15 @@ export default function CreateProductPage() {
           )}
         </div>
 
-        {/* Attributes */}
+        {/* Characteristics */}
         <div className="space-y-3">
-          <div className="flex justify-between items-center">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Характеристики
-            </label>
-            <button
-              type="button"
-              onClick={handleAddAttribute}
-              className="flex items-center gap-2 text-xs font-semibold text-primary hover:text-primary/80 transition-colors"
-            >
-              <Plus className="w-4 h-4" />
-              Додати
-            </button>
-          </div>
-
-          {formData.attributes.length > 0 && (
-            <div className="space-y-2">
-              {formData.attributes.map((attr, i) => (
-                <div key={i} className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Назва характеристики"
-                    value={attr.name}
-                    onChange={(e) =>
-                      handleUpdateAttribute(i, 'name', e.target.value)
-                    }
-                    className="flex-1 px-3 py-2 bg-foreground/5 border border-foreground/10 rounded-lg text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Значення"
-                    value={attr.value}
-                    onChange={(e) =>
-                      handleUpdateAttribute(i, 'value', e.target.value)
-                    }
-                    className="flex-1 px-3 py-2 bg-foreground/5 border border-foreground/10 rounded-lg text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleRemoveAttribute(i)}
-                    className="px-3 py-2 text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Характеристики
+          </label>
+          <CharacteristicSearch
+            value={formData.attributes}
+            onChange={(attrs) => setFormData(prev => ({ ...prev, attributes: attrs }))}
+          />
         </div>
 
         {/* Buttons */}
