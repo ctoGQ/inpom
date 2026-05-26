@@ -6,16 +6,10 @@ import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
-import { MobileModal } from '@/components/mobile-modal';
+import { CategorySearch } from '@/components/shop/category-search';
 import { CharacteristicSearch } from '@/components/shop/characteristic-search';
 import { useToast } from '@/components/ui/use-toast';
-import { Upload, Trash2, ChevronRight } from 'lucide-react';
-
-interface Category {
-  id: number;
-  name: string;
-  slug: string;
-}
+import { Upload, Trash2 } from 'lucide-react';
 
 interface ProductAttribute {
   name: string;
@@ -25,9 +19,7 @@ interface ProductAttribute {
 export default function CreateProductPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);
-  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -43,34 +35,13 @@ export default function CreateProductPage() {
     images: [] as string[]
   });
 
-  // Fetch categories
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch('/api/shop/categories');
-        if (!response.ok) throw new Error('Failed to fetch categories');
-        const data = await response.json();
-        setCategories(data);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-        toast({
-          title: 'Помилка',
-          description: 'Не вдалось завантажити категорії',
-          variant: 'destructive'
-        });
-      }
-    };
-
-    fetchCategories();
-  }, [toast]);
-
   const handleSelectCategory = (categoryId: string, categoryName: string) => {
+    console.log('[v0] Selected category:', { categoryId, categoryName });
     setFormData(prev => ({ 
       ...prev, 
       categoryId, 
       categoryName 
     }));
-    setIsCategoryModalOpen(false);
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -124,8 +95,15 @@ export default function CreateProductPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('[v0] handleSubmit called');
 
     if (!formData.title || !formData.categoryId || !formData.price || !formData.description) {
+      console.log('[v0] Validation failed:', {
+        title: !!formData.title,
+        categoryId: !!formData.categoryId,
+        price: !!formData.price,
+        description: !!formData.description
+      });
       toast({
         title: 'Помилка',
         description: 'Заповніть усі обов\'язкові поля (назва, категорія, ціна, опис)',
@@ -137,7 +115,12 @@ export default function CreateProductPage() {
     setLoading(true);
 
     try {
-      console.log('[v0] Submitting product creation form');
+      console.log('[v0] Submitting product:', {
+        title: formData.title,
+        categoryId: formData.categoryId,
+        price: formData.price,
+        description: formData.description
+      });
       
       const response = await fetch('/api/shop/products', {
         method: 'POST',
@@ -230,18 +213,11 @@ export default function CreateProductPage() {
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Категорія *
           </label>
-          <button
-            type="button"
-            onClick={() => setIsCategoryModalOpen(true)}
-            className="w-full p-4 rounded-2xl border border-foreground/10 bg-foreground/5 hover:bg-foreground/10 transition-all flex items-center justify-between group"
-          >
-            <div className="text-left">
-              <p className="font-medium text-foreground text-sm">
-                {formData.categoryName || 'Оберіть категорію'}
-              </p>
-            </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-          </button>
+          <CategorySearch
+            value={formData.categoryId}
+            categoryName={formData.categoryName}
+            onChange={handleSelectCategory}
+          />
         </div>
 
         {/* Price */}
@@ -424,29 +400,6 @@ export default function CreateProductPage() {
           </button>
         </div>
       </form>
-
-      {/* Category Modal */}
-      <MobileModal
-        isOpen={isCategoryModalOpen}
-        onClose={() => setIsCategoryModalOpen(false)}
-        title="Виберіть категорію"
-      >
-        <div className="px-4 py-6 space-y-2">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => handleSelectCategory(category.id.toString(), category.name)}
-              className={`w-full p-4 rounded-2xl border transition-all text-left font-medium ${
-                formData.categoryId === category.id.toString()
-                  ? 'bg-primary/10 border-primary/50 text-primary'
-                  : 'bg-foreground/5 border-foreground/10 text-foreground hover:bg-foreground/10'
-              }`}
-            >
-              {category.name}
-            </button>
-          ))}
-        </div>
-      </MobileModal>
     </CabinetLayout>
   );
 }
