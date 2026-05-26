@@ -359,7 +359,7 @@ export default function ProductDetailPage() {
                     />
                   ))}
               </div>
-              <span className="text-sm font-semibold">{product.rating.toFixed(1)}</span>
+              <span className="text-sm font-semibold">{(Number(product.rating) || 0).toFixed(1)}</span>
               <span className="text-sm text-muted-foreground">
                 ({product.review_count} відгуків)
               </span>
