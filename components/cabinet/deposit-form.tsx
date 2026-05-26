@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { MobileModal } from '@/components/mobile-modal';
-import { CreditCard, Building2, Bitcoin, ChevronRight } from 'lucide-react';
+import { CreditCard, Building2, Bitcoin, ChevronRight, Loader } from 'lucide-react';
 
 interface DepositFormProps {
   customerId: number;
@@ -32,10 +33,14 @@ const PAYMENT_METHODS = [
 const QUICK_AMOUNTS = [100, 500, 1000, 5000];
 
 export function DepositForm({ customerId }: DepositFormProps) {
+  const router = useRouter();
   const [amount, setAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('card');
   const [isMethodModalOpen, setIsMethodModalOpen] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const handleQuickAmount = (value: number) => {
     setAmount(value.toString());
@@ -46,9 +51,45 @@ export function DepositForm({ customerId }: DepositFormProps) {
     setIsMethodModalOpen(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Deposit:', { customerId, amount, paymentMethod });
+    setError(null);
+    setSuccess(false);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/api/deposit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          amount: parseFloat(amount),
+          paymentMethod,
+          customerId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.error || 'Помилка при обробці депозиту');
+        return;
+      }
+
+      setSuccess(true);
+      setAmount('');
+      
+      // Redirect back to cabinet after 2 seconds
+      setTimeout(() => {
+        router.push('/mycabinet');
+      }, 2000);
+    } catch (err) {
+      console.error('[v0] Deposit error:', err);
+      setError('Помилка при обробці депозиту');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const selectedMethod = PAYMENT_METHODS.find(m => m.id === paymentMethod);
@@ -57,6 +98,24 @@ export function DepositForm({ customerId }: DepositFormProps) {
   return (
     <>
       <form onSubmit={handleSubmit} className="px-4 pt-6 pb-24 space-y-8">
+        {/* Success Message */}
+        {success && (
+          <div className="p-4 rounded-2xl bg-green-500/10 border border-green-500/30">
+            <p className="text-sm font-medium text-green-600">
+              ✓ Депозит успішно поповнено! Перенаправлення на кабінет...
+            </p>
+          </div>
+        )}
+
+        {/* Error Message */}
+        {error && (
+          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30">
+            <p className="text-sm font-medium text-red-600">
+              ✗ {error}
+            </p>
+          </div>
+        )}
+
         {/* Amount Section */}
         <div className="space-y-4">
           <div>
@@ -70,7 +129,8 @@ export function DepositForm({ customerId }: DepositFormProps) {
               min="0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full mt-3 px-5 py-4 bg-foreground/5 border border-foreground/10 rounded-2xl text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+              disabled={isLoading}
+              className="w-full mt-3 px-5 py-4 bg-foreground/5 border border-foreground/10 rounded-2xl text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <p className="text-xs text-muted-foreground mt-2">INPOM</p>
           </div>
@@ -86,7 +146,8 @@ export function DepositForm({ customerId }: DepositFormProps) {
                   key={val}
                   type="button"
                   onClick={() => handleQuickAmount(val)}
-                  className="px-4 py-3 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 text-foreground rounded-xl font-medium transition-all"
+                  disabled={isLoading}
+                  className="px-4 py-3 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 text-foreground rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {val} INPOM
                 </button>
@@ -104,7 +165,8 @@ export function DepositForm({ customerId }: DepositFormProps) {
           <button
             type="button"
             onClick={() => setIsMethodModalOpen(true)}
-            className="w-full p-4 rounded-2xl border border-foreground/10 bg-foreground/5 hover:bg-foreground/10 transition-all flex items-center justify-between group"
+            disabled={isLoading}
+            className="w-full p-4 rounded-2xl border border-foreground/10 bg-foreground/5 hover:bg-foreground/10 transition-all flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center gap-3">
               <div className="p-2 rounded-lg bg-foreground/10 group-hover:bg-foreground/20 transition-all">
@@ -130,7 +192,8 @@ export function DepositForm({ customerId }: DepositFormProps) {
             id="terms"
             checked={agreed}
             onChange={(e) => setAgreed(e.target.checked)}
-            className="w-5 h-5 mt-0.5 cursor-pointer accent-primary"
+            disabled={isLoading}
+            className="w-5 h-5 mt-0.5 cursor-pointer accent-primary disabled:cursor-not-allowed"
           />
           <label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
             Я погоджуюсь з умовами користування та політикою конфіденційності
@@ -140,10 +203,11 @@ export function DepositForm({ customerId }: DepositFormProps) {
         {/* Submit Button */}
         <button
           type="submit"
-          disabled={!amount || !agreed}
-          className="w-full px-6 py-4 bg-primary text-primary-foreground font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg active:scale-95"
+          disabled={!amount || !agreed || isLoading || success}
+          className="w-full px-6 py-4 bg-primary text-primary-foreground font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg active:scale-95 flex items-center justify-center gap-2"
         >
-          Продовжити оплату
+          {isLoading && <Loader className="w-5 h-5 animate-spin" />}
+          {isLoading ? 'Обробка...' : 'Продовжити оплату'}
         </button>
 
         {/* Info Box */}
@@ -169,7 +233,8 @@ export function DepositForm({ customerId }: DepositFormProps) {
               <button
                 key={method.id}
                 onClick={() => handleSelectMethod(method.id)}
-                className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-between group ${
+                disabled={isLoading}
+                className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed ${
                   isSelected
                     ? 'bg-primary/10 border-primary/50'
                     : 'bg-foreground/5 border-foreground/10 hover:bg-foreground/10'
