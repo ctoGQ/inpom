@@ -72,40 +72,6 @@ export default function ShopPage() {
     fetchProducts();
   }, [page, selectedStatus, toast]);
 
-  const handleDeleteProduct = async (productId: number) => {
-    if (!confirm('Ви впевнені, що хочете видалити цей продукт?')) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/shop/products/delete`, {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productId
-        })
-      });
-
-      if (!response.ok) throw new Error('Failed to delete product');
-
-      toast({
-        title: 'Успіх!',
-        description: 'Продукт видалено'
-      });
-
-      // Refresh products
-      setPage(1);
-      setProducts(products.filter(p => p.id !== productId));
-    } catch (error) {
-      console.error('[v0] Error deleting product:', error);
-      toast({
-        title: 'Помилка',
-        description: 'Не вдалось видалити продукт',
-        variant: 'destructive'
-      });
-    }
-  };
-
   const statusLabel = {
     'all': 'Усі товари',
     'active': 'Активні',
@@ -190,7 +156,6 @@ export default function ShopPage() {
                   categoryName={product.category_name}
                   saleCount={product.sale_count}
                   status={product.status}
-                  onDelete={handleDeleteProduct}
                 />
               ))}
             </div>
