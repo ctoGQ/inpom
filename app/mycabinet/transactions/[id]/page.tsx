@@ -9,9 +9,9 @@ import Image from 'next/image';
 import { TransactionDetailClient } from '@/components/transaction-detail-client';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 async function getTransaction(transactionId: number, customerId: number) {

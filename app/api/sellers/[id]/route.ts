@@ -3,10 +3,11 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const sellerId = parseInt(params.id, 10);
+    const { id } = await params;
+    const sellerId = parseInt(id, 10);
     if (isNaN(sellerId)) {
       return NextResponse.json(
         { error: 'Invalid seller ID' },

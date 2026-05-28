@@ -20,7 +20,7 @@ interface UpdateProductRequest {
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const customer = await getSessionCustomer();
@@ -31,7 +31,8 @@ export async function PUT(
       );
     }
 
-    const productId = parseInt(params.id, 10);
+    const { id } = await params;
+    const productId = parseInt(id, 10);
     if (isNaN(productId)) {
       return NextResponse.json(
         { error: 'Invalid product ID' },

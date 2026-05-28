@@ -139,18 +139,18 @@ function renderBlockContent(blocks: any[]) {
   });
 }
 
-export default async function ArticlePage({ params }: { params: { id: string } }) {
+export default async function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
   // In Next.js 16+, params is a Promise - must await it
-  const resolvedParams = await params;
-  
-  const article = await getArticle(resolvedParams.id);
+  const { id } = await params;
+
+  const article = await getArticle(id);
 
   if (!article) {
     notFound();
   }
 
   const relatedArticles = article.category_id
-    ? await getRelatedArticles(article.category_id as number, resolvedParams.id)
+    ? await getRelatedArticles(article.category_id as number, id)
     : [];
   const subscriberCount = await getSubscriptionStats();
 
@@ -310,8 +310,9 @@ export async function generateStaticParams() {
   }
 }
 
-export async function generateMetadata({ params }: { params: { id: string } }) {
-  const article = await getArticle(params.id);
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
+  const article = await getArticle(id);
   
   if (!article) {
     return {

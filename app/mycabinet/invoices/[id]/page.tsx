@@ -9,9 +9,9 @@ import { formatAmount, safeAmount } from '@/lib/format-amount';
 import Link from 'next/link';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 async function getInvoice(invoiceId: number) {

@@ -8,7 +8,7 @@ import { NextRequest, NextResponse } from 'next/server';
 // ── GET ─────────────────────────────────────────────────────────────────────
 export async function GET(
   _req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
@@ -57,7 +57,7 @@ export async function GET(
 // ── POST ─────────────────────────────────────────────────────────────────────
 export async function POST(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const customer = await getSessionCustomer();

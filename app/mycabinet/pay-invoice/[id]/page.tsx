@@ -7,9 +7,9 @@ import { sql } from '@/lib/db';
 import { formatAmount } from '@/lib/format-amount';
 
 interface PageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 async function getInvoice(invoiceId: number) {
