@@ -182,7 +182,7 @@ export function CardSlider({
               <span className="text-center">ІНВОЙС</span>
             </motion.button>
           </Link>
-          <Link href="/mycabinet/withdraw">
+          <Link href={`/mycabinet/withdraw?cardId=${currentCard.id}`}>
             <motion.button
               className="w-full aspect-square bg-black flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
               style={{ borderRadius: '8px 8px 26px 8px' }}
