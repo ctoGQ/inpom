@@ -1,16 +1,25 @@
 // app/mycabinet/shop/page.tsx
-// Main shop page with product listing and filters
+// Marketplace page - App Store / Play Market style
+// All authenticated users see ALL products
 
 'use client';
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Input } from '@/components/ui/input';
+import Image from 'next/image';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
-import { MobileModal } from '@/components/mobile-modal';
-import { SellerProductCard } from '@/components/shop/seller-product-card';
-import { Search, Plus, SlidersHorizontal } from 'lucide-react';
-import { useToast } from '@/components/ui/use-toast';
+import {
+  Search,
+  Star,
+  Tag,
+  ChevronRight,
+  Plus,
+  TrendingUp,
+  Sparkles,
+  Package,
+  Store,
+  Percent,
+} from 'lucide-react';
 
 interface Product {
   id: number;
@@ -23,218 +32,400 @@ interface Product {
   review_count: number;
   primary_image?: string;
   category_name: string;
+  category_slug: string;
   sale_count: number;
-  status: string;
-  attribute_count: number;
+  seller_name: string;
+  seller_id: number;
+  seller_avatar?: string;
 }
 
-export default function ShopPage() {
-  const [products, setProducts] = useState<Product[]>([]);
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  icon_url?: string;
+  color?: string;
+}
+
+interface Seller {
+  id: number;
+  name: string;
+  avatar?: string;
+  saleCount: number;
+  productCount: number;
+}
+
+// ─── Compact product card for carousels ───────────────────────────────────────
+function CarouselProductCard({ product }: { product: Product }) {
+  const discount =
+    product.original_price && product.original_price > product.price
+      ? Math.round(((product.original_price - product.price) / product.original_price) * 100)
+      : 0;
+
+  return (
+    <Link href={`/mycabinet/shop/${product.id}`} className="block flex-shrink-0 w-40">
+      <div className="rounded-2xl border border-foreground/10 bg-card overflow-hidden hover:bg-foreground/5 transition-colors">
+        {/* Image */}
+        <div className="relative w-full aspect-square bg-foreground/5">
+          {product.primary_image ? (
+            <Image
+              src={product.primary_image}
+              alt={product.title}
+              fill
+              sizes="160px"
+              className="object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Package className="w-8 h-8 text-muted-foreground/30" />
+            </div>
+          )}
+          {discount > 0 && (
+            <div className="absolute top-2 left-2 bg-destructive text-destructive-foreground text-xs font-bold px-1.5 py-0.5 rounded-md">
+              -{discount}%
+            </div>
+          )}
+        </div>
+        {/* Info */}
+        <div className="p-3 space-y-1">
+          <p className="text-xs font-medium text-foreground line-clamp-2 leading-tight">{product.title}</p>
+          <div className="flex items-center gap-1">
+            <Star className="w-3 h-3 fill-foreground/60 text-foreground/60" />
+            <span className="text-xs text-muted-foreground">
+              {Number(product.rating).toFixed(1)}
+            </span>
+          </div>
+          <div>
+            <p className="text-sm font-bold text-foreground">
+              {Number(product.price).toFixed(0)} {product.currency}
+            </p>
+            {product.original_price && product.original_price > product.price && (
+              <p className="text-xs text-muted-foreground line-through">
+                {Number(product.original_price).toFixed(0)}
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+// ─── Seller circle avatar ─────────────────────────────────────────────────────
+function SellerCircle({ seller }: { seller: Seller }) {
+  const initials = seller.name
+    .split(' ')
+    .map((w) => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+
+  return (
+    <Link
+      href={`/shop?seller_id=${seller.id}`}
+      className="block flex-shrink-0 w-[72px] text-center"
+    >
+      <div className="w-14 h-14 mx-auto rounded-full border-2 border-foreground/10 bg-foreground/5 overflow-hidden mb-1.5">
+        {seller.avatar ? (
+          <Image
+            src={seller.avatar}
+            alt={seller.name}
+            width={56}
+            height={56}
+            className="object-cover w-full h-full"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <span className="text-sm font-bold text-muted-foreground">{initials}</span>
+          </div>
+        )}
+      </div>
+      <p className="text-xs text-muted-foreground truncate leading-tight">{seller.name.split(' ')[0]}</p>
+    </Link>
+  );
+}
+
+// ─── Section header ───────────────────────────────────────────────────────────
+function SectionHeader({
+  title,
+  icon: Icon,
+  href,
+}: {
+  title: string;
+  icon: React.ElementType;
+  href?: string;
+}) {
+  return (
+    <div className="flex items-center justify-between px-4 mb-3">
+      <div className="flex items-center gap-2">
+        <Icon className="w-5 h-5 text-foreground" />
+        <h2 className="text-base font-bold text-foreground">{title}</h2>
+      </div>
+      {href && (
+        <Link
+          href={href}
+          className="flex items-center gap-0.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          Всі <ChevronRight className="w-3 h-3" />
+        </Link>
+      )}
+    </div>
+  );
+}
+
+// ─── Skeleton rows ────────────────────────────────────────────────────────────
+const ProductSkeletons = () => (
+  <>
+    {Array.from({ length: 6 }).map((_, i) => (
+      <div key={i} className="flex-shrink-0 w-40 h-56 bg-foreground/5 rounded-2xl animate-pulse" />
+    ))}
+  </>
+);
+
+const SellerSkeletons = () => (
+  <>
+    {Array.from({ length: 8 }).map((_, i) => (
+      <div key={i} className="flex-shrink-0 w-[72px] space-y-1.5">
+        <div className="w-14 h-14 mx-auto rounded-full bg-foreground/5 animate-pulse" />
+        <div className="h-3 w-10 mx-auto bg-foreground/5 rounded animate-pulse" />
+      </div>
+    ))}
+  </>
+);
+
+// ─── Category icons fallback map ──────────────────────────────────────────────
+const CATEGORY_ICONS: Record<string, string> = {
+  default: '🛍️',
+};
+
+// ─── Main Page ────────────────────────────────────────────────────────────────
+export default function ShopMarketplacePage() {
+  const [popularProducts, setPopularProducts] = useState<Product[]>([]);
+  const [ratedProducts, setRatedProducts] = useState<Product[]>([]);
+  const [newProducts, setNewProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [sellers, setSellers] = useState<Seller[]>([]);
+  const [discountProducts, setDiscountProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [total, setTotal] = useState(0);
-  const [isSortModalOpen, setIsSortModalOpen] = useState(false);
-  const [selectedStatus, setSelectedStatus] = useState<'all' | 'active' | 'draft' | 'inactive'>('all');
-  const { toast } = useToast();
 
-  const limit = 12;
-  const totalPages = Math.ceil(total / limit);
-
-  // Fetch products
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchAll = async () => {
       setLoading(true);
       try {
-        const params = new URLSearchParams({
-          page: page.toString(),
-          limit: limit.toString(),
-          status: selectedStatus
-        });
+        const [popularRes, ratedRes, newRes, categoriesRes] = await Promise.all([
+          fetch('/api/shop/products?sortBy=popular&limit=24'),
+          fetch('/api/shop/products?sortBy=rating&limit=24'),
+          fetch('/api/shop/products?sortBy=newest&limit=24'),
+          fetch('/api/shop/categories'),
+        ]);
 
-        const response = await fetch(`/api/shop/products/seller?${params}`);
-        if (!response.ok) throw new Error('Failed to fetch products');
-        const data = await response.json();
+        const [popularData, ratedData, newData, categoriesData] = await Promise.all([
+          popularRes.json(),
+          ratedRes.json(),
+          newRes.json(),
+          categoriesRes.json(),
+        ]);
 
-        setProducts(data.products || []);
-        setTotal(data.pagination?.total || 0);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        toast({
-          title: 'Помилка',
-          description: 'Не вдалось завантажити товари',
-          variant: 'destructive'
+        const popular: Product[] = popularData.products || [];
+        const rated: Product[] = ratedData.products || [];
+        const newest: Product[] = newData.products || [];
+
+        setPopularProducts(popular);
+        setRatedProducts(rated);
+        setNewProducts(newest);
+        setCategories(Array.isArray(categoriesData) ? categoriesData : []);
+
+        // Collect discount products from all fetched sets
+        const seen = new Set<number>();
+        const discounts: Product[] = [];
+        [...popular, ...rated, ...newest].forEach((p) => {
+          if (
+            !seen.has(p.id) &&
+            p.original_price &&
+            Number(p.original_price) > Number(p.price)
+          ) {
+            seen.add(p.id);
+            discounts.push(p);
+          }
         });
+        setDiscountProducts(discounts);
+
+        // Extract and rank unique sellers
+        const sellerMap = new Map<number, Seller>();
+        [...popular, ...rated].forEach((p) => {
+          if (!sellerMap.has(p.seller_id)) {
+            sellerMap.set(p.seller_id, {
+              id: p.seller_id,
+              name: p.seller_name,
+              avatar: p.seller_avatar,
+              saleCount: Number(p.sale_count) || 0,
+              productCount: 1,
+            });
+          } else {
+            const s = sellerMap.get(p.seller_id)!;
+            s.saleCount += Number(p.sale_count) || 0;
+            s.productCount++;
+          }
+        });
+        setSellers(
+          Array.from(sellerMap.values())
+            .sort((a, b) => b.saleCount - a.saleCount)
+            .slice(0, 24)
+        );
+      } catch (err) {
+        console.error('[ShopMarketplace] Error fetching data:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProducts();
-  }, [page, selectedStatus, toast]);
-
-  const statusLabel = {
-    'all': 'Усі товари',
-    'active': 'Активні',
-    'draft': 'Чорновики',
-    'inactive': 'Неактивні'
-  }[selectedStatus] || 'Усі товари';
+    fetchAll();
+  }, []);
 
   return (
-    <CabinetLayout 
-      title="Магазин"
-      showBack={true}
-      showAvatar={true}
-      showNav={true}
-    >
-      <div className="px-4 pt-6 pb-24 space-y-6">
-        {/* Top Bar with Add Button */}
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-foreground">Мої товари</h2>
-          <Link href="/mycabinet/shop/create">
-            <button className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg font-medium hover:shadow-md transition-all active:scale-95">
-              <Plus className="w-4 h-4" />
-              <span className="text-sm">Додати</span>
-            </button>
+    <CabinetLayout title="Маркетплейс" showAvatar showNav>
+      <div className="pb-28">
+        {/* ── Search bar ── */}
+        <div className="px-4 pt-4 pb-6">
+          <Link href="/shop">
+            <div className="flex items-center gap-3 px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl">
+              <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+              <span className="text-sm text-muted-foreground">Пошук товарів та послуг...</span>
+            </div>
           </Link>
         </div>
 
-        {/* Filter Bar */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => setIsSortModalOpen(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 text-foreground rounded-lg text-sm font-medium transition-all"
-          >
-            <SlidersHorizontal className="w-4 h-4" />
-            <span>{statusLabel}</span>
-          </button>
-
-          {selectedStatus !== 'all' && (
-            <button
-              onClick={() => {
-                setSelectedStatus('all');
-                setPage(1);
-              }}
-              className="px-3 py-2 text-muted-foreground hover:text-foreground text-xs font-medium transition-colors"
-            >
-              Скинути
-            </button>
-          )}
-        </div>
-
-        {/* Products Grid */}
-        {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-96 bg-foreground/5 rounded-2xl animate-pulse" />
-            ))}
-          </div>
-        ) : products.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16">
-            <Search className="w-16 h-16 text-muted-foreground/30 mb-4" />
-            <p className="text-foreground font-semibold text-center">Товари не знайдені</p>
-            <p className="text-muted-foreground text-sm text-center mt-2">
-              {selectedStatus === 'all' 
-                ? 'Почніть продавати - додайте свій перший товар'
-                : 'Немає товарів з цим статусом'}
-            </p>
-          </div>
-        ) : (
-          <>
-            {/* Products Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {products.map(product => (
-                <SellerProductCard
-                  key={product.id}
-                  id={product.id}
-                  title={product.title}
-                  price={product.price}
-                  originalPrice={product.original_price}
-                  currency={product.currency}
-                  rating={product.rating}
-                  reviewCount={product.review_count}
-                  primaryImage={product.primary_image}
-                  categoryName={product.category_name}
-                  saleCount={product.sale_count}
-                  status={product.status}
-                />
-              ))}
+        <div className="space-y-10">
+          {/* ── 1. Кращі Продавці ── */}
+          <section>
+            <SectionHeader title="Кращі Продавці" icon={Store} />
+            <div className="flex gap-4 overflow-x-auto px-4 pb-2 scrollbar-hide">
+              {loading ? (
+                <SellerSkeletons />
+              ) : sellers.length > 0 ? (
+                sellers.map((seller) => <SellerCircle key={seller.id} seller={seller} />)
+              ) : (
+                <p className="text-sm text-muted-foreground px-2">Поки немає продавців</p>
+              )}
             </div>
+          </section>
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-              <div className="flex justify-center gap-2 pt-6">
-                <button
-                  onClick={() => setPage(Math.max(1, page - 1))}
-                  disabled={page === 1}
-                  className="px-4 py-2 bg-foreground/10 hover:bg-foreground/20 disabled:opacity-50 disabled:cursor-not-allowed text-foreground rounded-lg font-medium transition-all"
-                >
-                  Попередня
-                </button>
+          {/* ── 2. Кращі Послуги ── */}
+          <section>
+            <SectionHeader title="Кращі Послуги" icon={Sparkles} href="/shop?sortBy=rating" />
+            <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide">
+              {loading ? (
+                <ProductSkeletons />
+              ) : ratedProducts.length > 0 ? (
+                ratedProducts.map((p) => <CarouselProductCard key={p.id} product={p} />)
+              ) : (
+                <p className="text-sm text-muted-foreground px-2">Немає послуг</p>
+              )}
+            </div>
+          </section>
 
-                {Array.from({ length: Math.min(5, totalPages) }).map((_, i) => {
-                  const pageNum = Math.max(1, page - 2) + i;
-                  if (pageNum > totalPages) return null;
-                  return (
-                    <button
-                      key={pageNum}
-                      onClick={() => setPage(pageNum)}
-                      className={`w-10 h-10 rounded-lg font-medium transition-all ${
-                        page === pageNum
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-foreground/10 hover:bg-foreground/20 text-foreground'
-                      }`}
-                    >
-                      {pageNum}
-                    </button>
-                  );
-                })}
+          {/* ── 3. Кращі Товари ── */}
+          <section>
+            <SectionHeader title="Кращі Товари" icon={TrendingUp} href="/shop?sortBy=popular" />
+            <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide">
+              {loading ? (
+                <ProductSkeletons />
+              ) : popularProducts.length > 0 ? (
+                popularProducts.map((p) => <CarouselProductCard key={p.id} product={p} />)
+              ) : (
+                <p className="text-sm text-muted-foreground px-2">Немає товарів</p>
+              )}
+            </div>
+          </section>
 
-                <button
-                  onClick={() => setPage(Math.min(totalPages, page + 1))}
-                  disabled={page === totalPages}
-                  className="px-4 py-2 bg-foreground/10 hover:bg-foreground/20 disabled:opacity-50 disabled:cursor-not-allowed text-foreground rounded-lg font-medium transition-all"
-                >
-                  Наступна
-                </button>
+          {/* ── 4. Категорії (2-column grid, 6 rows) ── */}
+          <section>
+            <SectionHeader title="Категорії" icon={Tag} href="/shop" />
+            <div className="px-4">
+              {loading ? (
+                <div className="grid grid-cols-2 gap-3">
+                  {Array.from({ length: 12 }).map((_, i) => (
+                    <div key={i} className="h-14 bg-foreground/5 rounded-2xl animate-pulse" />
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  {categories.slice(0, 12).map((cat) => (
+                    <Link key={cat.id} href={`/shop?category=${cat.slug}`}>
+                      <div className="p-4 rounded-2xl border border-foreground/10 bg-card hover:bg-foreground/5 transition-colors flex items-center gap-3 h-14">
+                        {cat.icon_url ? (
+                          <Image
+                            src={cat.icon_url}
+                            alt={cat.name}
+                            width={24}
+                            height={24}
+                            className="w-6 h-6 object-contain flex-shrink-0"
+                          />
+                        ) : (
+                          <span className="text-lg flex-shrink-0">
+                            {CATEGORY_ICONS[cat.slug] || CATEGORY_ICONS.default}
+                          </span>
+                        )}
+                        <span className="text-sm font-medium text-foreground truncate leading-tight">
+                          {cat.name}
+                        </span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* ── 5. Останні Новинки ── */}
+          <section>
+            <SectionHeader title="Останні Новинки" icon={Package} href="/shop?sortBy=newest" />
+            <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide">
+              {loading ? (
+                <ProductSkeletons />
+              ) : newProducts.length > 0 ? (
+                newProducts.map((p) => <CarouselProductCard key={p.id} product={p} />)
+              ) : (
+                <p className="text-sm text-muted-foreground px-2">Немає новинок</p>
+              )}
+            </div>
+          </section>
+
+          {/* ── 6. Акції та Знижки ── */}
+          <section>
+            <SectionHeader title="Акції та Знижки" icon={Percent} />
+            <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide">
+              {loading ? (
+                <ProductSkeletons />
+              ) : discountProducts.length > 0 ? (
+                discountProducts.map((p) => <CarouselProductCard key={p.id} product={p} />)
+              ) : (
+                <div className="flex-shrink-0 w-72">
+                  <div className="rounded-2xl border border-foreground/10 bg-card p-6 text-center">
+                    <Percent className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+                    <p className="text-sm text-muted-foreground">Зараз немає акцій</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* ── CTA: Add your product ── */}
+          <div className="px-4">
+            <Link href="/mycabinet/shop/create">
+              <div className="rounded-2xl border border-foreground/10 bg-card p-5 flex items-center justify-between hover:bg-foreground/5 transition-colors">
+                <div>
+                  <p className="font-semibold text-foreground">Додайте свій товар</p>
+                  <p className="text-sm text-muted-foreground mt-0.5">Почніть продавати на платформі</p>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                  <Plus className="w-5 h-5 text-primary-foreground" />
+                </div>
               </div>
-            )}
-          </>
-        )}
-      </div>
-
-      {/* Status Filter Modal */}
-      <MobileModal
-        isOpen={isSortModalOpen}
-        onClose={() => setIsSortModalOpen(false)}
-        title="Фільтр за статусом"
-      >
-        <div className="px-4 py-6 space-y-2">
-          {(['all', 'active', 'draft', 'inactive'] as const).map(status => (
-            <button
-              key={status}
-              onClick={() => {
-                setSelectedStatus(status);
-                setIsSortModalOpen(false);
-                setPage(1);
-              }}
-              className={`w-full p-4 rounded-2xl border transition-all text-left font-medium ${
-                selectedStatus === status
-                  ? 'bg-primary/10 border-primary/50 text-primary'
-                  : 'bg-foreground/5 border-foreground/10 text-foreground hover:bg-foreground/10'
-              }`}
-            >
-              {statusLabel.split(' ').length > 1 
-                ? {
-                    'all': 'Усі товари',
-                    'active': 'Активні',
-                    'draft': 'Чорновики',
-                    'inactive': 'Неактивні'
-                  }[status]
-                : statusLabel}
-            </button>
-          ))}
+            </Link>
+          </div>
         </div>
-      </MobileModal>
+      </div>
     </CabinetLayout>
   );
 }
