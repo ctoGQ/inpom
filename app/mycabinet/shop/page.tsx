@@ -51,8 +51,10 @@ interface Seller {
   id: number;
   name: string;
   avatar?: string;
-  saleCount: number;
-  productCount: number;
+  average_rating: number;
+  total_sales: number;
+  product_count: number;
+  is_verified: boolean;
 }
 
 // ─── Compact product card for carousels ───────────────────────────────────────
@@ -125,7 +127,7 @@ function SellerCircle({ seller }: { seller: Seller }) {
       href={`/shop?seller_id=${seller.id}`}
       className="block flex-shrink-0 w-[72px] text-center"
     >
-      <div className="w-14 h-14 mx-auto rounded-full border-2 border-foreground/10 bg-foreground/5 overflow-hidden mb-1.5">
+      <div className="relative w-14 h-14 mx-auto rounded-full border-2 border-foreground/10 bg-foreground/5 overflow-hidden mb-1.5">
         {seller.avatar ? (
           <Image
             src={seller.avatar}
@@ -139,8 +141,16 @@ function SellerCircle({ seller }: { seller: Seller }) {
             <span className="text-sm font-bold text-muted-foreground">{initials}</span>
           </div>
         )}
+        {seller.is_verified && (
+          <div className="absolute bottom-0 right-0 w-4 h-4 bg-primary rounded-full flex items-center justify-center">
+            <span className="text-[8px] text-primary-foreground font-bold">✓</span>
+          </div>
+        )}
       </div>
       <p className="text-xs text-muted-foreground truncate leading-tight">{seller.name.split(' ')[0]}</p>
+      {seller.product_count > 0 && (
+        <p className="text-[10px] text-muted-foreground/60">{seller.product_count} тов.</p>
+      )}
     </Link>
   );
 }
@@ -200,8 +210,8 @@ const CATEGORY_ICONS: Record<string, string> = {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 export default function ShopMarketplacePage() {
+  const [serviceProducts, setServiceProducts] = useState<Product[]>([]);
   const [popularProducts, setPopularProducts] = useState<Product[]>([]);
-  const [ratedProducts, setRatedProducts] = useState<Product[]>([]);
   const [newProducts, setNewProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [sellers, setSellers] = useState<Seller[]>([]);
@@ -212,33 +222,37 @@ export default function ShopMarketplacePage() {
     const fetchAll = async () => {
       setLoading(true);
       try {
-        const [popularRes, ratedRes, newRes, categoriesRes] = await Promise.all([
-          fetch('/api/shop/products?sortBy=popular&limit=24'),
-          fetch('/api/shop/products?sortBy=rating&limit=24'),
+        const [sellersRes, servicesRes, goodsRes, newRes, categoriesRes] = await Promise.all([
+          fetch('/api/shop/sellers?limit=24'),
+          fetch('/api/shop/products?type=service&sortBy=rating&limit=24'),
+          fetch('/api/shop/products?type=goods&sortBy=popular&limit=24'),
           fetch('/api/shop/products?sortBy=newest&limit=24'),
           fetch('/api/shop/categories'),
         ]);
 
-        const [popularData, ratedData, newData, categoriesData] = await Promise.all([
-          popularRes.json(),
-          ratedRes.json(),
+        const [sellersData, servicesData, goodsData, newData, categoriesData] = await Promise.all([
+          sellersRes.json(),
+          servicesRes.json(),
+          goodsRes.json(),
           newRes.json(),
           categoriesRes.json(),
         ]);
 
-        const popular: Product[] = popularData.products || [];
-        const rated: Product[] = ratedData.products || [];
+        setSellers(Array.isArray(sellersData) ? sellersData : []);
+
+        const services: Product[] = servicesData.products || [];
+        const goods: Product[] = goodsData.products || [];
         const newest: Product[] = newData.products || [];
 
-        setPopularProducts(popular);
-        setRatedProducts(rated);
+        setServiceProducts(services);
+        setPopularProducts(goods);
         setNewProducts(newest);
         setCategories(Array.isArray(categoriesData) ? categoriesData : []);
 
-        // Collect discount products from all fetched sets
+        // Discount products: any active product with original_price > price
         const seen = new Set<number>();
         const discounts: Product[] = [];
-        [...popular, ...rated, ...newest].forEach((p) => {
+        [...services, ...goods, ...newest].forEach((p) => {
           if (
             !seen.has(p.id) &&
             p.original_price &&
@@ -249,29 +263,6 @@ export default function ShopMarketplacePage() {
           }
         });
         setDiscountProducts(discounts);
-
-        // Extract and rank unique sellers
-        const sellerMap = new Map<number, Seller>();
-        [...popular, ...rated].forEach((p) => {
-          if (!sellerMap.has(p.seller_id)) {
-            sellerMap.set(p.seller_id, {
-              id: p.seller_id,
-              name: p.seller_name,
-              avatar: p.seller_avatar,
-              saleCount: Number(p.sale_count) || 0,
-              productCount: 1,
-            });
-          } else {
-            const s = sellerMap.get(p.seller_id)!;
-            s.saleCount += Number(p.sale_count) || 0;
-            s.productCount++;
-          }
-        });
-        setSellers(
-          Array.from(sellerMap.values())
-            .sort((a, b) => b.saleCount - a.saleCount)
-            .slice(0, 24)
-        );
       } catch (err) {
         console.error('[ShopMarketplace] Error fetching data:', err);
       } finally {
@@ -312,12 +303,12 @@ export default function ShopMarketplacePage() {
 
           {/* ── 2. Кращі Послуги ── */}
           <section>
-            <SectionHeader title="Кращі Послуги" icon={Sparkles} href="/shop?sortBy=rating" />
+            <SectionHeader title="Кращі Послуги" icon={Sparkles} href="/shop?type=service&sortBy=rating" />
             <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide">
               {loading ? (
                 <ProductSkeletons />
-              ) : ratedProducts.length > 0 ? (
-                ratedProducts.map((p) => <CarouselProductCard key={p.id} product={p} />)
+              ) : serviceProducts.length > 0 ? (
+                serviceProducts.map((p) => <CarouselProductCard key={p.id} product={p} />)
               ) : (
                 <p className="text-sm text-muted-foreground px-2">Немає послуг</p>
               )}

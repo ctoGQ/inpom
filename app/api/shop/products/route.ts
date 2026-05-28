@@ -9,6 +9,7 @@ interface QueryParams {
   search?: string;
   category?: string;
   sortBy?: 'newest' | 'popular' | 'price-asc' | 'price-desc' | 'rating';
+  type?: string; // 'goods' | 'service' | 'digital' | 'subscription'
   minPrice?: string;
   maxPrice?: string;
   page?: string;
@@ -23,6 +24,7 @@ export async function GET(request: NextRequest) {
       search: searchParams.get('search') || undefined,
       category: searchParams.get('category') || undefined,
       sortBy: (searchParams.get('sortBy') as any) || 'newest',
+      type: searchParams.get('type') || undefined,
       minPrice: searchParams.get('minPrice') || undefined,
       maxPrice: searchParams.get('maxPrice') || undefined,
       page: searchParams.get('page') || '1',
@@ -72,6 +74,12 @@ export async function GET(request: NextRequest) {
       params_array.push(parseInt(params.seller_id));
     }
 
+    // Product type filter
+    if (params.type) {
+      query += ` AND p.product_type = $${params_array.length + 1}`;
+      params_array.push(params.type);
+    }
+
     // Price range filter
     if (params.minPrice) {
       query += ` AND p.price >= $${params_array.length + 1}`;
@@ -114,6 +122,11 @@ export async function GET(request: NextRequest) {
     if (params.category) {
       countQuery += ` AND c.slug = $${countParams.length + 1}`;
       countParams.push(params.category);
+    }
+
+    if (params.type) {
+      countQuery += ` AND p.product_type = $${countParams.length + 1}`;
+      countParams.push(params.type);
     }
 
     const countResult = await sql.unsafe(countQuery, countParams);
@@ -167,6 +180,7 @@ interface CreateProductRequest {
   originalPrice?: number;
   stockQuantity?: number;
   sku?: string;
+  productType?: 'goods' | 'service' | 'digital' | 'subscription';
   attributes?: Array<{ name: string; value: string }>;
   images?: string[];
 }
@@ -217,11 +231,12 @@ export async function POST(request: NextRequest) {
       .replace(/[^\w-]/g, '')
       .substring(0, 200);
 
-    // Insert product
+    // Insert product (status = active immediately; no moderation workflow yet)
+    const productType = body.productType || 'goods';
     const productResult = await sql`
       INSERT INTO shop_products (
         seller_id, category_id, title, slug, description, short_description,
-        price, original_price, stock_quantity, sku, status
+        price, original_price, stock_quantity, sku, status, product_type
       )
       VALUES (
         ${customer.id},
@@ -234,7 +249,8 @@ export async function POST(request: NextRequest) {
         ${body.originalPrice || null},
         ${body.stockQuantity || 0},
         ${body.sku || null},
-        'moderation'
+        'active',
+        ${productType}
       )
       RETURNING id, title, slug, created_at
     `;
@@ -284,14 +300,14 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(
-      `[Create Product API] ✅ Product created: ID=${productId}, Status=moderation`
+      `[Create Product API] ✅ Product created: ID=${productId}, Type=${productType}, Status=active`
     );
 
     return NextResponse.json(
       {
         success: true,
         productId,
-        message: 'Product created successfully. It will appear in the shop after moderation.'
+        message: 'Товар успішно створено та опублікований в магазині.'
       },
       { status: 201 }
     );

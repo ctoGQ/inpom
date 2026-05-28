@@ -25,6 +25,7 @@ export default function CreateProductPage() {
     title: '',
     categoryId: '',
     categoryName: '',
+    productType: 'goods' as 'goods' | 'service' | 'digital' | 'subscription',
     price: '',
     description: '',
     shortDescription: '',
@@ -134,6 +135,7 @@ export default function CreateProductPage() {
           originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : undefined,
           stockQuantity: parseInt(formData.stockQuantity) || 0,
           sku: formData.sku,
+          productType: formData.productType,
           attributes: formData.attributes.filter(a => a.name && a.value),
           images: formData.images
         })
@@ -160,6 +162,7 @@ export default function CreateProductPage() {
         title: '',
         categoryId: '',
         categoryName: '',
+        productType: 'goods',
         price: '',
         description: '',
         shortDescription: '',
@@ -206,6 +209,34 @@ export default function CreateProductPage() {
             required
             className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           />
+        </div>
+
+        {/* Product type */}
+        <div className="space-y-2">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Тип оголошення *
+          </label>
+          <div className="grid grid-cols-4 gap-2">
+            {([
+              { value: 'goods', label: '📦 Товар' },
+              { value: 'service', label: '🛠️ Послуга' },
+              { value: 'digital', label: '💾 Цифровий' },
+              { value: 'subscription', label: '🔁 Підписка' },
+            ] as const).map(({ value, label }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, productType: value }))}
+                className={`px-2 py-2.5 rounded-2xl border text-xs font-medium transition-all text-center ${
+                  formData.productType === value
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-foreground/10 bg-foreground/5 text-muted-foreground hover:border-foreground/20'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Category */}
