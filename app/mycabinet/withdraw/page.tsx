@@ -97,7 +97,7 @@ export default async function WithdrawPage({ searchParams }: PageProps) {
           </div>
           <div className="pt-4 border-t border-foreground/10">
             <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold mb-1">Доступний баланс</p>
-            <p className="text-3xl font-bold text-foreground">{card.balance?.toFixed(2) || '0.00'}</p>
+            <p className="text-3xl font-bold text-foreground">{typeof card.balance === 'string' ? parseFloat(card.balance).toFixed(2) : Number(card.balance).toFixed(2)}</p>
           </div>
         </div>
 
@@ -105,7 +105,7 @@ export default async function WithdrawPage({ searchParams }: PageProps) {
         <WithdrawForm 
           cardId={card.id}
           customerId={customer.id}
-          availableBalance={parseFloat(card.balance)}
+          availableBalance={typeof card.balance === 'string' ? parseFloat(card.balance) : card.balance}
         />
       </div>
     </CabinetLayout>
