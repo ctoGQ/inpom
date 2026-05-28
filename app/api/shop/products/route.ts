@@ -1,7 +1,7 @@
 // GET /api/shop/products
 // Fetch products with filtering, sorting, and search
 
-import { sql } from '@/lib/db';
+import { sql, query as dbQuery } from '@/lib/db';
 import { getSessionCustomer } from '@/lib/auth';
 import { NextRequest, NextResponse } from 'next/server';
 
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     const page = Math.max(parseInt(params.page || '1'), 1);
     const offset = (page - 1) * limit;
 
-    let query = `
+    let sqlText = `
       SELECT 
         p.id, p.title, p.slug, p.description, p.short_description,
         p.price, p.original_price, p.currency, p.stock_quantity,
@@ -58,31 +58,31 @@ export async function GET(request: NextRequest) {
 
     // Search filter
     if (params.search) {
-      query += ` AND (p.title ILIKE $${params_array.length + 1} OR p.description ILIKE $${params_array.length + 1})`;
+      sqlText += ` AND (p.title ILIKE $${params_array.length + 1} OR p.description ILIKE $${params_array.length + 1})`;
       params_array.push(`%${params.search}%`);
     }
 
     // Category filter
     if (params.category) {
-      query += ` AND c.slug = $${params_array.length + 1}`;
+      sqlText += ` AND c.slug = $${params_array.length + 1}`;
       params_array.push(params.category);
     }
 
     // Seller filter
     if (params.seller_id) {
-      query += ` AND p.seller_id = $${params_array.length + 1}`;
+      sqlText += ` AND p.seller_id = $${params_array.length + 1}`;
       params_array.push(parseInt(params.seller_id));
     }
 
     // Product type filter (column may not exist before migration_shop_extend.sql is run)
+    let typeFilterApplied = false;
     if (params.type) {
       try {
-        // Check if column exists before adding filter
-        await sql.unsafe(`SELECT product_type FROM shop_products LIMIT 0`, []);
-        query += ` AND p.product_type = $${params_array.length + 1}`;
+        await dbQuery(`SELECT product_type FROM shop_products LIMIT 0`, []);
+        sqlText += ` AND p.product_type = $${params_array.length + 1}`;
         params_array.push(params.type);
+        typeFilterApplied = true;
       } catch {
-        // product_type column doesn't exist yet — skip the filter, show all types
         console.warn('[Shop Products API] product_type column not found, ignoring type filter');
       }
     }
@@ -107,13 +107,13 @@ export async function GET(request: NextRequest) {
       rating: 'p.rating DESC'
     };
 
-    query += ` ORDER BY ${sortMap[params.sortBy] || sortMap.newest}`;
+    sqlText += ` ORDER BY ${sortMap[params.sortBy] || sortMap.newest}`;
 
     // Pagination
-    query += ` LIMIT $${params_array.length + 1} OFFSET $${params_array.length + 2}`;
+    sqlText += ` LIMIT $${params_array.length + 1} OFFSET $${params_array.length + 2}`;
     params_array.push(limit, offset);
 
-    const result = await sql.unsafe(query, params_array);
+    const result = await dbQuery(sqlText, params_array);
 
     // Count total
     let countQuery = `SELECT COUNT(*) as total FROM shop_products p
@@ -131,13 +131,12 @@ export async function GET(request: NextRequest) {
       countParams.push(params.category);
     }
 
-    if (params.type && params_array.some((v) => v === params.type)) {
-      // Only add type filter to count if it was successfully added to main query
+    if (typeFilterApplied && params.type) {
       countQuery += ` AND p.product_type = $${countParams.length + 1}`;
       countParams.push(params.type);
     }
 
-    const countResult = await sql.unsafe(countQuery, countParams);
+    const countResult = await dbQuery(countQuery, countParams);
     const total = (countResult.rows && countResult.rows.length > 0) ? parseInt(countResult.rows[0].total) : 0;
 
     console.log(

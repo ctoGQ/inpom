@@ -21,16 +21,15 @@ export async function GET(request: NextRequest) {
     const productResult = await sql`
       SELECT 
         p.id, p.title, p.slug, p.description, p.short_description,
-        p.price, p.original_price, p.currency, p.stock_quantity,
+        p.price, p.original_price, p.currency, p.stock_quantity, p.sku,
         p.rating, p.review_count, p.view_count, p.sale_count,
         p.status, p.is_featured, p.created_at,
+        COALESCE(p.comment_count, 0) as comment_count,
         c.name as category_name, c.id as category_id,
-        cu.name as seller_name, cu.id as seller_id,
-        spi.image_url as primary_image
+        cu.name as seller_name, cu.id as seller_id, cu.avatar_url as seller_avatar
       FROM shop_products p
       JOIN shop_categories c ON p.category_id = c.id
       JOIN customers cu ON p.seller_id = cu.id
-      LEFT JOIN shop_product_images spi ON p.id = spi.product_id AND spi.is_primary = TRUE
       WHERE p.id = ${productId}
     `;
 
@@ -43,9 +42,9 @@ export async function GET(request: NextRequest) {
 
     const product = productResult.rows[0];
 
-    // Check if user is the seller or if product is active
+    // Check if user is the seller or if product is publicly visible
     const customer = await getSessionCustomer();
-    if (customer?.id !== product.seller_id && product.status !== 'active') {
+    if (customer?.id !== product.seller_id && !['active', 'moderation'].includes(product.status)) {
       return NextResponse.json(
         { error: 'Product not found' },
         { status: 404 }

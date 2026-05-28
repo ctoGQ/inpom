@@ -342,7 +342,7 @@ export default function ShopMarketplacePage() {
               ) : (
                 <div className="grid grid-cols-2 gap-3">
                   {categories.slice(0, 12).map((cat) => (
-                    <Link key={cat.id} href={`/shop?category=${cat.slug}`}>
+                    <Link key={cat.id} href={`/mycabinet/shop/category/${cat.slug}`}>
                       <div className="p-4 rounded-2xl border border-foreground/10 bg-card hover:bg-foreground/5 transition-colors flex items-center gap-3 h-14">
                         {cat.icon_url ? (
                           <Image
