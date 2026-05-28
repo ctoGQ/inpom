@@ -73,17 +73,17 @@ interface Comment {
 
 // â”€â”€ Helpers â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 const PRODUCT_TYPE_LABELS: Record<string, string> = {
-  goods: 'Ğ¢Ğ¾Ğ²Ğ°Ñ€',
-  service: 'ĞŸĞ¾ÑĞ»ÑƒĞ³Ğ°',
-  digital: 'Ğ¦Ğ¸Ñ„Ñ€Ğ¾Ğ²Ğ¸Ğ¹',
-  subscription: 'ĞŸÑ–Ğ´Ğ¿Ğ¸ÑĞºĞ°',
+  goods: 'Товар',
+  service: 'Послуга',
+  digital: 'Цифровий',
+  subscription: 'Підписка',
 };
 
 const STATUS_LABELS: Record<string, string> = {
-  active: 'ĞĞºÑ‚Ğ¸Ğ²Ğ½Ğ¸Ğ¹',
-  draft: 'Ğ§ĞµÑ€Ğ½ĞµÑ‚ĞºĞ°',
-  inactive: 'ĞĞµĞ°ĞºÑ‚Ğ¸Ğ²Ğ½Ğ¸Ğ¹',
-  moderation: 'ĞĞ° Ğ¿ĞµÑ€ĞµĞ²Ñ–Ñ€Ñ†Ñ–',
+  active: 'Активний',
+  draft: 'Чернетка',
+  inactive: 'Неактивний',
+  moderation: 'На перевірці',
 };
 
 function initials(name: string) {
@@ -98,12 +98,12 @@ function initials(name: string) {
 function timeAgo(dateStr: string) {
   const diff = Date.now() - new Date(dateStr).getTime();
   const m = Math.floor(diff / 60000);
-  if (m < 1) return 'Ñ‰Ğ¾Ğ¹Ğ½Ğ¾';
-  if (m < 60) return `${m} Ñ…Ğ² Ñ‚Ğ¾Ğ¼Ñƒ`;
+  if (m < 1) return 'щойно';
+  if (m < 60) return `${m} хв тому`;
   const h = Math.floor(m / 60);
-  if (h < 24) return `${h} Ğ³Ğ¾Ğ´ Ñ‚Ğ¾Ğ¼Ñƒ`;
+  if (h < 24) return `${h} год тому`;
   const d = Math.floor(h / 24);
-  if (d < 7) return `${d} Ğ´Ğ½ Ñ‚Ğ¾Ğ¼Ñƒ`;
+  if (d < 7) return `${d} дн тому`;
   return new Date(dateStr).toLocaleDateString('uk-UA', { day: '2-digit', month: 'short' });
 }
 
@@ -133,7 +133,7 @@ function CommentRow({ comment, onReply }: { comment: Comment; onReply?: (id: num
   if (comment.is_deleted) {
     return (
       <div className={`p-4 ${comment.parent_id ? 'pl-10' : ''}`}>
-        <p className="text-xs text-muted-foreground italic">[ĞºĞ¾Ğ¼ĞµĞ½Ñ‚Ğ°Ñ€ Ğ²Ğ¸Ğ´Ğ°Ğ»ĞµĞ½Ğ¾]</p>
+        <p className="text-xs text-muted-foreground italic">[коментар видалено]</p>
       </div>
     );
   }
@@ -145,7 +145,7 @@ function CommentRow({ comment, onReply }: { comment: Comment; onReply?: (id: num
           <div className="flex items-center gap-2 flex-wrap mb-1">
             <span className="text-sm font-semibold text-foreground">{comment.author_name}</span>
             <span className="text-xs text-muted-foreground">{timeAgo(comment.created_at)}</span>
-            {comment.is_edited && <span className="text-xs text-muted-foreground">â€¢ Ñ€ĞµĞ´Ğ°Ğ³Ğ¾Ğ²Ğ°Ğ½Ğ¾</span>}
+            {comment.is_edited && <span className="text-xs text-muted-foreground">• редаговано</span>}
           </div>
           <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap break-words">{comment.content}</p>
           {onReply && (
@@ -208,7 +208,7 @@ export default function ProductDetailPage() {
         if (profileData.customer) setCurrentUserId(profileData.customer.id);
       } catch (err) {
         console.error('[ProductDetail] fetch error:', err);
-        toast({ title: 'ĞŸĞ¾Ğ¼Ğ¸Ğ»ĞºĞ°', description: 'ĞĞµ Ğ²Ğ´Ğ°Ğ»Ğ¾ÑÑŒ Ğ·Ğ°Ğ²Ğ°Ğ½Ñ‚Ğ°Ğ¶Ğ¸Ñ‚Ğ¸ Ñ‚Ğ¾Ğ²Ğ°Ñ€', variant: 'destructive' });
+        toast({ title: 'Помилка', description: 'Не вдалось завантажити товар', variant: 'destructive' });
       } finally {
         setLoading(false);
       }
@@ -233,7 +233,7 @@ export default function ProductDetailPage() {
       setCommentText('');
       setReplyTo(null);
     } catch (err) {
-      toast({ title: 'ĞŸĞ¾Ğ¼Ğ¸Ğ»ĞºĞ°', description: err instanceof Error ? err.message : 'ĞĞµ Ğ²Ğ´Ğ°Ğ»Ğ¾ÑÑŒ Ğ¾Ğ¿ÑƒĞ±Ğ»Ñ–ĞºÑƒĞ²Ğ°Ñ‚Ğ¸', variant: 'destructive' });
+      toast({ title: 'Помилка', description: err instanceof Error ? err.message : 'Не вдалось опублікувати', variant: 'destructive' });
     } finally {
       setSubmitting(false);
     }
@@ -247,7 +247,7 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <CabinetLayout title="Ğ—Ğ°Ğ²Ğ°Ğ½Ñ‚Ğ°Ğ¶ĞµĞ½Ğ½Ñ..." showBack showAvatar showNav>
+      <CabinetLayout title="Завантаження..." showBack showAvatar showNav>
         <div className="px-4 pt-6 pb-28 space-y-4">
           <div className="w-full aspect-[4/3] bg-foreground/5 rounded-2xl animate-pulse" />
           <div className="h-6 w-2/3 bg-foreground/5 rounded animate-pulse" />
@@ -263,12 +263,12 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <CabinetLayout title="ĞĞµ Ğ·Ğ½Ğ°Ğ¹Ğ´ĞµĞ½Ğ¾" showBack showAvatar showNav>
+      <CabinetLayout title="Не знайдено" showBack showAvatar showNav>
         <div className="px-4 pt-16 pb-28 flex flex-col items-center gap-4">
           <AlertCircle className="w-16 h-16 text-muted-foreground" />
-          <p className="font-semibold text-foreground">Ğ¢Ğ¾Ğ²Ğ°Ñ€ Ğ½Ğµ Ğ·Ğ½Ğ°Ğ¹Ğ´ĞµĞ½Ğ¾</p>
+          <p className="font-semibold text-foreground">Товар не знайдено</p>
           <Link href="/mycabinet/shop" className="text-sm text-muted-foreground underline">
-            Ğ”Ğ¾ Ğ¼Ğ°Ñ€ĞºĞµÑ‚Ğ¿Ğ»ĞµĞ¹ÑÑƒ
+            До магазину
           </Link>
         </div>
       </CabinetLayout>
@@ -342,7 +342,7 @@ export default function ProductDetailPage() {
         <div className="p-5 rounded-2xl border border-foreground/10 space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Ğ¦Ñ–Ğ½Ğ°</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Ціна</p>
               <div className="flex items-baseline gap-2">
                 <p className="text-4xl font-bold text-foreground">{Number(product.price).toFixed(0)}</p>
                 <p className="text-lg font-semibold text-muted-foreground">{product.currency || 'INPOM'}</p>
@@ -354,7 +354,7 @@ export default function ProductDetailPage() {
               )}
             </div>
             <div className="text-right">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Ğ¢Ğ¸Ğ¿</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Тип</p>
               <span className="inline-block px-2.5 py-1 rounded-lg bg-foreground/5 border border-foreground/10 text-xs font-medium text-foreground">
                 {PRODUCT_TYPE_LABELS[product.product_type] || product.product_type}
               </span>
@@ -372,7 +372,7 @@ export default function ProductDetailPage() {
           <div className="p-5 rounded-2xl border border-foreground/10 flex items-center gap-4 hover:bg-foreground/5 transition-colors">
             <Avatar name={product.seller_name} src={product.seller_avatar} size={48} />
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">ĞŸÑ€Ğ¾Ğ´Ğ°Ğ²ĞµÑ†ÑŒ</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Продавець</p>
               <p className="text-sm font-semibold text-foreground truncate">{product.seller_name}</p>
             </div>
             <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
@@ -382,9 +382,9 @@ export default function ProductDetailPage() {
         {/* â”€â”€ Stats row â”€â”€ */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: 'ĞŸÑ€Ğ¾Ğ´Ğ°Ğ½Ğ¾', value: product.sale_count, icon: <BarChart2 className="w-4 h-4" /> },
-            { label: 'Ğ ĞµĞ¹Ñ‚Ğ¸Ğ½Ğ³', value: (Number(product.rating) || 0).toFixed(1), icon: <Star className="w-4 h-4 fill-foreground/60 text-foreground/60" /> },
-            { label: 'Ğ’ Ğ½Ğ°ÑĞ²Ğ½Ğ¾ÑÑ‚Ñ–', value: product.stock_quantity, icon: <Package className="w-4 h-4" /> },
+            { label: 'Продано', value: product.sale_count, icon: <BarChart2 className="w-4 h-4" /> },
+            { label: 'Рейтинг', value: (Number(product.rating) || 0).toFixed(1), icon: <Star className="w-4 h-4 fill-foreground/60 text-foreground/60" /> },
+            { label: 'В наявності', value: product.stock_quantity, icon: <Package className="w-4 h-4" /> },
           ].map(({ label, value, icon }) => (
             <div key={label} className="p-4 rounded-2xl border border-foreground/10 bg-foreground/[0.02] flex flex-col gap-1">
               <div className="flex items-center gap-1.5 text-muted-foreground">
@@ -400,9 +400,9 @@ export default function ProductDetailPage() {
         <div className="flex gap-2 bg-foreground/5 p-1 rounded-xl">
           {(
             [
-              { key: 'details', label: 'Ğ”ĞµÑ‚Ğ°Ğ»Ñ–' },
-              { key: 'attributes', label: `Ğ¥Ğ°Ñ€Ğ°ĞºÑ‚ĞµÑ€Ğ¸ÑÑ‚Ğ¸ĞºĞ¸${attributes.length ? ` (${attributes.length})` : ''}` },
-              { key: 'comments', label: `ĞšĞ¾Ğ¼ĞµĞ½Ñ‚Ğ°Ñ€Ñ–${comments.length ? ` (${comments.length})` : ''}` },
+              { key: 'details', label: 'Деталі' },
+              { key: 'attributes', label: `Характеристики${attributes.length ? ` (${attributes.length})` : ''}` },
+              { key: 'comments', label: `Коментарі${comments.length ? ` (${comments.length})` : ''}` },
             ] as const
           ).map(({ key, label }) => (
             <button
@@ -422,35 +422,35 @@ export default function ProductDetailPage() {
           <div className="rounded-2xl border border-foreground/10 overflow-hidden divide-y divide-foreground/10">
             <div className="p-4 flex items-start gap-3 hover:bg-foreground/5 transition-colors">
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-muted-foreground mb-1">ĞĞ¿Ğ¸Ñ</p>
+                <p className="text-xs text-muted-foreground mb-1">Опис</p>
                 <p className="text-sm text-foreground leading-relaxed whitespace-pre-wrap">{product.description || 'â€”'}</p>
               </div>
             </div>
             <div className="p-4 flex items-center justify-between hover:bg-foreground/5 transition-colors">
-              <p className="text-sm text-muted-foreground">ĞšĞ°Ñ‚ĞµĞ³Ğ¾Ñ€Ñ–Ñ</p>
+              <p className="text-sm text-muted-foreground">Категорія</p>
               <div className="flex items-center gap-1.5">
                 <Tag className="w-3.5 h-3.5 text-muted-foreground" />
                 <p className="text-sm font-medium text-foreground">{product.category_name}</p>
               </div>
             </div>
             <div className="p-4 flex items-center justify-between hover:bg-foreground/5 transition-colors">
-              <p className="text-sm text-muted-foreground">Ğ¡Ñ‚Ğ°Ñ‚ÑƒÑ</p>
+              <p className="text-sm text-muted-foreground">Статус</p>
               <p className="text-sm font-medium text-foreground">{STATUS_LABELS[product.status] || product.status}</p>
             </div>
             {product.sku && (
               <div className="p-4 flex items-center justify-between hover:bg-foreground/5 transition-colors">
-                <p className="text-sm text-muted-foreground">ĞÑ€Ñ‚Ğ¸ĞºÑƒĞ» (SKU)</p>
+                <p className="text-sm text-muted-foreground">Артикул (SKU)</p>
                 <p className="text-sm font-medium text-foreground font-mono">{product.sku}</p>
               </div>
             )}
             <div className="p-4 flex items-center justify-between hover:bg-foreground/5 transition-colors">
-              <p className="text-sm text-muted-foreground">ĞĞ¿ÑƒĞ±Ğ»Ñ–ĞºĞ¾Ğ²Ğ°Ğ½Ğ¾</p>
+              <p className="text-sm text-muted-foreground">Опубліковано</p>
               <p className="text-sm font-medium text-foreground">
                 {new Date(product.created_at).toLocaleDateString('uk-UA', { day: '2-digit', month: 'long', year: 'numeric' })}
               </p>
             </div>
             <div className="p-4 flex items-center justify-between hover:bg-foreground/5 transition-colors">
-              <p className="text-sm text-muted-foreground">ĞšĞ¾Ğ¼ĞµĞ½Ñ‚Ğ°Ñ€Ñ–Ğ²</p>
+              <p className="text-sm text-muted-foreground">Коментарів</p>
               <p className="text-sm font-medium text-foreground">{product.comment_count ?? comments.length}</p>
             </div>
           </div>
@@ -468,7 +468,7 @@ export default function ProductDetailPage() {
               ))
             ) : (
               <div className="p-8 text-center">
-                <p className="text-sm text-muted-foreground">Ğ¥Ğ°Ñ€Ğ°ĞºÑ‚ĞµÑ€Ğ¸ÑÑ‚Ğ¸ĞºĞ¸ Ğ²Ñ–Ğ´ÑÑƒÑ‚Ğ½Ñ–</p>
+                <p className="text-sm text-muted-foreground">Характеристики відсутні</p>
               </div>
             )}
           </div>
@@ -493,7 +493,7 @@ export default function ProductDetailPage() {
             ) : (
               <div className="rounded-2xl border border-foreground/10 p-8 text-center">
                 <MessageCircle className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                <p className="text-sm text-muted-foreground">ĞŸĞ¾ĞºĞ¸ Ğ½ĞµĞ¼Ğ°Ñ” ĞºĞ¾Ğ¼ĞµĞ½Ñ‚Ğ°Ñ€Ñ–Ğ². Ğ‘ÑƒĞ´ÑŒÑ‚Ğµ Ğ¿ĞµÑ€ÑˆĞ¸Ğ¼!</p>
+                <p className="text-sm text-muted-foreground">Поки немає коментарів. Будьте першим!</p>
               </div>
             )}
 
@@ -502,10 +502,10 @@ export default function ProductDetailPage() {
               {replyTo && (
                 <div className="px-4 py-2 bg-foreground/5 border-b border-foreground/10 flex items-center justify-between">
                   <p className="text-xs text-muted-foreground">
-                    Ğ’Ñ–Ğ´Ğ¿Ğ¾Ğ²Ñ–Ğ´ÑŒ Ğ´Ğ¾ <span className="font-medium text-foreground">{replyTo.name}</span>
+                    Відповідь до <span className="font-medium text-foreground">{replyTo.name}</span>
                   </p>
                   <button type="button" onClick={() => setReplyTo(null)} className="text-xs text-muted-foreground hover:text-foreground">
-                    Ğ¡ĞºĞ°ÑÑƒĞ²Ğ°Ñ‚Ğ¸
+                    Скасувати
                   </button>
                 </div>
               )}
@@ -514,7 +514,7 @@ export default function ProductDetailPage() {
                   ref={commentInputRef}
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
-                  placeholder="ĞĞ°Ğ¿Ğ¸ÑˆÑ–Ñ‚ÑŒ ĞºĞ¾Ğ¼ĞµĞ½Ñ‚Ğ°Ñ€..."
+                  placeholder="Напишіть коментар..."
                   rows={2}
                   maxLength={2000}
                   className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground focus:outline-none resize-none"
@@ -542,8 +542,8 @@ export default function ProductDetailPage() {
                 <Pencil className="w-4 h-4 text-muted-foreground" />
               </div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-foreground">Ğ ĞµĞ´Ğ°Ğ³ÑƒĞ²Ğ°Ñ‚Ğ¸ Ğ¾Ğ³Ğ¾Ğ»Ğ¾ÑˆĞµĞ½Ğ½Ñ</p>
-                <p className="text-xs text-muted-foreground">Ğ’Ğ¸ Ñ” Ğ°Ğ²Ñ‚Ğ¾Ñ€Ğ¾Ğ¼ Ñ†ÑŒĞ¾Ğ³Ğ¾ Ñ‚Ğ¾Ğ²Ğ°Ñ€Ñƒ</p>
+                <p className="text-sm font-medium text-foreground">Редагувати оголошення</p>
+                <p className="text-xs text-muted-foreground">Ви є автором цього товару</p>
               </div>
               <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
             </div>
@@ -555,7 +555,7 @@ export default function ProductDetailPage() {
           <div className="fixed bottom-[72px] left-0 right-0 px-4 z-10">
             <button className="w-full py-4 bg-primary text-primary-foreground font-semibold rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg">
               <ShoppingCart className="w-5 h-5" />
-              ĞŸÑ€Ğ¸Ğ´Ğ±Ğ°Ñ‚Ğ¸
+              Придбати
             </button>
           </div>
         )}
