@@ -51,24 +51,25 @@ export async function GET(
     // Fetch seller's active products with basic info
     const productsResult = await sql`
       SELECT 
-        id,
-        title,
-        slug,
-        price,
-        original_price,
-        currency,
-        rating,
-        review_count,
-        sale_count,
-        stock_quantity,
-        is_featured,
-        status,
-        category_id,
-        (SELECT name FROM shop_categories WHERE id = shop_products.category_id) as category_name
-      FROM shop_products
-      WHERE seller_id = ${sellerId}
-        AND status IN ('active', 'moderation')
-      ORDER BY created_at DESC
+        sp.id,
+        sp.title,
+        sp.slug,
+        sp.price,
+        sp.original_price,
+        sp.currency,
+        sp.rating,
+        sp.review_count,
+        sp.sale_count,
+        sp.stock_quantity,
+        sp.is_featured,
+        sp.status,
+        sp.category_id,
+        sc.name as category_name
+      FROM shop_products sp
+      LEFT JOIN shop_categories sc ON sp.category_id = sc.id
+      WHERE sp.seller_id = ${sellerId}
+        AND sp.status IN ('active', 'moderation')
+      ORDER BY sp.created_at DESC
       LIMIT 20
     `;
 
