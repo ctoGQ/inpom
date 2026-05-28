@@ -367,8 +367,8 @@ export default function ProductDetailPage() {
           )}
         </div>
 
-        {/* â”€â”€ Seller card â”€â”€ */}
-        <Link href={`/shop?seller_id=${product.seller_id}`}>
+        {/* Product seller card */}
+        <Link href={`/mycabinet/members/${product.seller_id}`}>
           <div className="p-5 rounded-2xl border border-foreground/10 flex items-center gap-4 hover:bg-foreground/5 transition-colors">
             <Avatar name={product.seller_name} src={product.seller_avatar} size={48} />
             <div className="flex-1 min-w-0">
