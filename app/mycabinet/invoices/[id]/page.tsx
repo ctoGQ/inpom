@@ -113,7 +113,7 @@ export default async function InvoiceViewPage({ params }: PageProps) {
         <div className="space-y-2">
           <Link href={`/mycabinet/pay-invoice/${invoice.id}`} className="block">
             <Button
-              className="w-full h-12 rounded-xl bg-white border border-gray-200 text-slate-900 font-semibold hover:bg-gray-50 transition-all"
+              className="w-full h-12 rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-gray-50 dark:hover:bg-slate-700 transition-all"
             >
               Переглянути сторінку оплати
               <ExternalLink className="w-4 h-4 ml-2" />
@@ -122,7 +122,7 @@ export default async function InvoiceViewPage({ params }: PageProps) {
 
           <Link href="/mycabinet/transactions" className="block">
             <Button
-              className="w-full h-12 rounded-xl bg-white border border-gray-200 text-slate-900 font-semibold hover:bg-gray-50 transition-all"
+              className="w-full h-12 rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-gray-50 dark:hover:bg-slate-700 transition-all"
             >
               Повернутись до транзакцій
             </Button>
@@ -130,9 +130,9 @@ export default async function InvoiceViewPage({ params }: PageProps) {
         </div>
 
         {/* Info */}
-        <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl shadow-sm space-y-2">
-          <p className="text-xs font-semibold text-slate-900">Інформація:</p>
-          <ul className="text-xs text-gray-700 space-y-1 list-disc list-inside">
+        <div className="p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-sm space-y-2">
+          <p className="text-xs font-semibold text-slate-900 dark:text-white">Інформація:</p>
+          <ul className="text-xs text-gray-700 dark:text-gray-400 space-y-1 list-disc list-inside">
             <li>Поділіться QR-кодом з іншим користувачем</li>
             <li>Користувач може відсканувати код або перейти за посиланням</li>
             <li>Після оплати інвойс буде позначено як оплачено</li>

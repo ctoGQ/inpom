@@ -8,12 +8,12 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-async function runMigration() {
+async function runFix() {
   let pool = null;
   let client = null;
 
   try {
-    console.log('🚀 Starting withdrawal table migration...');
+    console.log('🔧 Starting withdrawals schema fix...');
     
     const databaseUrl = process.env.DATABASE_URL;
     if (!databaseUrl) {
@@ -25,15 +25,18 @@ async function runMigration() {
     client = await pool.connect();
     console.log('✅ Database connection established\n');
 
-    // Read the migration file
-    const migrationPath = resolve(__dirname, '../migrations/004_create_withdrawals_table.sql');
-    console.log(`📄 Reading migration from: ${migrationPath}`);
-    const migrationSQL = readFileSync(migrationPath, 'utf-8');
+    // Read the fix migration file
+    const fixPath = resolve(__dirname, '../migrations/005_fix_withdrawals_schema.sql');
+    console.log(`📄 Reading fix script from: ${fixPath}`);
+    const fixSQL = readFileSync(fixPath, 'utf-8');
 
-    console.log('⚙️  Executing migration SQL...\n');
+    console.log('⚠️  WARNING: This will DROP the existing withdrawals table and recreate it');
+    console.log('All existing withdrawal data will be lost!\n');
+
+    console.log('⚙️  Executing fix SQL...\n');
     
     // Split by semicolon and execute each statement
-    const statements = migrationSQL
+    const statements = fixSQL
       .split(';')
       .map(stmt => stmt.trim())
       .filter(stmt => stmt.length > 0);
@@ -41,7 +44,6 @@ async function runMigration() {
     console.log(`Found ${statements.length} SQL statements\n`);
 
     let successCount = 0;
-    let skippedCount = 0;
 
     for (let i = 0; i < statements.length; i++) {
       const statement = statements[i];
@@ -52,22 +54,17 @@ async function runMigration() {
         console.log(`  ✅ Success\n`);
         successCount++;
       } catch (error) {
-        // 42P07 = table already exists, 42P08 = index already exists
-        if (error.code === '42P07' || error.code === '42P08' || error.message.includes('already exists')) {
-          console.log(`  ⚠️  Already exists (skipped)\n`);
-          skippedCount++;
-        } else {
-          throw error;
-        }
+        console.error(`  ❌ Error: ${error.message}\n`);
+        throw error;
       }
     }
     
     console.log('========================================');
-    console.log('✅ Migration completed!');
-    console.log(`📊 Results: ${successCount} executed, ${skippedCount} skipped`);
+    console.log('✅ Schema fix completed!');
+    console.log(`📊 Results: ${successCount} statements executed`);
     console.log('========================================\n');
     
-    // Verify table was created
+    // Verify table structure
     console.log('📋 Verifying table structure...\n');
     const tableCheckResult = await client.query(
       `SELECT column_name, data_type FROM information_schema.columns 
@@ -75,22 +72,22 @@ async function runMigration() {
     );
     
     if (tableCheckResult.rows.length > 0) {
-      console.log('✅ Withdrawals table exists with columns:');
+      console.log('✅ Withdrawals table recreated with correct columns:');
       tableCheckResult.rows.forEach((row, idx) => {
         console.log(`  ${idx + 1}. ${row.column_name} (${row.data_type})`);
       });
     } else {
-      console.log('⚠️  Withdrawals table not found - check migration errors above');
+      console.log('❌ Withdrawals table not found - something went wrong');
+      process.exit(1);
     }
     
-    console.log('\n✅ All done! The withdrawal system is ready to use.');
+    console.log('\n✅ Schema fix complete! Withdrawal system is ready.');
     process.exit(0);
   } catch (error) {
-    console.error('\n❌ Migration failed!');
+    console.error('\n❌ Schema fix failed!');
     console.error('Error:', error.message);
     if (error.detail) console.error('Details:', error.detail);
     if (error.code) console.error('Error Code:', error.code);
-    console.error('\nStacktrace:', error);
     process.exit(1);
   } finally {
     if (client) {
@@ -110,4 +107,4 @@ async function runMigration() {
   }
 }
 
-runMigration();
+runFix();

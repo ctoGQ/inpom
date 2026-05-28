@@ -100,8 +100,8 @@ export function DepositForm({ customerId }: DepositFormProps) {
       <form onSubmit={handleSubmit} className="px-4 pt-6 pb-24 space-y-8">
         {/* Success Message */}
         {success && (
-          <div className="p-4 rounded-2xl bg-green-500/10 border border-green-500/30">
-            <p className="text-sm font-medium text-green-600">
+          <div className="p-4 rounded-2xl bg-green-500/10 dark:bg-green-950/30 border border-green-500/30 dark:border-green-900/50">
+            <p className="text-sm font-medium text-green-600 dark:text-green-400">
               ✓ Депозит успішно поповнено! Перенаправлення на кабінет...
             </p>
           </div>
@@ -109,8 +109,8 @@ export function DepositForm({ customerId }: DepositFormProps) {
 
         {/* Error Message */}
         {error && (
-          <div className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30">
-            <p className="text-sm font-medium text-red-600">
+          <div className="p-4 rounded-2xl bg-red-500/10 dark:bg-red-950/30 border border-red-500/30 dark:border-red-900/50">
+            <p className="text-sm font-medium text-red-600 dark:text-red-400">
               ✗ {error}
             </p>
           </div>
@@ -119,7 +119,7 @@ export function DepositForm({ customerId }: DepositFormProps) {
         {/* Amount Section */}
         <div className="space-y-4">
           <div>
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
               Введіть суму
             </label>
             <input
@@ -130,14 +130,14 @@ export function DepositForm({ customerId }: DepositFormProps) {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               disabled={isLoading}
-              className="w-full mt-3 px-5 py-4 bg-foreground/5 border border-foreground/10 rounded-2xl text-2xl font-semibold text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full mt-3 px-5 py-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl text-2xl font-semibold text-slate-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             />
-            <p className="text-xs text-muted-foreground mt-2">INPOM</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">INPOM</p>
           </div>
 
           {/* Quick Amounts */}
           <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3">
+            <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-3">
               Швидкі суми
             </p>
             <div className="grid grid-cols-2 gap-3">
@@ -147,7 +147,7 @@ export function DepositForm({ customerId }: DepositFormProps) {
                   type="button"
                   onClick={() => handleQuickAmount(val)}
                   disabled={isLoading}
-                  className="px-4 py-3 bg-foreground/5 border border-foreground/10 hover:bg-foreground/10 text-foreground rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-700 text-slate-900 dark:text-gray-300 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {val} INPOM
                 </button>
@@ -158,7 +158,7 @@ export function DepositForm({ customerId }: DepositFormProps) {
 
         {/* Payment Method Selection */}
         <div className="space-y-3">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
             Спосіб оплати
           </p>
 
@@ -166,36 +166,36 @@ export function DepositForm({ customerId }: DepositFormProps) {
             type="button"
             onClick={() => setIsMethodModalOpen(true)}
             disabled={isLoading}
-            className="w-full p-4 rounded-2xl border border-foreground/10 bg-foreground/5 hover:bg-foreground/10 transition-all flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full p-4 rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-foreground/10 group-hover:bg-foreground/20 transition-all">
-                <SelectedIcon className="w-5 h-5 text-foreground" />
+              <div className="p-2 rounded-lg bg-gray-100 dark:bg-slate-700 group-hover:bg-gray-200 dark:group-hover:bg-slate-600 transition-all">
+                <SelectedIcon className="w-5 h-5 text-slate-900 dark:text-gray-300" />
               </div>
               <div className="text-left">
-                <p className="font-medium text-foreground text-sm">
+                <p className="font-medium text-slate-900 dark:text-white text-sm">
                   {selectedMethod?.label}
                 </p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-xs text-gray-600 dark:text-gray-400">
                   {selectedMethod?.description}
                 </p>
               </div>
             </div>
-            <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+            <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
           </button>
         </div>
 
         {/* Agreement */}
-        <div className="flex items-start gap-3 p-4 rounded-2xl bg-foreground/5 border border-foreground/10">
+        <div className="flex items-start gap-3 p-4 rounded-2xl bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
           <input
             type="checkbox"
             id="terms"
             checked={agreed}
             onChange={(e) => setAgreed(e.target.checked)}
             disabled={isLoading}
-            className="w-5 h-5 mt-0.5 cursor-pointer accent-primary disabled:cursor-not-allowed"
+            className="w-5 h-5 mt-0.5 cursor-pointer accent-blue-500 disabled:cursor-not-allowed"
           />
-          <label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+          <label htmlFor="terms" className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed cursor-pointer">
             Я погоджуюсь з умовами користування та політикою конфіденційності
           </label>
         </div>
@@ -204,15 +204,15 @@ export function DepositForm({ customerId }: DepositFormProps) {
         <button
           type="submit"
           disabled={!amount || !agreed || isLoading || success}
-          className="w-full px-6 py-4 bg-primary text-primary-foreground font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg active:scale-95 flex items-center justify-center gap-2"
+          className="w-full px-6 py-4 bg-slate-900 dark:bg-slate-950 text-white font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800 dark:hover:bg-slate-900 active:scale-95 flex items-center justify-center gap-2"
         >
           {isLoading && <Loader className="w-5 h-5 animate-spin" />}
           {isLoading ? 'Обробка...' : 'Продовжити оплату'}
         </button>
 
         {/* Info Box */}
-        <div className="p-4 rounded-2xl bg-foreground/5 border border-foreground/10">
-          <p className="text-xs text-muted-foreground leading-relaxed">
+        <div className="p-4 rounded-2xl bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
+          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
             Комісія залежить від обраного способу оплати. Зазвичай від 0.5% до 3%.
           </p>
         </div>
@@ -236,18 +236,18 @@ export function DepositForm({ customerId }: DepositFormProps) {
                 disabled={isLoading}
                 className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed ${
                   isSelected
-                    ? 'bg-primary/10 border-primary/50'
-                    : 'bg-foreground/5 border-foreground/10 hover:bg-foreground/10'
+                    ? 'bg-gray-100 dark:bg-slate-700 border-gray-300 dark:border-slate-600'
+                    : 'bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-700'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg transition-all ${
                     isSelected
-                      ? 'bg-primary/20'
-                      : 'bg-foreground/10 group-hover:bg-foreground/20'
+                      ? 'bg-gray-200 dark:bg-slate-600'
+                      : 'bg-gray-100 dark:bg-slate-700 group-hover:bg-gray-200 dark:group-hover:bg-slate-600'
                   }`}>
                     <MethodIcon className={`w-5 h-5 ${
-                      isSelected ? 'text-primary' : 'text-foreground'
+                      isSelected ? 'text-slate-900 dark:text-white' : 'text-slate-900 dark:text-gray-300'
                     }`} />
                   </div>
                   <div className="text-left">

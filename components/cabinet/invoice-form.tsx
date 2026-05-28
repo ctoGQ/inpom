@@ -136,7 +136,7 @@ export function InvoiceForm({ customerId, cardId }: InvoiceFormProps) {
         <div>
           <button
             onClick={() => setCreatedInvoice(null)}
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+            className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition-colors mb-4"
           >
             <ArrowLeft className="w-4 h-4" />
             Створити новий інвойс
@@ -159,7 +159,7 @@ export function InvoiceForm({ customerId, cardId }: InvoiceFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Amount Input */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-900">
+        <label className="text-sm font-medium text-slate-900 dark:text-white">
           Сума (inpom) *
         </label>
         <input
@@ -170,13 +170,13 @@ export function InvoiceForm({ customerId, cardId }: InvoiceFormProps) {
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
           required
-          className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-600"
         />
       </div>
 
       {/* Description */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-900">
+        <label className="text-sm font-medium text-slate-900 dark:text-white">
           Опис *
         </label>
         <textarea
@@ -185,22 +185,22 @@ export function InvoiceForm({ customerId, cardId }: InvoiceFormProps) {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           required
-          className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+          className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-600 resize-none"
         />
-        <p className="text-xs text-muted-foreground">
+        <p className="text-xs text-gray-600 dark:text-gray-400">
           {description.length}/500 символів
         </p>
       </div>
 
       {/* Expiry */}
       <div className="space-y-2">
-        <label className="text-sm font-medium text-slate-900">
+        <label className="text-sm font-medium text-slate-900 dark:text-white">
           Термін дії (хвилин)
         </label>
         <select
           value={expiry}
           onChange={(e) => setExpiry(e.target.value)}
-          className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-600"
         >
           <option value="15">15 хвилин</option>
           <option value="30">30 хвилин</option>
@@ -214,16 +214,16 @@ export function InvoiceForm({ customerId, cardId }: InvoiceFormProps) {
       <Button
         type="submit"
         disabled={!amount || !description.trim() || loading || parseFloat(amount) <= 0}
-        className="w-full bg-foreground text-background hover:bg-foreground/90 disabled:opacity-50 rounded-lg py-3"
+        className="w-full bg-slate-900 dark:bg-slate-950 text-white hover:bg-slate-800 dark:hover:bg-slate-900 disabled:opacity-50 rounded-lg py-3"
       >
         <QrCode className="w-4 h-4 mr-2" />
         {loading ? 'Створення...' : 'Створити інвойс'}
       </Button>
 
       {/* Info */}
-      <div className="p-4 bg-accent/10 border border-accent/20 rounded-lg space-y-2">
-        <p className="text-xs font-medium text-foreground">Як це працює:</p>
-        <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+      <div className="p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg space-y-2">
+        <p className="text-xs font-medium text-slate-900 dark:text-white">Як це працює:</p>
+        <ol className="text-xs text-gray-600 dark:text-gray-400 space-y-1 list-decimal list-inside">
           <li>Введіть суму платежу</li>
           <li>Натисніть &quot;Створити інвойс&quot;</li>
           <li>Поділітеся QR-кодом з іншим користувачем</li>
