@@ -119,7 +119,7 @@ export async function POST(request: NextRequest) {
     const newBuyerBalance = buyerCard.balance - totalPrice;
     await sql`
       UPDATE user_cards
-      SET balance = ${newBuyerBalance}, updated_at = NOW()
+      SET balance = ${newBuyerBalance}
       WHERE id = ${buyerCard.id}
     `;
 
@@ -127,22 +127,15 @@ export async function POST(request: NextRequest) {
     const newSellerBalance = sellerCard.balance + totalPrice;
     await sql`
       UPDATE user_cards
-      SET balance = ${newSellerBalance}, updated_at = NOW()
+      SET balance = ${newSellerBalance}
       WHERE id = ${sellerCard.id}
     `;
 
-    // Update product stock
+    // Update product stock and increment sale count
     const newStock = product.stock_quantity - quantity;
     await sql`
       UPDATE shop_products
-      SET stock_quantity = ${newStock}, updated_at = NOW()
-      WHERE id = ${productId}
-    `;
-
-    // Increment product sale count
-    await sql`
-      UPDATE shop_products
-      SET sale_count = sale_count + ${quantity}
+      SET stock_quantity = ${newStock}, sale_count = COALESCE(sale_count, 0) + ${quantity}
       WHERE id = ${productId}
     `;
 
@@ -155,9 +148,10 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
   } catch (error) {
-    console.error('[POST /api/shop/purchase]', error);
+    console.error('[POST /api/shop/purchase] Error:', error instanceof Error ? error.message : String(error));
+    console.error('[POST /api/shop/purchase] Stack:', error instanceof Error ? error.stack : 'No stack');
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
