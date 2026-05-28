@@ -183,6 +183,7 @@ export default function ProductDetailPage() {
   const [commentText, setCommentText] = useState('');
   const [replyTo, setReplyTo] = useState<{ id: number; name: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [purchasing, setPurchasing] = useState(false);
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -245,6 +246,48 @@ export default function ProductDetailPage() {
     setReplyTo({ id, name });
     setActiveTab('comments');
     setTimeout(() => commentInputRef.current?.focus(), 100);
+  };
+
+  const handleBuyClick = async () => {
+    if (!product || purchasing) return;
+    
+    setPurchasing(true);
+    try {
+      const res = await fetch('/api/shop/purchase', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: product.id,
+          quantity: 1,
+          sellerId: product.seller_id,
+          amount: product.price,
+          currency: product.currency,
+        }),
+      });
+
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || 'Не вдалось створити покупку');
+      }
+
+      const data = await res.json();
+      toast({
+        title: 'Успіх',
+        description: `Покупка успішна. Транзакція #${data.transactionId}`,
+      });
+      
+      // Redirect to transaction detail
+      router.push(`/mycabinet/transactions/${data.transactionId}`);
+    } catch (err) {
+      console.error('[Buy] Error:', err);
+      toast({
+        title: 'Помилка',
+        description: err instanceof Error ? err.message : 'Не вдалось створити покупку',
+        variant: 'destructive',
+      });
+    } finally {
+      setPurchasing(false);
+    }
   };
 
   if (loading) {
@@ -552,12 +595,16 @@ export default function ProductDetailPage() {
           </Link>
         )}
 
-        {/* â”€â”€ Buy button (non-owner, in-stock) â”€â”€ */}
+        {/* Buy button (non-owner, in-stock) */}
         {!isOwner && product.stock_quantity > 0 && (
           <div className="fixed bottom-[72px] left-0 right-0 px-4 z-10">
-            <button className="w-full py-4 bg-primary text-primary-foreground font-semibold rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg">
+            <button 
+              onClick={handleBuyClick}
+              disabled={purchasing}
+              className="w-full py-4 bg-primary text-primary-foreground font-semibold rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
               <ShoppingCart className="w-5 h-5" />
-              Придбати
+              {purchasing ? 'Обробка...' : 'Придбати'}
             </button>
           </div>
         )}

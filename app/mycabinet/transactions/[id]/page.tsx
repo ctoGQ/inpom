@@ -17,9 +17,19 @@ interface PageProps {
 async function getTransaction(transactionId: number, customerId: number) {
   try {
     const result = await sql`
-      SELECT id, type, amount, description, created_at, invoice_id, card_id
-      FROM transactions
-      WHERE id = ${transactionId} AND customer_id = ${customerId}
+      SELECT 
+        t.id, 
+        t.type, 
+        t.amount, 
+        t.description, 
+        t.created_at, 
+        t.invoice_id, 
+        t.card_id,
+        t.product_id,
+        t.quantity,
+        t.seller_id
+      FROM transactions t
+      WHERE t.id = ${transactionId} AND t.customer_id = ${customerId}
     `;
     
     if (!result.rows?.length) {
@@ -29,6 +39,39 @@ async function getTransaction(transactionId: number, customerId: number) {
     return result.rows[0];
   } catch (error) {
     console.error('[getTransaction] Error fetching transaction:', error);
+    return null;
+  }
+}
+
+async function getProductDetails(productId: number) {
+  try {
+    const result = await sql`
+      SELECT 
+        sp.id,
+        sp.title,
+        sp.slug,
+        sp.price,
+        sp.original_price,
+        sp.currency,
+        sp.rating,
+        sp.review_count,
+        sp.sale_count,
+        sp.stock_quantity,
+        sp.is_featured,
+        sp.status,
+        sc.id as category_id,
+        sc.name as category_name,
+        cu.id as seller_id,
+        cu.name as seller_name,
+        cu.avatar_url as seller_avatar
+      FROM shop_products sp
+      LEFT JOIN shop_categories sc ON sp.category_id = sc.id
+      LEFT JOIN customers cu ON sp.seller_id = cu.id
+      WHERE sp.id = ${productId}
+    `;
+    return result.rows?.[0] || null;
+  } catch (error) {
+    console.error('[getProductDetails] Error fetching product:', error);
     return null;
   }
 }
@@ -138,6 +181,11 @@ export default async function TransactionDetailPage({ params }: PageProps) {
     invoice = await getInvoiceDetails(transaction.invoice_id);
   }
 
+  let product = null;
+  if (transaction.type === 'purchase' && transaction.product_id) {
+    product = await getProductDetails(transaction.product_id);
+  }
+
   let otherCustomer = null;
   if (invoice) {
     if (transaction.type === 'payment_sent') {
@@ -174,6 +222,7 @@ export default async function TransactionDetailPage({ params }: PageProps) {
       <TransactionDetailClient 
         transaction={transaction}
         invoice={invoice}
+        product={product}
         otherCustomer={otherCustomer}
         isIncoming={isIncoming}
         dateTime={{ date, time }}

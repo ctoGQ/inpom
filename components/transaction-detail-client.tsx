@@ -9,6 +9,7 @@ import Image from 'next/image';
 interface TransactionDetailClientProps {
   transaction: any;
   invoice: any;
+  product?: any;
   otherCustomer: any;
   isIncoming: boolean;
   dateTime: { date: string; time: string };
@@ -18,12 +19,13 @@ interface TransactionDetailClientProps {
 export function TransactionDetailClient({
   transaction,
   invoice,
+  product,
   otherCustomer,
   isIncoming,
   dateTime,
   customer,
 }: TransactionDetailClientProps) {
-  const [activeTab, setActiveTab] = useState<'details' | 'invoice'>('details');
+  const [activeTab, setActiveTab] = useState<'details' | 'invoice' | 'product'>('details');
 
   const getAvatarInitials = (name: string) => {
     return name
@@ -111,6 +113,18 @@ export function TransactionDetailClient({
             }`}
           >
             Інвойс
+          </button>
+        )}
+        {product && transaction.type === 'purchase' && (
+          <button
+            onClick={() => setActiveTab('product')}
+            className={`flex-1 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors ${
+              activeTab === 'product'
+                ? 'bg-foreground/10 text-foreground'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Товар
           </button>
         )}
       </div>
@@ -216,6 +230,109 @@ export function TransactionDetailClient({
               </button>
             </Link>
           </div>
+        </div>
+      )}
+
+      {/* Product Tab */}
+      {activeTab === 'product' && product && (
+        <div className="space-y-4">
+          {/* Product Preview Card */}
+          <div className="rounded-2xl border border-foreground/10 overflow-hidden">
+            <div className="aspect-video bg-foreground/5 relative flex items-center justify-center">
+              <p className="text-sm text-muted-foreground">Превью товара</p>
+            </div>
+            <div className="p-4 space-y-3">
+              <h3 className="font-semibold text-foreground line-clamp-2">{product.title}</h3>
+              <div className="flex items-baseline gap-2">
+                <p className="text-2xl font-bold text-foreground">
+                  {formatAmount(product.price)} {product.currency}
+                </p>
+                {product.original_price && Number(product.original_price) > Number(product.price) && (
+                  <p className="text-sm text-muted-foreground line-through">
+                    {formatAmount(product.original_price)} {product.currency}
+                  </p>
+                )}
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <span className="flex items-center gap-1">
+                  ⭐ {product.rating || '0'} ({product.review_count || '0'} відгуків)
+                </span>
+              </div>
+              {product.category_name && (
+                <p className="text-xs text-muted-foreground">
+                  Категорія: {product.category_name}
+                </p>
+              )}
+              {transaction.quantity && (
+                <p className="text-xs text-muted-foreground">
+                  Кількість: {transaction.quantity}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Seller Info Card */}
+          {product.seller_name && (
+            <div className="p-4 rounded-2xl border border-foreground/10 flex items-center gap-3">
+              <div className="flex-shrink-0">
+                {product.seller_avatar ? (
+                  <Image
+                    src={product.seller_avatar}
+                    alt={product.seller_name}
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center">
+                    <span className="text-xs font-semibold text-foreground">
+                      {getAvatarInitials(product.seller_name)}
+                    </span>
+                  </div>
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-muted-foreground">Продавець</p>
+                <p className="text-sm font-semibold text-foreground truncate">
+                  {product.seller_name}
+                </p>
+              </div>
+              <Link href={`/mycabinet/members/${product.seller_id}`}>
+                <button className="text-primary hover:text-primary/80 transition-colors">
+                  <ExternalLink className="w-4 h-4" />
+                </button>
+              </Link>
+            </div>
+          )}
+
+          {/* Product Details */}
+          <div className="rounded-2xl border border-foreground/10 overflow-hidden divide-y divide-foreground/10">
+            <div className="p-4 flex items-center justify-between hover:bg-foreground/5 transition-colors">
+              <p className="text-sm text-muted-foreground">Статус товара</p>
+              <p className="text-sm font-medium text-foreground">
+                {product.status === 'active' ? 'Активний' :
+                 product.status === 'draft' ? 'Чернетка' :
+                 product.status === 'moderation' ? 'На перевірці' :
+                 product.status}
+              </p>
+            </div>
+            <div className="p-4 flex items-center justify-between hover:bg-foreground/5 transition-colors">
+              <p className="text-sm text-muted-foreground">Продано</p>
+              <p className="text-sm font-medium text-foreground">{product.sale_count || '0'} од.</p>
+            </div>
+            <div className="p-4 flex items-center justify-between hover:bg-foreground/5 transition-colors">
+              <p className="text-sm text-muted-foreground">Залишилось</p>
+              <p className="text-sm font-medium text-foreground">{product.stock_quantity} од.</p>
+            </div>
+          </div>
+
+          {/* View Product Button */}
+          <Link href={`/mycabinet/shop/${product.id}`}>
+            <button className="w-full px-4 py-3 rounded-lg bg-primary text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+              Переглянути товар
+              <ExternalLink className="w-4 h-4" />
+            </button>
+          </Link>
         </div>
       )}
 
