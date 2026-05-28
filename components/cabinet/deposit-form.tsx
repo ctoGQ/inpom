@@ -97,11 +97,11 @@ export function DepositForm({ customerId }: DepositFormProps) {
 
   return (
     <>
-      <form onSubmit={handleSubmit} className="px-4 pt-6 pb-24 space-y-8">
+      <div className="px-4 pt-6 pb-24 space-y-6">
         {/* Success Message */}
         {success && (
-          <div className="p-4 rounded-2xl bg-green-500/10 dark:bg-green-950/30 border border-green-500/30 dark:border-green-900/50">
-            <p className="text-sm font-medium text-green-600 dark:text-green-400">
+          <div className="p-4 rounded-2xl bg-card border border-foreground/10">
+            <p className="text-sm font-medium text-foreground">
               ✓ Депозит успішно поповнено! Перенаправлення на кабінет...
             </p>
           </div>
@@ -109,114 +109,129 @@ export function DepositForm({ customerId }: DepositFormProps) {
 
         {/* Error Message */}
         {error && (
-          <div className="p-4 rounded-2xl bg-red-500/10 dark:bg-red-950/30 border border-red-500/30 dark:border-red-900/50">
-            <p className="text-sm font-medium text-red-600 dark:text-red-400">
+          <div className="p-4 rounded-2xl bg-destructive/10 border border-destructive/20">
+            <p className="text-sm font-medium text-destructive">
               ✗ {error}
             </p>
           </div>
         )}
 
-        {/* Amount Section */}
-        <div className="space-y-4">
-          <div>
-            <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-              Введіть суму
-            </label>
-            <input
-              type="number"
-              placeholder="0.00"
-              step="0.01"
-              min="0"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              disabled={isLoading}
-              className="w-full mt-3 px-5 py-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl text-2xl font-semibold text-slate-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-400 dark:focus:ring-gray-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-            <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">INPOM</p>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Amount Display */}
+          <div className="p-6 rounded-2xl border border-foreground/10 space-y-4">
+            <div className="flex items-baseline justify-between">
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                  Сума депозиту
+                </p>
+                <p className="text-4xl font-bold text-foreground">
+                  {amount || '0.00'}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
+                  Валюта
+                </p>
+                <p className="text-lg font-semibold text-foreground">INPOM</p>
+              </div>
+            </div>
           </div>
 
-          {/* Quick Amounts */}
-          <div>
-            <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide mb-3">
-              Швидкі суми
+          {/* Amount Input Card */}
+          <div className="space-y-0.5 rounded-2xl border border-foreground/10 overflow-hidden divide-y divide-foreground/10">
+            <div className="p-4">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 block">
+                Введіть суму
+              </label>
+              <input
+                type="number"
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                disabled={isLoading}
+                className="w-full px-3 py-2 bg-input border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+              />
+            </div>
+
+            {/* Quick Amounts */}
+            {QUICK_AMOUNTS.map((val) => (
+              <button
+                key={val}
+                type="button"
+                onClick={() => handleQuickAmount(val)}
+                disabled={isLoading}
+                className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span className="text-sm text-muted-foreground">Швидко: {val} INPOM</span>
+                <span className="text-sm font-medium text-foreground">{val}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* Payment Method Selection */}
+          <div className="space-y-3 rounded-2xl border border-foreground/10 p-6">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Спосіб оплати
             </p>
-            <div className="grid grid-cols-2 gap-3">
-              {QUICK_AMOUNTS.map((val) => (
-                <button
-                  key={val}
-                  type="button"
-                  onClick={() => handleQuickAmount(val)}
-                  disabled={isLoading}
-                  className="px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-700 text-slate-900 dark:text-gray-300 rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {val} INPOM
-                </button>
-              ))}
-            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsMethodModalOpen(true)}
+              disabled={isLoading}
+              className="w-full p-4 rounded-2xl border border-foreground/10 bg-card hover:bg-muted/50 transition-all flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg bg-muted group-hover:bg-muted/80 transition-all">
+                  <SelectedIcon className="w-5 h-5 text-foreground" />
+                </div>
+                <div className="text-left">
+                  <p className="font-medium text-foreground text-sm">
+                    {selectedMethod?.label}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {selectedMethod?.description}
+                  </p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+            </button>
           </div>
-        </div>
 
-        {/* Payment Method Selection */}
-        <div className="space-y-3">
-          <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wide">
-            Спосіб оплати
-          </p>
+          {/* Agreement */}
+          <div className="flex items-start gap-3 p-4 rounded-2xl border border-foreground/10 bg-card">
+            <input
+              type="checkbox"
+              id="terms"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              disabled={isLoading}
+              className="w-5 h-5 mt-0.5 cursor-pointer accent-foreground disabled:cursor-not-allowed"
+            />
+            <label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+              Я погоджуюсь з умовами користування та політикою конфіденційності
+            </label>
+          </div>
 
+          {/* Submit Button */}
           <button
-            type="button"
-            onClick={() => setIsMethodModalOpen(true)}
-            disabled={isLoading}
-            className="w-full p-4 rounded-2xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 hover:bg-gray-100 dark:hover:bg-slate-700 transition-all flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed"
+            type="submit"
+            disabled={!amount || !agreed || isLoading || success}
+            className="w-full px-6 py-4 bg-primary text-primary-foreground font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95 flex items-center justify-center gap-2"
           >
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gray-100 dark:bg-slate-700 group-hover:bg-gray-200 dark:group-hover:bg-slate-600 transition-all">
-                <SelectedIcon className="w-5 h-5 text-slate-900 dark:text-gray-300" />
-              </div>
-              <div className="text-left">
-                <p className="font-medium text-slate-900 dark:text-white text-sm">
-                  {selectedMethod?.label}
-                </p>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  {selectedMethod?.description}
-                </p>
-              </div>
-            </div>
-            <ChevronRight className="w-5 h-5 text-gray-600 dark:text-gray-400 group-hover:text-slate-900 dark:group-hover:text-white transition-colors" />
+            {isLoading && <Loader className="w-5 h-5 animate-spin" />}
+            {isLoading ? 'Обробка...' : 'Продовжити оплату'}
           </button>
-        </div>
 
-        {/* Agreement */}
-        <div className="flex items-start gap-3 p-4 rounded-2xl bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
-          <input
-            type="checkbox"
-            id="terms"
-            checked={agreed}
-            onChange={(e) => setAgreed(e.target.checked)}
-            disabled={isLoading}
-            className="w-5 h-5 mt-0.5 cursor-pointer accent-blue-500 disabled:cursor-not-allowed"
-          />
-          <label htmlFor="terms" className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed cursor-pointer">
-            Я погоджуюсь з умовами користування та політикою конфіденційності
-          </label>
-        </div>
-
-        {/* Submit Button */}
-        <button
-          type="submit"
-          disabled={!amount || !agreed || isLoading || success}
-          className="w-full px-6 py-4 bg-slate-900 dark:bg-slate-950 text-white font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800 dark:hover:bg-slate-900 active:scale-95 flex items-center justify-center gap-2"
-        >
-          {isLoading && <Loader className="w-5 h-5 animate-spin" />}
-          {isLoading ? 'Обробка...' : 'Продовжити оплату'}
-        </button>
-
-        {/* Info Box */}
-        <div className="p-4 rounded-2xl bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700">
-          <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
-            Комісія залежить від обраного способу оплати. Зазвичай від 0.5% до 3%.
-          </p>
-        </div>
-      </form>
+          {/* Info Box */}
+          <div className="p-4 rounded-2xl border border-foreground/10 bg-card">
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Комісія залежить від обраного способу оплати. Зазвичай від 0.5% до 3%.
+            </p>
+          </div>
+        </form>
+      </div>
 
       {/* Payment Method Modal */}
       <MobileModal
@@ -236,18 +251,18 @@ export function DepositForm({ customerId }: DepositFormProps) {
                 disabled={isLoading}
                 className={`w-full p-4 rounded-2xl border transition-all flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed ${
                   isSelected
-                    ? 'bg-gray-100 dark:bg-slate-700 border-gray-300 dark:border-slate-600'
-                    : 'bg-gray-50 dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-700'
+                    ? 'bg-secondary/20 border-foreground/20'
+                    : 'bg-card border-foreground/10 hover:bg-muted/50'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg transition-all ${
                     isSelected
-                      ? 'bg-gray-200 dark:bg-slate-600'
-                      : 'bg-gray-100 dark:bg-slate-700 group-hover:bg-gray-200 dark:group-hover:bg-slate-600'
+                      ? 'bg-secondary/30'
+                      : 'bg-muted group-hover:bg-muted/80'
                   }`}>
                     <MethodIcon className={`w-5 h-5 ${
-                      isSelected ? 'text-slate-900 dark:text-white' : 'text-slate-900 dark:text-gray-300'
+                      isSelected ? 'text-foreground' : 'text-foreground'
                     }`} />
                   </div>
                   <div className="text-left">

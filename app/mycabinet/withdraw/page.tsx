@@ -46,16 +46,16 @@ export default async function WithdrawPage({ searchParams }: PageProps) {
   if (!cardId || isNaN(cardId)) {
     return (
       <CabinetLayout title="Вивід коштів" showBack>
-        <div className="space-y-2xl pt-lg">
-          <div className="flex flex-col items-center justify-center py-16">
-            <AlertCircle className="w-12 h-12 text-red-500 dark:text-red-400 mb-4" />
-            <p className="text-slate-900 dark:text-white font-semibold text-center">
-              Карту не вибрано
-            </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 text-center mt-2">
-              Виберіть карту зі слайдера на головній сторінці
-            </p>
+        <div className="px-4 pt-6 pb-24 flex flex-col items-center justify-center py-16 space-y-4">
+          <div className="p-4 rounded-2xl bg-destructive/10 border border-destructive/20">
+            <AlertCircle className="w-12 h-12 text-destructive" />
           </div>
+          <p className="text-foreground font-semibold text-center">
+            Карту не вибрано
+          </p>
+          <p className="text-sm text-muted-foreground text-center">
+            Виберіть карту зі слайдера на головній сторінці
+          </p>
         </div>
       </CabinetLayout>
     );
@@ -66,16 +66,16 @@ export default async function WithdrawPage({ searchParams }: PageProps) {
   if (!card) {
     return (
       <CabinetLayout title="Вивід коштів" showBack>
-        <div className="space-y-2xl pt-lg">
-          <div className="flex flex-col items-center justify-center py-16">
-            <AlertCircle className="w-12 h-12 text-red-500 dark:text-red-400 mb-4" />
-            <p className="text-slate-900 dark:text-white font-semibold text-center">
-              Карта не знайдена
-            </p>
-            <p className="text-sm text-gray-600 dark:text-gray-400 text-center mt-2">
-              Вибрана карта більше недоступна
-            </p>
+        <div className="px-4 pt-6 pb-24 flex flex-col items-center justify-center py-16 space-y-4">
+          <div className="p-4 rounded-2xl bg-destructive/10 border border-destructive/20">
+            <AlertCircle className="w-12 h-12 text-destructive" />
           </div>
+          <p className="text-foreground font-semibold text-center">
+            Карта не знайдена
+          </p>
+          <p className="text-sm text-muted-foreground text-center">
+            Вибрана карта більше недоступна
+          </p>
         </div>
       </CabinetLayout>
     );
@@ -83,23 +83,21 @@ export default async function WithdrawPage({ searchParams }: PageProps) {
 
   return (
     <CabinetLayout title="Вивід коштів" showBack>
-      <div className="space-y-2xl pt-lg">
+      <div className="px-4 pt-6 space-y-6">
         {/* Card Info */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-gray-200 dark:border-slate-800 shadow-sm mx-4">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-              <ArrowDown className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+        <div className="rounded-2xl p-6 border border-foreground/10 bg-card space-y-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-muted">
+              <ArrowDown className="w-5 h-5 text-foreground" />
             </div>
             <div>
-              <p className="text-xs text-gray-600 dark:text-gray-400">Карта вибору</p>
-              <p className="font-semibold text-slate-900 dark:text-white">{card.card_type}</p>
+              <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold">Карта вибору</p>
+              <p className="font-semibold text-foreground">{card.card_type}</p>
             </div>
           </div>
-          <div className="pt-4 border-t border-gray-200 dark:border-slate-800">
-            <p className="text-xs text-gray-600 dark:text-gray-400 mb-1">Доступний баланс</p>
-            <p className="text-2xl font-bold text-slate-900 dark:text-white">
-              {parseFloat(card.balance).toFixed(2)} inpom
-            </p>
+          <div className="pt-4 border-t border-foreground/10">
+            <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold mb-1">Доступний баланс</p>
+            <p className="text-3xl font-bold text-foreground">{card.balance?.toFixed(2) || '0.00'}</p>
           </div>
         </div>
 

@@ -110,29 +110,25 @@ export default async function InvoiceViewPage({ params }: PageProps) {
         />
 
         {/* Action Buttons */}
-        <div className="space-y-2">
+        <div className="space-y-0.5 rounded-2xl border border-foreground/10 overflow-hidden divide-y divide-foreground/10">
           <Link href={`/mycabinet/pay-invoice/${invoice.id}`} className="block">
-            <Button
-              className="w-full h-12 rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-gray-50 dark:hover:bg-slate-700 transition-all"
-            >
-              Переглянути сторінку оплати
-              <ExternalLink className="w-4 h-4 ml-2" />
-            </Button>
+            <button className="w-full p-4 text-left hover:bg-muted/50 transition-colors flex items-center justify-between">
+              <span className="text-sm font-medium text-foreground">Переглянути сторінку оплати</span>
+              <ExternalLink className="w-4 h-4 text-muted-foreground" />
+            </button>
           </Link>
 
           <Link href="/mycabinet/transactions" className="block">
-            <Button
-              className="w-full h-12 rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-gray-50 dark:hover:bg-slate-700 transition-all"
-            >
-              Повернутись до транзакцій
-            </Button>
+            <button className="w-full p-4 text-left hover:bg-muted/50 transition-colors flex items-center justify-between">
+              <span className="text-sm font-medium text-foreground">Повернутись до транзакцій</span>
+            </button>
           </Link>
         </div>
 
         {/* Info */}
-        <div className="p-4 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-sm space-y-2">
-          <p className="text-xs font-semibold text-slate-900 dark:text-white">Інформація:</p>
-          <ul className="text-xs text-gray-700 dark:text-gray-400 space-y-1 list-disc list-inside">
+        <div className="p-4 rounded-2xl border border-foreground/10 bg-card space-y-2">
+          <p className="text-xs font-semibold text-foreground uppercase tracking-wide">Інформація:</p>
+          <ul className="text-xs text-muted-foreground space-y-1 list-disc list-inside">
             <li>Поділіться QR-кодом з іншим користувачем</li>
             <li>Користувач може відсканувати код або перейти за посиланням</li>
             <li>Після оплати інвойс буде позначено як оплачено</li>

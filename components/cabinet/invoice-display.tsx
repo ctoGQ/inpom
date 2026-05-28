@@ -60,47 +60,47 @@ export function InvoiceDisplay({
     <div className="space-y-6">
       {/* Status Badge */}
       {status === 'pending' && (
-        <div className="flex items-center gap-2 p-3 bg-yellow-500/10 dark:bg-yellow-950/30 border border-yellow-500/20 dark:border-yellow-900/50 rounded-lg">
-          <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
-          <span className="text-sm text-yellow-600 dark:text-yellow-400">Очікує оплату</span>
+        <div className="flex items-center gap-2 p-4 rounded-2xl border border-foreground/10 bg-card">
+          <div className="w-2 h-2 bg-foreground/40 rounded-full animate-pulse" />
+          <span className="text-sm text-muted-foreground">Очікує оплату</span>
         </div>
       )}
       {status === 'paid' && (
-        <div className="flex items-center gap-2 p-3 bg-green-500/10 dark:bg-green-950/30 border border-green-500/20 dark:border-green-900/50 rounded-lg">
-          <CheckCircle2 className="w-4 h-4 text-green-500" />
-          <span className="text-sm text-green-600 dark:text-green-400">Оплачено</span>
+        <div className="flex items-center gap-2 p-4 rounded-2xl border border-foreground/10 bg-card">
+          <CheckCircle2 className="w-4 h-4 text-foreground" />
+          <span className="text-sm text-foreground">✓ Оплачено</span>
         </div>
       )}
 
       {/* Invoice Details */}
-      <div className="p-6 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg">
+      <div className="p-6 rounded-2xl border border-foreground/10 space-y-4">
         <div className="text-center space-y-3">
-          <p className="text-xs font-medium text-gray-600 dark:text-gray-400">СУМА ІНВОЙСА</p>
-          <p className="text-5xl font-display text-slate-900 dark:text-white">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">СУМА ІНВОЙСА</p>
+          <p className="text-5xl font-bold text-foreground">
             {formatAmount(amount)}
           </p>
-          <p className="text-sm text-gray-600 dark:text-gray-400">inpom</p>
+          <p className="text-sm text-muted-foreground">inpom</p>
         </div>
 
-        <div className="pt-6 mt-6 border-t border-gray-200 dark:border-slate-700 space-y-3">
-          <p className="text-xs font-medium text-gray-600 dark:text-gray-400">ВИСТАВЛЕНО</p>
-          <p className="text-base text-slate-900 dark:text-white">{creatorName}</p>
+        <div className="pt-4 border-t border-foreground/10 space-y-2">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">ВИСТАВЛЕНО</p>
+          <p className="text-sm text-foreground">{creatorName}</p>
         </div>
 
         {description && (
-          <div className="pt-6 mt-6 border-t border-gray-200 dark:border-slate-700 space-y-3">
-            <p className="text-xs font-medium text-gray-600 dark:text-gray-400">ОПИС</p>
-            <p className="text-sm text-slate-900 dark:text-gray-300">{description}</p>
+          <div className="pt-4 border-t border-foreground/10 space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">ОПИС</p>
+            <p className="text-sm text-foreground">{description}</p>
           </div>
         )}
       </div>
 
       {/* QR Code Section */}
-      <div className="p-6 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg">
-        <p className="text-sm font-medium text-slate-900 dark:text-white mb-4 text-center">
+      <div className="p-6 rounded-2xl border border-foreground/10 space-y-4">
+        <p className="text-sm font-semibold text-foreground text-center uppercase tracking-wide">
           QR-КОД ДЛЯ СКАНУВАННЯ
         </p>
-        <div className="flex justify-center p-6 bg-white rounded-lg" ref={qrRef}>
+        <div className="flex justify-center p-6 bg-card rounded-lg border border-foreground/10" ref={qrRef}>
           <QRCodeCanvas
             value={paymentUrl}
             size={256}
@@ -113,15 +113,15 @@ export function InvoiceDisplay({
         <Button
           onClick={handleDownloadQR}
           variant="outline"
-          className="w-full mt-4 border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-700"
+          className="w-full border-foreground/10 text-foreground hover:bg-muted"
         >
           Завантажити QR-код
         </Button>
       </div>
 
       {/* Copy URL Section */}
-      <div className="space-y-2">
-        <p className="text-xs font-medium text-gray-600 dark:text-gray-400">
+      <div className="space-y-3 rounded-2xl border border-foreground/10 p-6">
+        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
           АБО ПОДІЛІТЬСЯ ПОСИЛАННЯМ
         </p>
         <div className="flex gap-2">
@@ -129,13 +129,13 @@ export function InvoiceDisplay({
             type="text"
             value={paymentUrl}
             readOnly
-            className="flex-1 px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-lg text-sm text-slate-900 dark:text-white truncate"
+            className="flex-1 px-3 py-2 bg-input border border-input rounded-lg text-sm text-foreground truncate"
           />
           <Button
             onClick={handleCopyUrl}
             variant="outline"
             size="icon"
-            className="flex-shrink-0 border-gray-200 dark:border-slate-700 text-slate-900 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-700"
+            className="flex-shrink-0 border-foreground/10"
           >
             <Copy className="w-4 h-4" />
           </Button>
@@ -145,16 +145,8 @@ export function InvoiceDisplay({
       {/* Navigation */}
       {status === 'pending' && (
         <Link href={`/mycabinet/invoices/${invoiceId}`}>
-          <Button className="w-full bg-slate-900 dark:bg-slate-950 text-white hover:bg-slate-800 dark:hover:bg-slate-900">
+          <Button className="w-full bg-primary text-primary-foreground hover:opacity-90">
             Переглянути інвойс
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </Link>
-      )}
-      {status === 'paid' && (
-        <Link href={`/mycabinet/invoices/${invoiceId}`}>
-          <Button variant="outline" className="w-full">
-            Переглянути інвойс (оплачено)
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </Link>
