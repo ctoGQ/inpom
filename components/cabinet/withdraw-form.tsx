@@ -130,8 +130,8 @@ export function WithdrawForm({ cardId, customerId, availableBalance }: WithdrawF
   return (
     <form onSubmit={handleSubmit} className="space-y-6 px-4">
       {/* Personal Info Section */}
-      <div className="bg-white rounded-3xl p-6 border border-gray-200">
-        <h3 className="text-lg font-bold text-slate-900 mb-4">Особисті дані</h3>
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-gray-200 dark:border-slate-800">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Особисті дані</h3>
         <div className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <input
@@ -139,25 +139,25 @@ export function WithdrawForm({ cardId, customerId, availableBalance }: WithdrawF
               placeholder="Ім'я"
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
-              className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-slate-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               type="text"
               placeholder="Прізвище"
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
-              className="px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-slate-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
       </div>
 
       {/* Amount Section */}
-      <div className="bg-white rounded-3xl p-6 border border-gray-200 space-y-4">
-        <h3 className="text-lg font-bold text-slate-900">Сума вивода</h3>
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-gray-200 dark:border-slate-800 space-y-4">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white">Сума вивода</h3>
         
         <div>
-          <label className="text-xs font-semibold text-gray-600 uppercase mb-2 block">
+          <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase mb-2 block">
             Введіть суму
           </label>
           <input
@@ -168,14 +168,14 @@ export function WithdrawForm({ cardId, customerId, availableBalance }: WithdrawF
             max={availableBalance}
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-2xl font-bold text-slate-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-2xl font-bold text-slate-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <p className="text-xs text-gray-600 mt-2">Доступно: {availableBalance.toFixed(2)} INPOM</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">Доступно: {availableBalance.toFixed(2)} INPOM</p>
         </div>
 
         {/* Quick Amounts */}
         <div>
-          <p className="text-xs font-semibold text-gray-600 uppercase mb-3 block">Швидкі суми</p>
+          <p className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase mb-3 block">Швидкі суми</p>
           <div className="grid grid-cols-2 gap-2">
             {[100, 500, 1000, 5000].map((val) => (
               <button
@@ -183,7 +183,7 @@ export function WithdrawForm({ cardId, customerId, availableBalance }: WithdrawF
                 type="button"
                 onClick={() => handleQuickAmount(val)}
                 disabled={val > availableBalance}
-                className="px-3 py-2 bg-gray-50 border border-gray-200 hover:border-gray-300 text-gray-700 rounded-lg text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 py-2 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {val}
               </button>
@@ -193,35 +193,35 @@ export function WithdrawForm({ cardId, customerId, availableBalance }: WithdrawF
 
         {/* Commission Breakdown */}
         {amountNum > 0 && (
-          <div className="space-y-3 pt-4 border-t border-gray-200">
+          <div className="space-y-3 pt-4 border-t border-gray-200 dark:border-slate-800">
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Сума:</span>
-              <span className="font-semibold text-slate-900">{amountNum.toFixed(2)} INPOM</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">Сума:</span>
+              <span className="font-semibold text-slate-900 dark:text-white">{amountNum.toFixed(2)} INPOM</span>
             </div>
             <div className="flex justify-between items-center">
-              <span className="text-sm text-gray-600">Комісія (20%):</span>
-              <span className="font-semibold text-red-500">-{commission.toFixed(2)} INPOM</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">Комісія (20%):</span>
+              <span className="font-semibold text-red-500 dark:text-red-400">-{commission.toFixed(2)} INPOM</span>
             </div>
-            <div className="flex justify-between items-center pt-3 border-t border-gray-200">
-              <span className="text-sm font-bold text-slate-900">Ви отримаєте:</span>
-              <span className="text-lg font-bold text-green-600">{resultAmount.toFixed(2)} INPOM</span>
+            <div className="flex justify-between items-center pt-3 border-t border-gray-200 dark:border-slate-800">
+              <span className="text-sm font-bold text-slate-900 dark:text-white">Ви отримаєте:</span>
+              <span className="text-lg font-bold text-green-600 dark:text-green-400">{resultAmount.toFixed(2)} INPOM</span>
             </div>
           </div>
         )}
       </div>
 
       {/* Method Selection */}
-      <div className="bg-white rounded-3xl p-6 border border-gray-200 space-y-4">
-        <h3 className="text-lg font-bold text-slate-900 mb-4">Спосіб вивода</h3>
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-gray-200 dark:border-slate-800 space-y-4">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Спосіб вивода</h3>
 
-        <div className="flex gap-3 p-1 bg-gray-100 rounded-xl">
+        <div className="flex gap-3 p-1 bg-gray-100 dark:bg-slate-800 rounded-xl">
           <button
             type="button"
             onClick={() => setWithdrawMethod('card')}
             className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
               withdrawMethod === 'card'
-                ? 'bg-white text-slate-900 shadow-sm border border-gray-200'
-                : 'text-gray-600 hover:text-slate-900'
+                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm border border-gray-200 dark:border-slate-600'
+                : 'text-gray-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200'
             }`}
           >
             <CreditCard className="w-4 h-4" />
@@ -232,8 +232,8 @@ export function WithdrawForm({ cardId, customerId, availableBalance }: WithdrawF
             onClick={() => setWithdrawMethod('iban')}
             className={`flex-1 px-4 py-3 rounded-lg font-semibold transition-all flex items-center justify-center gap-2 ${
               withdrawMethod === 'iban'
-                ? 'bg-white text-slate-900 shadow-sm border border-gray-200'
-                : 'text-gray-600 hover:text-slate-900'
+                ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm border border-gray-200 dark:border-slate-600'
+                : 'text-gray-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-gray-200'
             }`}
           >
             <Building2 className="w-4 h-4" />
@@ -250,7 +250,7 @@ export function WithdrawForm({ cardId, customerId, availableBalance }: WithdrawF
               value={cardNumber}
               onChange={(e) => setCardNumber(e.target.value.replace(/\s/g, '').slice(0, 19))}
               maxLength={19}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-slate-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
             />
             <input
               type="text"
@@ -263,7 +263,7 @@ export function WithdrawForm({ cardId, customerId, availableBalance }: WithdrawF
                 }
               }}
               maxLength={5}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-slate-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
             />
           </div>
         )}
@@ -275,29 +275,29 @@ export function WithdrawForm({ cardId, customerId, availableBalance }: WithdrawF
               placeholder="IBAN"
               value={iban}
               onChange={(e) => setIban(e.target.value.toUpperCase())}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-slate-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
             />
             <input
               type="text"
               placeholder="Назва банку"
               value={bankName}
               onChange={(e) => setBankName(e.target.value)}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-slate-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <input
               type="text"
               placeholder="Swift Code"
               value={swiftCode}
               onChange={(e) => setSwiftCode(e.target.value.toUpperCase())}
-              className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-slate-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
+              className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
             />
           </div>
         )}
       </div>
 
       {/* Notes */}
-      <div className="bg-white rounded-3xl p-6 border border-gray-200">
-        <label className="text-xs font-semibold text-gray-600 uppercase mb-3 block">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-gray-200 dark:border-slate-800">
+        <label className="text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase mb-3 block">
           Примітка (опціонально)
         </label>
         <textarea
@@ -305,12 +305,12 @@ export function WithdrawForm({ cardId, customerId, availableBalance }: WithdrawF
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           rows={3}
-          className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-slate-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+          className="w-full px-4 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
         />
       </div>
 
       {/* Agreement */}
-      <div className="bg-white rounded-3xl p-6 border border-gray-200">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 border border-gray-200 dark:border-slate-800">
         <label className="flex items-start gap-3 cursor-pointer">
           <input
             type="checkbox"
@@ -318,7 +318,7 @@ export function WithdrawForm({ cardId, customerId, availableBalance }: WithdrawF
             onChange={(e) => setAgreed(e.target.checked)}
             className="w-5 h-5 mt-1 accent-blue-500 cursor-pointer"
           />
-          <span className="text-xs text-gray-600 leading-relaxed">
+          <span className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
             Я погоджуюсь з умовами користування. Розумію, що комісія платформи 20% буде утримана з суми вивода. Гарантую, що реквізити належать мені.
           </span>
         </label>
@@ -328,7 +328,7 @@ export function WithdrawForm({ cardId, customerId, availableBalance }: WithdrawF
       <button
         type="submit"
         disabled={!canSubmit() || isLoading}
-        className="w-full px-6 py-4 bg-blue-500 text-white font-bold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 active:scale-95 flex items-center justify-center gap-2"
+        className="w-full px-6 py-4 bg-blue-500 dark:bg-blue-600 text-white font-bold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-600 dark:hover:bg-blue-700 active:scale-95 flex items-center justify-center gap-2"
       >
         {isLoading && <Loader className="w-5 h-5 animate-spin" />}
         {resultAmount > 0 ? `Вивести ${resultAmount.toFixed(2)} INPOM` : 'Вивести коштиы'}
