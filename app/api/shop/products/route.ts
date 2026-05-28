@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
       JOIN shop_categories c ON p.category_id = c.id
       JOIN customers cu ON p.seller_id = cu.id
       LEFT JOIN shop_product_images spi ON p.id = spi.product_id AND spi.is_primary = TRUE
-      WHERE p.status = 'active'
+      WHERE p.status IN ('active', 'moderation')
     `;
 
     const params_array: any[] = [];
@@ -74,10 +74,17 @@ export async function GET(request: NextRequest) {
       params_array.push(parseInt(params.seller_id));
     }
 
-    // Product type filter
+    // Product type filter (column may not exist before migration_shop_extend.sql is run)
     if (params.type) {
-      query += ` AND p.product_type = $${params_array.length + 1}`;
-      params_array.push(params.type);
+      try {
+        // Check if column exists before adding filter
+        await sql.unsafe(`SELECT product_type FROM shop_products LIMIT 0`, []);
+        query += ` AND p.product_type = $${params_array.length + 1}`;
+        params_array.push(params.type);
+      } catch {
+        // product_type column doesn't exist yet — skip the filter, show all types
+        console.warn('[Shop Products API] product_type column not found, ignoring type filter');
+      }
     }
 
     // Price range filter
@@ -111,7 +118,7 @@ export async function GET(request: NextRequest) {
     // Count total
     let countQuery = `SELECT COUNT(*) as total FROM shop_products p
                      JOIN shop_categories c ON p.category_id = c.id
-                     WHERE p.status = 'active'`;
+                     WHERE p.status IN ('active', 'moderation')`;
     const countParams: any[] = [];
 
     if (params.search) {
@@ -124,7 +131,8 @@ export async function GET(request: NextRequest) {
       countParams.push(params.category);
     }
 
-    if (params.type) {
+    if (params.type && params_array.some((v) => v === params.type)) {
+      // Only add type filter to count if it was successfully added to main query
       countQuery += ` AND p.product_type = $${countParams.length + 1}`;
       countParams.push(params.type);
     }
