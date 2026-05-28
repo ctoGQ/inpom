@@ -82,38 +82,53 @@ export async function POST(request: NextRequest) {
 
     const sellerCard = sellerCardResult.rows[0];
 
-    // Create transaction record
-    const transactionResult = await sql`
-      INSERT INTO transactions (
-        customer_id,
+    // Create shop transaction record (for product purchase)
+    const shopTransactionResult = await sql`
+      INSERT INTO shop_transactions (
+        product_id,
         buyer_id,
         seller_id,
-        product_id,
+        quantity,
+        price_per_unit,
+        total_price,
+        status
+      )
+      VALUES (
+        ${productId},
+        ${customer.id},
+        ${sellerId},
+        ${quantity},
+        ${amount},
+        ${totalPrice},
+        'confirmed'
+      )
+      RETURNING id
+    `;
+
+    if (!shopTransactionResult.rows || shopTransactionResult.rows.length === 0) {
+      throw new Error('Failed to create shop transaction');
+    }
+
+    const shopTransactionId = shopTransactionResult.rows[0].id;
+
+    // Also create a record in transactions table for user's transaction history
+    // This tracks the financial movement from buyer's perspective
+    await sql`
+      INSERT INTO transactions (
+        customer_id,
         type,
         amount,
-        quantity,
         description,
         created_at
       )
       VALUES (
         ${customer.id},
-        ${customer.id},
-        ${sellerId},
-        ${productId},
         'purchase',
         ${totalPrice},
-        ${quantity},
         ${`Покупка товара: ${product.title}`},
         NOW()
       )
-      RETURNING id
     `;
-
-    if (!transactionResult.rows || transactionResult.rows.length === 0) {
-      throw new Error('Failed to create transaction');
-    }
-
-    const transactionId = transactionResult.rows[0].id;
 
     // Deduct from buyer's balance
     const newBuyerBalance = buyerCard.balance - totalPrice;
@@ -142,7 +157,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        transactionId,
+        transactionId: shopTransactionId,
         message: 'Purchase successful',
       },
       { status: 201 }

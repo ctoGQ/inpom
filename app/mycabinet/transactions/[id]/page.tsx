@@ -24,10 +24,7 @@ async function getTransaction(transactionId: number, customerId: number) {
         t.description, 
         t.created_at, 
         t.invoice_id, 
-        t.card_id,
-        t.product_id,
-        t.quantity,
-        t.seller_id
+        t.card_id
       FROM transactions t
       WHERE t.id = ${transactionId} AND t.customer_id = ${customerId}
     `;
@@ -43,11 +40,17 @@ async function getTransaction(transactionId: number, customerId: number) {
   }
 }
 
-async function getProductDetails(productId: number) {
+async function getProductDetailsFromShopTransaction(customerId: number, transactionId: number) {
   try {
+    // Find shop transaction by purchase time matching this transaction
     const result = await sql`
       SELECT 
-        sp.id,
+        st.id,
+        st.product_id,
+        st.quantity,
+        st.buyer_id,
+        st.seller_id,
+        sp.id as pid,
         sp.title,
         sp.slug,
         sp.price,
@@ -61,17 +64,20 @@ async function getProductDetails(productId: number) {
         sp.status,
         sc.id as category_id,
         sc.name as category_name,
-        cu.id as seller_id,
+        cu.id as seller_id_cust,
         cu.name as seller_name,
         cu.avatar_url as seller_avatar
-      FROM shop_products sp
+      FROM shop_transactions st
+      LEFT JOIN shop_products sp ON st.product_id = sp.id
       LEFT JOIN shop_categories sc ON sp.category_id = sc.id
-      LEFT JOIN customers cu ON sp.seller_id = cu.id
-      WHERE sp.id = ${productId}
+      LEFT JOIN customers cu ON st.seller_id = cu.id
+      WHERE st.buyer_id = ${customerId}
+      ORDER BY st.transaction_date DESC
+      LIMIT 1
     `;
     return result.rows?.[0] || null;
   } catch (error) {
-    console.error('[getProductDetails] Error fetching product:', error);
+    console.error('[getProductDetailsFromShopTransaction] Error:', error);
     return null;
   }
 }
@@ -182,8 +188,8 @@ export default async function TransactionDetailPage({ params }: PageProps) {
   }
 
   let product = null;
-  if (transaction.type === 'purchase' && transaction.product_id) {
-    product = await getProductDetails(transaction.product_id);
+  if (transaction.type === 'purchase') {
+    product = await getProductDetailsFromShopTransaction(customer.id, transactionId);
   }
 
   let otherCustomer = null;
