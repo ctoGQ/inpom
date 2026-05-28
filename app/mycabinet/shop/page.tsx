@@ -50,8 +50,9 @@ interface Category {
 interface Seller {
   id: number;
   name: string;
-  avatar?: string;
+  avatar_url?: string;
   average_rating: number;
+  total_reviews: number;
   total_sales: number;
   product_count: number;
   is_verified: boolean;
@@ -124,13 +125,13 @@ function SellerCircle({ seller }: { seller: Seller }) {
 
   return (
     <Link
-      href={`/shop?seller_id=${seller.id}`}
+      href={`/mycabinet/members/${seller.id}`}
       className="block flex-shrink-0 w-[72px] text-center"
     >
       <div className="relative w-14 h-14 mx-auto rounded-full border-2 border-foreground/10 bg-foreground/5 overflow-hidden mb-1.5">
-        {seller.avatar ? (
+        {seller.avatar_url ? (
           <Image
-            src={seller.avatar}
+            src={seller.avatar_url}
             alt={seller.name}
             width={56}
             height={56}
