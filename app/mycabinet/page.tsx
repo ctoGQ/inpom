@@ -75,6 +75,14 @@ async function getRecentTransactionsByCard(cardId: number) {
             other_customer_avatar: null,
           };
         }
+
+        if (transaction.type === 'withdraw') {
+          return {
+            ...transaction,
+            other_customer_name: 'Вивід',
+            other_customer_avatar: null,
+          };
+        }
         
         if (transaction.other_customer_id) {
           try {

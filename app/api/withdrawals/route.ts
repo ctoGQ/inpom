@@ -20,40 +20,53 @@ export async function POST(request: NextRequest) {
       notes,
     } = body;
 
+    console.log('[Withdrawals API] Request body:', {
+      cardId,
+      customerId,
+      withdrawType,
+      amount,
+      commission,
+      firstName,
+      lastName,
+    });
+
     // Validate required fields
     if (!cardId || !customerId || !withdrawType || !amount || !firstName || !lastName) {
+      console.error('[Withdrawals API] Missing required fields:', {
+        cardId: !!cardId,
+        customerId: !!customerId,
+        withdrawType: !!withdrawType,
+        amount: !!amount,
+        firstName: !!firstName,
+        lastName: !!lastName,
+      });
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
       );
     }
 
-    // Validate withdrawal type
-    if (!['card', 'iban'].includes(withdrawType)) {
-      return NextResponse.json(
-        { error: 'Invalid withdrawal type' },
-        { status: 400 }
-      );
-    }
-
-    // Validate method-specific fields
-    if (withdrawType === 'card' && (!cardNumber || !cardExpiry)) {
-      return NextResponse.json(
-        { error: 'Card details are required' },
-        { status: 400 }
-      );
-    }
-
-    if (withdrawType === 'iban' && (!iban || !bankName || !swiftCode)) {
-      return NextResponse.json(
-        { error: 'IBAN details are required' },
-        { status: 400 }
-      );
-    }
-
+    // Parse numeric values
+    const cardIdNum = parseInt(cardId, 10);
+    const customerIdNum = parseInt(customerId, 10);
     const amountNum = parseFloat(amount);
     const commissionNum = parseFloat(commission);
     const totalAmount = amountNum + commissionNum;
+
+    console.log('[Withdrawals API] Parsed values:', {
+      cardIdNum,
+      customerIdNum,
+      amountNum,
+      commissionNum,
+      totalAmount,
+    });
+
+    if (isNaN(cardIdNum) || isNaN(customerIdNum)) {
+      return NextResponse.json(
+        { error: 'Invalid card ID or customer ID' },
+        { status: 400 }
+      );
+    }
 
     if (amountNum <= 0 || !isFinite(amountNum)) {
       return NextResponse.json(
@@ -65,10 +78,11 @@ export async function POST(request: NextRequest) {
     // Check card exists and belongs to customer
     const cardResult = await sql`
       SELECT id, balance FROM user_cards 
-      WHERE id = ${parseInt(cardId)} AND customer_id = ${customerId}
+      WHERE id = ${cardIdNum} AND customer_id = ${customerIdNum}
     `;
 
     if (!cardResult.rows?.length) {
+      console.error('[Withdrawals API] Card not found:', { cardIdNum, customerIdNum });
       return NextResponse.json(
         { error: 'Card not found' },
         { status: 404 }
@@ -79,6 +93,10 @@ export async function POST(request: NextRequest) {
     const cardBalance = parseFloat(card.balance);
 
     if (cardBalance < totalAmount) {
+      console.error('[Withdrawals API] Insufficient balance:', {
+        cardBalance,
+        totalAmount,
+      });
       return NextResponse.json(
         { error: 'Insufficient balance' },
         { status: 400 }
@@ -106,8 +124,8 @@ export async function POST(request: NextRequest) {
         created_at,
         updated_at
       ) VALUES (
-        ${parseInt(cardId)},
-        ${customerId},
+        ${cardIdNum},
+        ${customerIdNum},
         ${firstName},
         ${lastName},
         ${withdrawType},
@@ -138,11 +156,11 @@ export async function POST(request: NextRequest) {
     await sql`
       UPDATE user_cards 
       SET balance = ${newBalance}, updated_at = NOW() 
-      WHERE id = ${parseInt(cardId)}
+      WHERE id = ${cardIdNum}
     `;
 
     // Create transaction record
-    await sql`
+    const transactionResult = await sql`
       INSERT INTO transactions (
         customer_id,
         card_id,
@@ -151,14 +169,20 @@ export async function POST(request: NextRequest) {
         description,
         created_at
       ) VALUES (
-        ${customerId},
-        ${parseInt(cardId)},
+        ${customerIdNum},
+        ${cardIdNum},
         'withdraw',
         ${amountNum},
         ${'Withdrawal to ' + (withdrawType === 'card' ? 'card' : 'IBAN')},
         NOW()
       )
+      RETURNING id
     `;
+
+    console.log('[Withdrawals API] Success:', {
+      withdrawalId: withdrawal.id,
+      transactionId: transactionResult.rows?.[0]?.id,
+    });
 
     return NextResponse.json({
       success: true,
@@ -172,9 +196,12 @@ export async function POST(request: NextRequest) {
       },
     });
   } catch (error) {
-    console.error('Error creating withdrawal:', error);
+    console.error('[Withdrawals API] Error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { 
+        error: error instanceof Error ? error.message : 'Internal server error',
+        details: process.env.NODE_ENV === 'development' ? String(error) : undefined,
+      },
       { status: 500 }
     );
   }

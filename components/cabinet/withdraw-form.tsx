@@ -93,6 +93,7 @@ export function WithdrawForm({ cardId, customerId, availableBalance }: WithdrawF
         });
         router.push('/mycabinet/transactions');
       } else {
+        console.error('Withdrawal API error:', data);
         toast({
           title: 'Помилка',
           description: data.error || 'Не вдалось створити запит на вивід',

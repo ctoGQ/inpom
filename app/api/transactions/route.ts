@@ -61,10 +61,26 @@ export async function GET(request: NextRequest) {
     // Enrich with customer details
     const enriched = await Promise.all(
       (result.rows || []).map(async (transaction: any) => {
+        if (transaction.type === 'deposit') {
+          return {
+            ...transaction,
+            other_customer_name: 'Депозит',
+            other_customer_avatar: null,
+          };
+        }
+
+        if (transaction.type === 'withdraw') {
+          return {
+            ...transaction,
+            other_customer_name: 'Вивід',
+            other_customer_avatar: null,
+          };
+        }
+
         if (transaction.other_customer_id) {
           try {
             const customerResult = await sql`
-              SELECT name, avatar FROM customers WHERE id = ${transaction.other_customer_id}
+              SELECT name, avatar_url as avatar FROM customers WHERE id = ${transaction.other_customer_id}
             `;
             const otherCustomer = customerResult.rows?.[0];
             return {
