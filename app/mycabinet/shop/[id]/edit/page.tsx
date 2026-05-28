@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
@@ -35,8 +35,10 @@ interface Category {
 export default function EditProductPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const productId = params.id as string;
+  const referrer = searchParams.get('referrer');
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -170,7 +172,7 @@ export default function EditProductPage() {
 
   if (loading) {
     return (
-      <CabinetLayout title="Редагування..." showBack showAvatar showNav>
+      <CabinetLayout title="Редагування..." showBack showAvatar showNav backHref={referrer || `/mycabinet/shop/${productId}`}>
         <div className="px-4 pt-6 pb-28 flex items-center justify-center min-h-96">
           <Loader2 className="w-8 h-8 text-muted-foreground animate-spin" />
         </div>
@@ -180,7 +182,7 @@ export default function EditProductPage() {
 
   if (!product) {
     return (
-      <CabinetLayout title="Не знайдено" showBack showAvatar showNav>
+      <CabinetLayout title="Не знайдено" showBack showAvatar showNav backHref={referrer || `/mycabinet/shop/${productId}`}>
         <div className="px-4 pt-16 pb-28 flex flex-col items-center gap-4">
           <AlertCircle className="w-16 h-16 text-muted-foreground" />
           <p className="font-semibold text-foreground">Товар не знайдено</p>
@@ -193,7 +195,7 @@ export default function EditProductPage() {
   }
 
   return (
-    <CabinetLayout title="Редагування товару" showBack showAvatar showNav>
+    <CabinetLayout title="Редагування товару" showBack showAvatar showNav backHref={referrer || `/mycabinet/shop/${productId}`}>
       <div className="px-4 pt-6 pb-28 space-y-6">
         {/* Back link */}
         <Link href={`/mycabinet/shop/${product.id}`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">

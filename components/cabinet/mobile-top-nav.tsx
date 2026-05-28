@@ -11,6 +11,7 @@ interface MobileTopNavProps {
   showAvatar?: boolean;
   avatarUrl?: string;
   userName?: string;
+  backHref?: string;
 }
 
 export function MobileTopNav({
@@ -19,6 +20,7 @@ export function MobileTopNav({
   showAvatar = false,
   avatarUrl = '/placeholder-user.jpg',
   userName = '',
+  backHref,
 }: MobileTopNavProps) {
   const router = useRouter();
 
@@ -27,13 +29,19 @@ export function MobileTopNav({
       <div className="cabinet-top-nav-left">
         {/* Left: Back Button or Logo */}
         {showBack ? (
-          <button
-            onClick={() => router.back()}
-            className="cabinet-top-nav-back-btn"
-            aria-label="Go back"
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
+          backHref ? (
+            <Link href={backHref} className="cabinet-top-nav-back-btn" aria-label="Go back">
+              <ChevronLeft className="w-6 h-6" />
+            </Link>
+          ) : (
+            <button
+              onClick={() => router.back()}
+              className="cabinet-top-nav-back-btn"
+              aria-label="Go back"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+          )
         ) : (
           <Link href="/" className="flex items-center justify-center">
             <Image

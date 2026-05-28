@@ -296,7 +296,7 @@ export default function SellerProfilePage() {
                 {products.map((product) => (
                   <Link
                     key={product.id}
-                    href={`/mycabinet/shop/${product.id}`}
+                    href={`/mycabinet/shop/${product.id}?referrer=/mycabinet/members/${sellerId}`}
                     className="group"
                   >
                     <div className="rounded-2xl border border-foreground/10 overflow-hidden hover:border-foreground/30 transition-colors">

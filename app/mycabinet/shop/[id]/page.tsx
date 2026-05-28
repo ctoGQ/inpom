@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
@@ -166,7 +166,9 @@ function CommentRow({ comment, onReply }: { comment: Comment; onReply?: (id: num
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const productId = params.id as string;
+  const referrer = searchParams.get('referrer');
   const { toast } = useToast();
 
   const [product, setProduct] = useState<Product | null>(null);
@@ -247,7 +249,7 @@ export default function ProductDetailPage() {
 
   if (loading) {
     return (
-      <CabinetLayout title="Завантаження..." showBack showAvatar showNav>
+      <CabinetLayout title="Завантаження..." showBack showAvatar showNav backHref={referrer || '/mycabinet/shop'}>
         <div className="px-4 pt-6 pb-28 space-y-4">
           <div className="w-full aspect-[4/3] bg-foreground/5 rounded-2xl animate-pulse" />
           <div className="h-6 w-2/3 bg-foreground/5 rounded animate-pulse" />
@@ -263,7 +265,7 @@ export default function ProductDetailPage() {
 
   if (!product) {
     return (
-      <CabinetLayout title="Не знайдено" showBack showAvatar showNav>
+      <CabinetLayout title="Не знайдено" showBack showAvatar showNav backHref={referrer || '/mycabinet/shop'}>
         <div className="px-4 pt-16 pb-28 flex flex-col items-center gap-4">
           <AlertCircle className="w-16 h-16 text-muted-foreground" />
           <p className="font-semibold text-foreground">Товар не знайдено</p>
@@ -285,7 +287,7 @@ export default function ProductDetailPage() {
   const repliesFor = (id: number) => comments.filter((c) => c.parent_id === id);
 
   return (
-    <CabinetLayout title={product.title} showBack showAvatar showNav>
+    <CabinetLayout title={product.title} showBack showAvatar showNav backHref={referrer || '/mycabinet/shop'}>
       <div className="px-4 pt-6 pb-28 space-y-5">
 
         {/* â”€â”€ Hero image gallery â”€â”€ */}

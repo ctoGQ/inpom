@@ -13,6 +13,7 @@ interface CabinetLayoutProps {
   showHeader?: boolean;
   avatarUrl?: string;
   userName?: string;
+  backHref?: string;
 }
 
 export function CabinetLayout({
@@ -24,6 +25,7 @@ export function CabinetLayout({
   showHeader = true,
   avatarUrl = '/placeholder-user.jpg',
   userName = '',
+  backHref,
 }: CabinetLayoutProps) {
   return (
     <div className="mycabinet-container">
@@ -34,6 +36,7 @@ export function CabinetLayout({
           showAvatar={showAvatar}
           avatarUrl={avatarUrl}
           userName={userName}
+          backHref={backHref}
         />
       )}
       <main className="mycabinet-main">
