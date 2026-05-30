@@ -16,6 +16,7 @@ interface UpdateProductRequest {
   status?: string;
   is_featured?: boolean;
   category_id?: number;
+  attributes?: Array<{ name: string; value: string }>;
 }
 
 export async function PUT(
@@ -160,6 +161,28 @@ export async function PUT(
         { error: 'Failed to update product' },
         { status: 500 }
       );
+    }
+
+    // Handle attributes update if provided
+    if (body.attributes !== undefined && Array.isArray(body.attributes)) {
+      console.log(`[PUT Product] Updating attributes for product ${productId}`);
+      
+      // Delete old attributes
+      await sql`DELETE FROM shop_product_attributes WHERE product_id = ${productId}`;
+      
+      // Insert new attributes
+      if (body.attributes.length > 0) {
+        for (let i = 0; i < body.attributes.length; i++) {
+          const attr = body.attributes[i];
+          console.log(`  [${i}] ${attr.name} = ${attr.value}`);
+          await sql`
+            INSERT INTO shop_product_attributes (
+              product_id, attribute_name, attribute_value, display_order
+            )
+            VALUES (${productId}, ${attr.name}, ${attr.value}, ${i})
+          `;
+        }
+      }
     }
 
     return NextResponse.json({

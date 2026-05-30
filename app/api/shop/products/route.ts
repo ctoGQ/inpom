@@ -270,8 +270,10 @@ export async function POST(request: NextRequest) {
 
     // Insert attributes if provided
     if (body.attributes && body.attributes.length > 0) {
+      console.log(`[Create Product API] Saving ${body.attributes.length} attributes for product ${productId}`);
       for (let i = 0; i < body.attributes.length; i++) {
         const attr = body.attributes[i];
+        console.log(`  [${i}] ${attr.name} = ${attr.value}`);
         await sql`
           INSERT INTO shop_product_attributes (
             product_id, attribute_name, attribute_value, display_order
@@ -279,6 +281,8 @@ export async function POST(request: NextRequest) {
           VALUES (${productId}, ${attr.name}, ${attr.value}, ${i})
         `;
       }
+    } else {
+      console.log(`[Create Product API] No attributes provided for product ${productId}`);
     }
 
     // Insert images if provided

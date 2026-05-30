@@ -32,6 +32,11 @@ interface Category {
   slug: string;
 }
 
+interface Attribute {
+  attribute_name: string;
+  attribute_value: string;
+}
+
 export default function EditProductPage() {
   const params = useParams();
   const router = useRouter();
@@ -45,6 +50,7 @@ export default function EditProductPage() {
   const [product, setProduct] = useState<Product | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [currentUserId, setCurrentUserId] = useState<number | null>(null);
+  const [attributes, setAttributes] = useState<Attribute[]>([]);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -60,6 +66,7 @@ export default function EditProductPage() {
     status: 'draft',
     is_featured: false,
     category_id: '',
+    attributes: [] as Array<{ name: string; value: string }>,
   });
 
   useEffect(() => {
@@ -97,6 +104,7 @@ export default function EditProductPage() {
         setProduct(prod);
         setCategories(categoriesData.categories || []);
         setCurrentUserId(profileData.customer?.id);
+        setAttributes(productData.attributes || []);
 
         setFormData({
           title: prod.title || '',
@@ -112,6 +120,10 @@ export default function EditProductPage() {
           status: prod.status || 'draft',
           is_featured: prod.is_featured || false,
           category_id: String(prod.category_id) || '',
+          attributes: (productData.attributes || []).map((attr: Attribute) => ({
+            name: attr.attribute_name,
+            value: attr.attribute_value,
+          })),
         });
       } catch (err) {
         console.error('[EditProduct] fetch error:', err);
@@ -133,6 +145,29 @@ export default function EditProductPage() {
     setFormData((prev) => ({
       ...prev,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
+    }));
+  };
+
+  const handleAddAttribute = () => {
+    setFormData((prev) => ({
+      ...prev,
+      attributes: [...prev.attributes, { name: '', value: '' }],
+    }));
+  };
+
+  const handleUpdateAttribute = (index: number, field: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      attributes: prev.attributes.map((attr, i) =>
+        i === index ? { ...attr, [field]: value } : attr
+      ),
+    }));
+  };
+
+  const handleRemoveAttribute = (index: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      attributes: prev.attributes.filter((_, i) => i !== index),
     }));
   };
 
@@ -434,6 +469,68 @@ export default function EditProductPage() {
                 </label>
               </div>
             </div>
+          </div>
+
+          {/* Attributes */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-bold text-foreground">Характеристики</h2>
+              <button
+                type="button"
+                onClick={handleAddAttribute}
+                className="text-sm px-3 py-1.5 rounded-lg bg-primary text-primary-foreground font-medium hover:opacity-90 transition-colors"
+              >
+                + Додати
+              </button>
+            </div>
+
+            {formData.attributes.length > 0 ? (
+              <div className="space-y-3">
+                {formData.attributes.map((attr, index) => (
+                  <div key={index} className="flex gap-2 items-end">
+                    <div className="flex-1">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">
+                        Назва
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Наприклад: Колір"
+                        value={attr.name}
+                        onChange={(e) =>
+                          handleUpdateAttribute(index, 'name', e.target.value)
+                        }
+                        className="w-full px-4 py-2 rounded-xl border border-foreground/10 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 transition-colors"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1 block">
+                        Значення
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="Наприклад: Червоний"
+                        value={attr.value}
+                        onChange={(e) =>
+                          handleUpdateAttribute(index, 'value', e.target.value)
+                        }
+                        className="w-full px-4 py-2 rounded-xl border border-foreground/10 bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-foreground/30 transition-colors"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveAttribute(index)}
+                      className="px-3 py-2 rounded-xl bg-destructive/10 text-destructive hover:bg-destructive/20 transition-colors"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-4 rounded-xl border border-foreground/10 bg-foreground/5 text-center">
+                <p className="text-sm text-muted-foreground">Характеристики відсутні</p>
+              </div>
+            )}
           </div>
 
           {/* Actions */}

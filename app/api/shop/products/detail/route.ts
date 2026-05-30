@@ -59,6 +59,11 @@ export async function GET(request: NextRequest) {
       ORDER BY display_order ASC
     `;
 
+    console.log(`[Get Product API] Attributes for product ${productId}:`, {
+      count: attributesResult.rows?.length || 0,
+      attributes: attributesResult.rows
+    });
+
     // Fetch images
     const imagesResult = await sql`
       SELECT id, image_url, alt_text, is_primary, display_order
