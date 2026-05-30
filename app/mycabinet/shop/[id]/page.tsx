@@ -330,7 +330,7 @@ export default function ProductDetailPage() {
   const repliesFor = (id: number) => comments.filter((c) => c.parent_id === id);
 
   return (
-    <CabinetLayout title={product.title} showBack showAvatar showNav backHref={referrer || '/mycabinet/shop'}>
+    <CabinetLayout title={product.title} showBack showAvatar showNav={false} backHref={referrer || '/mycabinet/shop'}>
       <div className="px-4 pt-6 pb-28 space-y-5">
 
         {/* â”€â”€ Hero image gallery â”€â”€ */}
@@ -597,7 +597,7 @@ export default function ProductDetailPage() {
 
         {/* Buy button (non-owner, in-stock) */}
         {!isOwner && product.stock_quantity > 0 && (
-          <div className="fixed bottom-[72px] left-0 right-0 px-4 z-10">
+          <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 z-10 bg-background border-t border-foreground/10">
             <button 
               onClick={handleBuyClick}
               disabled={purchasing}
