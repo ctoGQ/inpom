@@ -74,10 +74,12 @@ async function getProductDetailsFromShopTransaction(transactionDescription: stri
         sc.name as category_name,
         cu.id as seller_id_cust,
         cu.name as seller_name,
-        cu.avatar_url as seller_avatar
+        cu.avatar_url as seller_avatar,
+        spi.image_url as product_image
       FROM shop_transactions st
       LEFT JOIN shop_products sp ON st.product_id = sp.id
       LEFT JOIN shop_categories sc ON sp.category_id = sc.id
+      LEFT JOIN shop_product_images spi ON sp.id = spi.product_id AND spi.is_primary = TRUE
       LEFT JOIN customers cu ON st.seller_id = cu.id
       WHERE st.id = ${shopTransactionId}
     `;

@@ -247,9 +247,19 @@ export function TransactionDetailClient({
         <div className="space-y-4">
           {/* Product Preview Card */}
           <div className="rounded-2xl border border-foreground/10 overflow-hidden">
-            <div className="aspect-video bg-foreground/5 relative flex items-center justify-center">
-              <p className="text-sm text-muted-foreground">Превью товара</p>
-            </div>
+            {product.product_image ? (
+              <Image
+                src={product.product_image}
+                alt={product.title}
+                width={500}
+                height={300}
+                className="w-full aspect-video object-cover"
+              />
+            ) : (
+              <div className="aspect-video bg-foreground/5 relative flex items-center justify-center">
+                <p className="text-sm text-muted-foreground">Немає зображення товара</p>
+              </div>
+            )}
             <div className="p-4 space-y-3">
               <h3 className="font-semibold text-foreground line-clamp-2">{product.title}</h3>
               <div className="flex items-baseline gap-2">
@@ -282,36 +292,34 @@ export function TransactionDetailClient({
 
           {/* Seller Info Card */}
           {product.seller_name && (
-            <div className="p-4 rounded-2xl border border-foreground/10 flex items-center gap-3">
-              <div className="flex-shrink-0">
-                {product.seller_avatar ? (
-                  <Image
-                    src={product.seller_avatar}
-                    alt={product.seller_name}
-                    width={40}
-                    height={40}
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center">
-                    <span className="text-xs font-semibold text-foreground">
-                      {getAvatarInitials(product.seller_name)}
-                    </span>
-                  </div>
-                )}
+            <Link href={`/mycabinet/members/${product.seller_id_cust}`}>
+              <div className="p-4 rounded-2xl border border-foreground/10 flex items-center gap-3 hover:bg-foreground/5 hover:border-foreground/20 transition-all cursor-pointer">
+                <div className="flex-shrink-0">
+                  {product.seller_avatar ? (
+                    <Image
+                      src={product.seller_avatar}
+                      alt={product.seller_name}
+                      width={40}
+                      height={40}
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-foreground/10 flex items-center justify-center">
+                      <span className="text-xs font-semibold text-foreground">
+                        {getAvatarInitials(product.seller_name)}
+                      </span>
+                    </div>
+                  )}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs text-muted-foreground">Продавець</p>
+                  <p className="text-sm font-semibold text-foreground truncate">
+                    {product.seller_name}
+                  </p>
+                </div>
+                <ExternalLink className="w-4 h-4 text-primary flex-shrink-0" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-muted-foreground">Продавець</p>
-                <p className="text-sm font-semibold text-foreground truncate">
-                  {product.seller_name}
-                </p>
-              </div>
-              <Link href={`/mycabinet/members/${product.seller_id}`}>
-                <button className="text-primary hover:text-primary/80 transition-colors">
-                  <ExternalLink className="w-4 h-4" />
-                </button>
-              </Link>
-            </div>
+            </Link>
           )}
 
           {/* Product Details */}
