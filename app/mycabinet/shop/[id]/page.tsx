@@ -210,7 +210,16 @@ export default function ProductDetailPage() {
         setAttributes(productData.attributes || []);
         setImages(productData.images || []);
         setComments(commentsData.comments || []);
-        if (profileData.customer) setCurrentUserId(profileData.customer.id);
+        
+        const userId = profileData.customer?.id;
+        setCurrentUserId(userId || null);
+        console.log('[ProductDetail] Loaded:', {
+          productId: productData.product?.id,
+          sellerId: productData.product?.seller_id,
+          currentUserId: userId,
+          isOwner: userId === productData.product?.seller_id,
+          stockQuantity: productData.product?.stock_quantity,
+        });
       } catch (err) {
         console.error('[ProductDetail] fetch error:', err);
         toast({ title: 'Помилка', description: 'Не вдалось завантажити товар', variant: 'destructive' });
@@ -605,7 +614,7 @@ export default function ProductDetailPage() {
 
         {/* Buy button (non-owner, in-stock) */}
         {!isOwner && product.stock_quantity > 0 && (
-          <div className="fixed bottom-0 left-0 right-0 px-4 pb-4 z-10 bg-background border-t border-foreground/10">
+          <div className="fixed bottom-0 left-0 right-0 px-4 py-4 z-50 bg-background border-t border-foreground/10 shadow-lg">
             <button 
               onClick={handleBuyClick}
               disabled={purchasing}
@@ -614,6 +623,15 @@ export default function ProductDetailPage() {
               <ShoppingCart className="w-5 h-5" />
               {purchasing ? 'Обробка...' : 'Придбати'}
             </button>
+          </div>
+        )}
+
+        {/* Debug info - Remove after testing */}
+        {process.env.NODE_ENV === 'development' && (
+          <div className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-xs font-mono">
+            <p>DEBUG: isOwner={String(isOwner)} | stock={product.stock_quantity}</p>
+            <p>showButton={String(!isOwner && product.stock_quantity > 0)}</p>
+            <p>currentUserId={currentUserId} | sellerId={product.seller_id}</p>
           </div>
         )}
       </div>
