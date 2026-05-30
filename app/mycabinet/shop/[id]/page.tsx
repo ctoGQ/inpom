@@ -354,7 +354,17 @@ export default function ProductDetailPage() {
     <>
     <CabinetLayout title={product.title} showBack showAvatar showNav={false} backHref={referrer || '/mycabinet/shop'}>
       <div className="px-4 pt-6 pb-4 space-y-5">
-
+        {/* Debug info - Remove after testing */}
+        {isDevelopment && (
+          <div className="p-4 bg-blue-50 border-2 border-blue-300 rounded-lg text-xs font-mono space-y-1 my-4">
+            <p className="font-bold text-blue-900">🔍 DEBUG INFO:</p>
+            <p>currentUserId: <span className="font-bold">{currentUserId}</span></p>
+            <p>sellerId: <span className="font-bold">{product.seller_id}</span></p>
+            <p>isOwner: <span className="font-bold">{String(isOwner)}</span></p>
+            <p>stock: <span className="font-bold">{product.stock_quantity}</span></p>
+            <p>shouldShowButton: <span className="font-bold text-green-700">{String(shouldShowBuyButton)}</span></p>
+          </div>
+        )}
         {/* â”€â”€ Hero image gallery â”€â”€ */}
         {images.length > 0 ? (
           <div className="space-y-2">
@@ -435,7 +445,7 @@ export default function ProductDetailPage() {
         </div>
 
         {/* Buy button (non-owner, in-stock) */}
-        {(shouldShowBuyButton || isDevelopment) && (
+        {!isOwner && (
           <div className="w-full px-0 py-4">
             <button 
               onClick={handleBuyClick}
@@ -445,9 +455,9 @@ export default function ProductDetailPage() {
               <ShoppingCart className="w-5 h-5" />
               {purchasing ? 'Обробка...' : 'Придбати'}
             </button>
-            {isDevelopment && !shouldShowBuyButton && (
+            {product.stock_quantity === 0 && (
               <p className="text-xs text-red-600 mt-2 text-center font-semibold">
-                ⚠️ Button disabled: isOwner={String(isOwner)} | stock={product.stock_quantity}
+                ❌ Товар закінчився
               </p>
             )}
           </div>
