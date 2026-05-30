@@ -82,7 +82,10 @@ export function TransactionDetailClient({
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              {transaction.type === 'payment_sent' ? 'Одержувач' : 'Плательщик'}
+              {transaction.type === 'payment_sent' ? 'Одержувач' : 
+               transaction.type === 'payment_received' ? 'Плательщик' :
+               transaction.type === 'product_purchase' ? 'Продавець' :
+               transaction.type === 'product_sale' ? 'Покупець' : 'Користувач'}
             </p>
             <p className="text-sm font-semibold text-foreground truncate">
               {otherCustomer.name}
@@ -115,7 +118,7 @@ export function TransactionDetailClient({
             Інвойс
           </button>
         )}
-        {product && transaction.type === 'purchase' && (
+        {product && (transaction.type === 'product_purchase' || transaction.type === 'product_sale') && (
           <button
             onClick={() => setActiveTab('product')}
             className={`flex-1 px-4 py-2.5 rounded-lg font-medium text-sm transition-colors ${
@@ -150,7 +153,11 @@ export function TransactionDetailClient({
           {transaction.description && (
             <div className="p-4 flex flex-col gap-1 hover:bg-foreground/5 transition-colors">
               <p className="text-sm text-muted-foreground">Опис</p>
-              <p className="text-sm font-medium text-foreground">{transaction.description}</p>
+              <p className="text-sm font-medium text-foreground">
+                {transaction.description.includes('|') 
+                  ? transaction.description.split('|')[1] 
+                  : transaction.description}
+              </p>
             </div>
           )}
 
@@ -160,7 +167,9 @@ export function TransactionDetailClient({
               {transaction.type === 'payment_sent' ? 'Оплачено' : 
                transaction.type === 'payment_received' ? 'Отримано' :
                transaction.type === 'deposit' ? 'Депозит' :
-               transaction.type === 'withdraw' ? 'Вивід' : transaction.type}
+               transaction.type === 'withdraw' ? 'Вивід' :
+               transaction.type === 'product_purchase' ? 'Покупка' :
+               transaction.type === 'product_sale' ? 'Продаж' : transaction.type}
             </p>
           </div>
         </div>

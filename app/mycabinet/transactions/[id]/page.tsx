@@ -40,9 +40,17 @@ async function getTransaction(transactionId: number, customerId: number) {
   }
 }
 
-async function getProductDetailsFromShopTransaction(customerId: number, transactionId: number) {
+async function getProductDetailsFromShopTransaction(transactionDescription: string) {
   try {
-    // Find shop transaction by purchase time matching this transaction
+    // Extract shop_transaction_id from description format: "shop:123|..."
+    const match = transactionDescription.match(/^shop:(\d+)\|/);
+    if (!match || !match[1]) {
+      return null;
+    }
+    
+    const shopTransactionId = parseInt(match[1], 10);
+    
+    // Find shop transaction by ID
     const result = await sql`
       SELECT 
         st.id,
@@ -71,9 +79,7 @@ async function getProductDetailsFromShopTransaction(customerId: number, transact
       LEFT JOIN shop_products sp ON st.product_id = sp.id
       LEFT JOIN shop_categories sc ON sp.category_id = sc.id
       LEFT JOIN customers cu ON st.seller_id = cu.id
-      WHERE st.buyer_id = ${customerId}
-      ORDER BY st.transaction_date DESC
-      LIMIT 1
+      WHERE st.id = ${shopTransactionId}
     `;
     return result.rows?.[0] || null;
   } catch (error) {
@@ -188,8 +194,8 @@ export default async function TransactionDetailPage({ params }: PageProps) {
   }
 
   let product = null;
-  if (transaction.type === 'purchase') {
-    product = await getProductDetailsFromShopTransaction(customer.id, transactionId);
+  if (transaction.type === 'product_purchase' || transaction.type === 'product_sale') {
+    product = await getProductDetailsFromShopTransaction(transaction.description);
   }
 
   let otherCustomer = null;
@@ -212,9 +218,15 @@ export default async function TransactionDetailPage({ params }: PageProps) {
     }
   }
 
+  // For product_sale transactions, show the buyer info
+  if (transaction.type === 'product_sale' && product) {
+    otherCustomer = await getOtherCustomer(product.buyer_id);
+  }
+
   const isIncoming = 
     transaction.type.includes('deposit') || 
-    transaction.type.includes('payment_received');
+    transaction.type.includes('payment_received') ||
+    transaction.type === 'product_sale';
 
   const { date, time } = formatDateTime(transaction.created_at);
 

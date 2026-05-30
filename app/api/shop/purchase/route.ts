@@ -144,20 +144,27 @@ export async function POST(request: NextRequest) {
       WHERE id = ${sellerCard.id}
     `;
 
-    // Create transaction records for buyer
-    await sql`
+    // Create transaction record for buyer with shop_transaction_id reference
+    const buyerTransactionResult = await sql`
       INSERT INTO transactions (customer_id, card_id, type, amount, description, created_at)
       VALUES (
         ${customer.id},
         ${buyerCard.id},
         'product_purchase',
         ${totalPrice},
-        ${'Покупка продукту: ' + product.title},
+        ${'shop:' + shopTransactionId + '|Покупка продукту: ' + product.title},
         NOW()
       )
+      RETURNING id
     `;
 
-    // Create transaction records for seller
+    if (!buyerTransactionResult.rows || buyerTransactionResult.rows.length === 0) {
+      throw new Error('Failed to create buyer transaction');
+    }
+
+    const buyerTransactionId = buyerTransactionResult.rows[0].id;
+
+    // Create transaction record for seller with shop_transaction_id reference
     await sql`
       INSERT INTO transactions (customer_id, card_id, type, amount, description, created_at)
       VALUES (
@@ -165,7 +172,7 @@ export async function POST(request: NextRequest) {
         ${sellerCard.id},
         'product_sale',
         ${totalPrice},
-        ${'Продаж продукту: ' + product.title},
+        ${'shop:' + shopTransactionId + '|Продаж продукту: ' + product.title},
         NOW()
       )
     `;
@@ -178,12 +185,12 @@ export async function POST(request: NextRequest) {
       WHERE id = ${productId}
     `;
 
-    console.log('[POST /api/shop/purchase] ✅ Purchase successful - Transaction:', shopTransactionId);
+    console.log('[POST /api/shop/purchase] ✅ Purchase successful - Transaction:', buyerTransactionId);
 
     return NextResponse.json(
       {
         success: true,
-        transactionId: shopTransactionId,
+        transactionId: buyerTransactionId,
         message: 'Purchase successful',
       },
       { status: 201 }
