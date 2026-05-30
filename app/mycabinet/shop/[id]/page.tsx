@@ -434,6 +434,25 @@ export default function ProductDetailPage() {
           )}
         </div>
 
+        {/* Buy button (non-owner, in-stock) */}
+        {(shouldShowBuyButton || isDevelopment) && (
+          <div className="w-full px-0 py-4">
+            <button 
+              onClick={handleBuyClick}
+              disabled={purchasing || !shouldShowBuyButton}
+              className="w-full py-4 bg-primary text-primary-foreground font-semibold rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ShoppingCart className="w-5 h-5" />
+              {purchasing ? 'Обробка...' : 'Придбати'}
+            </button>
+            {isDevelopment && !shouldShowBuyButton && (
+              <p className="text-xs text-red-600 mt-2 text-center font-semibold">
+                ⚠️ Button disabled: isOwner={String(isOwner)} | stock={product.stock_quantity}
+              </p>
+            )}
+          </div>
+        )}
+
         {/* Product seller card */}
         <Link href={`/mycabinet/members/${product.seller_id}`}>
           <div className="p-5 rounded-2xl border border-foreground/10 flex items-center gap-4 hover:bg-foreground/5 transition-colors">
@@ -663,24 +682,6 @@ export default function ProductDetailPage() {
       </MobileModal>
     </CabinetLayout>
 
-    {/* Buy button - Fixed at bottom, separate from navbar */}
-    {(shouldShowBuyButton || isDevelopment) && (
-      <div className="fixed bottom-0 left-0 right-0 px-4 py-4 z-40 bg-background border-t border-foreground/10 shadow-xl">
-        <button 
-          onClick={handleBuyClick}
-          disabled={purchasing || !shouldShowBuyButton}
-          className="w-full py-4 bg-primary text-primary-foreground font-semibold rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <ShoppingCart className="w-5 h-5" />
-          {purchasing ? 'Обробка...' : 'Придбати'}
-        </button>
-        {isDevelopment && !shouldShowBuyButton && (
-          <p className="text-xs text-red-600 mt-2 text-center font-semibold">
-            ⚠️ Кнопка вимкнена: isOwner={String(isOwner)} | stock={product.stock_quantity}
-          </p>
-        )}
-      </div>
-    )}
     </>
   );
 }
