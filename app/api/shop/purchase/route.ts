@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
     console.log('[POST /api/shop/purchase] Request:', { productId, quantity, sellerId, amount, customerId: customer.id });
 
     if (!productId || !quantity || quantity <= 0 || !sellerId || !amount) {
+      console.error('[POST /api/shop/purchase] Invalid params:', { productId, quantity, sellerId, amount });
       return NextResponse.json(
         { error: 'Invalid product, quantity, seller, or amount' },
         { status: 400 }
@@ -42,6 +43,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get product details
+    console.log('[POST /api/shop/purchase] Fetching product:', productId);
     const productResult = await sql`
       SELECT id, title, seller_id, stock_quantity, price, currency
       FROM shop_products
@@ -58,10 +60,15 @@ export async function POST(request: NextRequest) {
 
     // Check stock
     if (Number(product.stock_quantity) < quantity) {
+      console.error('[POST /api/shop/purchase] Insufficient stock:', {
+        available: product.stock_quantity,
+        requested: quantity,
+      });
       return NextResponse.json({ error: 'Insufficient stock' }, { status: 400 });
     }
 
-    // Get buyer's balance from customers table (simpler approach)
+    // Get buyer's balance from customers table
+    console.log('[POST /api/shop/purchase] Fetching buyer balance for customer:', customer.id);
     const buyerResult = await sql`
       SELECT id, balance
       FROM customers
@@ -69,20 +76,31 @@ export async function POST(request: NextRequest) {
     `;
 
     if (!buyerResult.rows || buyerResult.rows.length === 0) {
+      console.error('[POST /api/shop/purchase] Buyer not found:', customer.id);
       return NextResponse.json({ error: 'Buyer account not found' }, { status: 400 });
     }
 
     const buyer = buyerResult.rows[0];
-    const totalPrice = amount * quantity;
+    const buyerBalance = Number(buyer.balance) || 0;
+    const totalPrice = Number(amount) * Number(quantity);
 
-    console.log('[POST /api/shop/purchase] Buyer balance:', buyer.balance, 'Total price:', totalPrice);
+    console.log('[POST /api/shop/purchase] Balance check:', {
+      buyerBalance,
+      totalPrice,
+      hasEnough: buyerBalance >= totalPrice,
+    });
 
     // Check balance
-    if (Number(buyer.balance) < totalPrice) {
+    if (buyerBalance < totalPrice) {
+      console.error('[POST /api/shop/purchase] Insufficient balance:', {
+        have: buyerBalance,
+        need: totalPrice,
+      });
       return NextResponse.json({ error: 'Insufficient balance' }, { status: 400 });
     }
 
     // Get seller's account
+    console.log('[POST /api/shop/purchase] Fetching seller balance for:', sellerId);
     const sellerResult = await sql`
       SELECT id, balance
       FROM customers
@@ -95,8 +113,10 @@ export async function POST(request: NextRequest) {
     }
 
     const seller = sellerResult.rows[0];
+    console.log('[POST /api/shop/purchase] Seller found:', seller);
 
     // Create shop transaction record (for product purchase)
+    console.log('[POST /api/shop/purchase] Creating shop transaction');
     const shopTransactionResult = await sql`
       INSERT INTO shop_transactions (
         product_id,
@@ -129,6 +149,7 @@ export async function POST(request: NextRequest) {
     console.log('[POST /api/shop/purchase] Created shop transaction:', shopTransactionId);
 
     // Create buyer transaction record
+    console.log('[POST /api/shop/purchase] Creating buyer transaction');
     await sql`
       INSERT INTO transactions (
         customer_id,
@@ -147,6 +168,7 @@ export async function POST(request: NextRequest) {
     `;
 
     // Create seller transaction record
+    console.log('[POST /api/shop/purchase] Creating seller transaction');
     await sql`
       INSERT INTO transactions (
         customer_id,
@@ -165,7 +187,8 @@ export async function POST(request: NextRequest) {
     `;
 
     // Deduct from buyer's balance
-    const newBuyerBalance = Number(buyer.balance) - totalPrice;
+    console.log('[POST /api/shop/purchase] Updating buyer balance');
+    const newBuyerBalance = buyerBalance - totalPrice;
     await sql`
       UPDATE customers
       SET balance = ${newBuyerBalance}
@@ -173,7 +196,9 @@ export async function POST(request: NextRequest) {
     `;
 
     // Add to seller's balance
-    const newSellerBalance = Number(seller.balance) + totalPrice;
+    console.log('[POST /api/shop/purchase] Updating seller balance');
+    const sellerBalance = Number(seller.balance) || 0;
+    const newSellerBalance = sellerBalance + totalPrice;
     await sql`
       UPDATE customers
       SET balance = ${newSellerBalance}
@@ -181,6 +206,7 @@ export async function POST(request: NextRequest) {
     `;
 
     // Update product stock and increment sale count
+    console.log('[POST /api/shop/purchase] Updating product stock');
     const newStock = Number(product.stock_quantity) - quantity;
     await sql`
       UPDATE shop_products
