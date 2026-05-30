@@ -351,6 +351,7 @@ export default function ProductDetailPage() {
   const isDevelopment = process.env.NODE_ENV === 'development';
 
   return (
+    <>
     <CabinetLayout title={product.title} showBack showAvatar showNav={false} backHref={referrer || '/mycabinet/shop'}>
       <div className="px-4 pt-6 pb-4 space-y-5">
 
@@ -616,36 +617,7 @@ export default function ProductDetailPage() {
           </Link>
         )}
 
-        {/* Buy button (non-owner, in-stock) - Always show in development */}
-        {(shouldShowBuyButton || isDevelopment) && (
-          <div className="fixed bottom-0 left-0 right-0 px-4 py-4 z-50 bg-background border-t border-foreground/10 shadow-lg">
-            <button 
-              onClick={handleBuyClick}
-              disabled={purchasing || !shouldShowBuyButton}
-              className="w-full py-4 bg-primary text-primary-foreground font-semibold rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ShoppingCart className="w-5 h-5" />
-              {purchasing ? 'Обробка...' : 'Придбати'}
-            </button>
-            {isDevelopment && !shouldShowBuyButton && (
-              <p className="text-xs text-red-600 mt-2 text-center font-semibold">
-                ⚠️ Кнопка вимкнена: isOwner={String(isOwner)} | stock={product.stock_quantity}
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Debug info - Remove after testing */}
-        {isDevelopment && (
-          <div className="p-4 bg-blue-50 border-2 border-blue-300 rounded-lg text-xs font-mono space-y-1 my-4">
-            <p className="font-bold text-blue-900">🔍 DEBUG INFO:</p>
-            <p>currentUserId: <span className="font-bold">{currentUserId}</span></p>
-            <p>sellerId: <span className="font-bold">{product.seller_id}</span></p>
-            <p>isOwner: <span className="font-bold">{String(isOwner)}</span></p>
-            <p>stock: <span className="font-bold">{product.stock_quantity}</span></p>
-            <p>shouldShowButton: <span className="font-bold text-green-700">{String(shouldShowBuyButton)}</span></p>
-          </div>
-        )}
+        {/* â"€â"€ Owner edit link ends here â"€â"€ */}
       </div>
 
       {/* Purchase Confirmation Modal */}
@@ -690,5 +662,25 @@ export default function ProductDetailPage() {
         </div>
       </MobileModal>
     </CabinetLayout>
+
+    {/* Buy button - Fixed at bottom, separate from navbar */}
+    {(shouldShowBuyButton || isDevelopment) && (
+      <div className="fixed bottom-0 left-0 right-0 px-4 py-4 z-40 bg-background border-t border-foreground/10 shadow-xl">
+        <button 
+          onClick={handleBuyClick}
+          disabled={purchasing || !shouldShowBuyButton}
+          className="w-full py-4 bg-primary text-primary-foreground font-semibold rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <ShoppingCart className="w-5 h-5" />
+          {purchasing ? 'Обробка...' : 'Придбати'}
+        </button>
+        {isDevelopment && !shouldShowBuyButton && (
+          <p className="text-xs text-red-600 mt-2 text-center font-semibold">
+            ⚠️ Кнопка вимкнена: isOwner={String(isOwner)} | stock={product.stock_quantity}
+          </p>
+        )}
+      </div>
+    )}
+    </>
   );
 }
