@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
+import { MobileModal } from '@/components/mobile-modal';
 import { useToast } from '@/components/ui/use-toast';
 import {
   Star,
@@ -184,6 +185,7 @@ export default function ProductDetailPage() {
   const [replyTo, setReplyTo] = useState<{ id: number; name: string } | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [purchasing, setPurchasing] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const commentInputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -248,7 +250,12 @@ export default function ProductDetailPage() {
     setTimeout(() => commentInputRef.current?.focus(), 100);
   };
 
-  const handleBuyClick = async () => {
+  const handleBuyClick = () => {
+    if (!product) return;
+    setShowConfirmModal(true);
+  };
+
+  const confirmPurchase = async () => {
     if (!product || purchasing) return;
     
     setPurchasing(true);
@@ -271,6 +278,7 @@ export default function ProductDetailPage() {
       }
 
       const data = await res.json();
+      setShowConfirmModal(false);
       toast({
         title: 'Успіх',
         description: `Покупка успішна. Транзакція #${data.transactionId}`,
@@ -609,6 +617,48 @@ export default function ProductDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Purchase Confirmation Modal */}
+      <MobileModal
+        isOpen={showConfirmModal}
+        onClose={() => setShowConfirmModal(false)}
+        title="Підтвердити покупку"
+      >
+        <div className="px-6 py-6 space-y-6">
+          {/* Product Summary */}
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground">Товар</p>
+            <p className="text-lg font-semibold text-foreground line-clamp-2">{product?.title}</p>
+          </div>
+
+          {/* Amount to Deduct */}
+          <div className="rounded-2xl bg-destructive/10 border border-destructive/20 p-4 space-y-1">
+            <p className="text-sm text-muted-foreground">Сума списання</p>
+            <p className="text-3xl font-bold text-foreground">
+              {product?.price ? Number(product.price).toFixed(2) : '0.00'} {product?.currency || 'INPOM'}
+            </p>
+          </div>
+
+          {/* Confirm Button */}
+          <button
+            onClick={confirmPurchase}
+            disabled={purchasing}
+            className="w-full py-4 bg-primary text-primary-foreground font-semibold rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <ShoppingCart className="w-5 h-5" />
+            {purchasing ? 'Обробка...' : 'Підтвердити'}
+          </button>
+
+          {/* Cancel Button */}
+          <button
+            onClick={() => setShowConfirmModal(false)}
+            disabled={purchasing}
+            className="w-full py-3 bg-foreground/5 text-foreground font-medium rounded-2xl hover:bg-foreground/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Скасувати
+          </button>
+        </div>
+      </MobileModal>
     </CabinetLayout>
   );
 }
