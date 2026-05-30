@@ -128,42 +128,6 @@ export async function POST(request: NextRequest) {
     const shopTransactionId = shopTransactionResult.rows[0].id;
     console.log('[POST /api/shop/purchase] Created shop transaction:', shopTransactionId);
 
-    // Create buyer transaction record
-    await sql`
-      INSERT INTO transactions (
-        customer_id,
-        type,
-        amount,
-        description,
-        created_at
-      )
-      VALUES (
-        ${customer.id},
-        'purchase',
-        ${totalPrice},
-        ${'Покупка товара: ' + product.title},
-        NOW()
-      )
-    `;
-
-    // Create seller transaction record
-    await sql`
-      INSERT INTO transactions (
-        customer_id,
-        type,
-        amount,
-        description,
-        created_at
-      )
-      VALUES (
-        ${sellerId},
-        'sale',
-        ${totalPrice},
-        ${'Продаж товара: ' + product.title},
-        NOW()
-      )
-    `;
-
     // Deduct from buyer's balance
     const newBuyerBalance = Number(buyer.balance) - totalPrice;
     await sql`
