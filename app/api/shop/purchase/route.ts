@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
         price_per_unit,
         total_price,
         status,
-        created_at
+        transaction_date
       )
       VALUES (
         ${productId},

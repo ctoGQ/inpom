@@ -100,11 +100,11 @@ function CarouselProductCard({ product }: { product: Product }) {
           </div>
           <div>
             <p className="text-sm font-bold text-foreground">
-              {Number(product.price).toFixed(0)} {product.currency}
+              {Number(product.price).toFixed(0)} {product.currency || 'INPOM'}
             </p>
             {product.original_price && product.original_price > product.price && (
               <p className="text-xs text-muted-foreground line-through">
-                {Number(product.original_price).toFixed(0)}
+                {Number(product.original_price).toFixed(0)} {product.currency || 'INPOM'}
               </p>
             )}
           </div>
