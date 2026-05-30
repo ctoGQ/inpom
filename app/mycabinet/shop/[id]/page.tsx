@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
@@ -390,11 +390,11 @@ export default function ProductDetailPage() {
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Ціна</p>
               <div className="flex items-baseline gap-2">
                 <p className="text-4xl font-bold text-foreground">{Number(product.price).toFixed(0)}</p>
-                <p className="text-lg font-semibold text-muted-foreground">{product.currency || 'INPOM'}</p>
+                <p className="text-lg font-semibold text-muted-foreground">Inpom</p>
               </div>
               {product.original_price && Number(product.original_price) > Number(product.price) && (
                 <p className="text-sm text-muted-foreground line-through mt-0.5">
-                  {Number(product.original_price).toFixed(0)} {product.currency || 'INPOM'}
+                  {Number(product.original_price).toFixed(0)} Inpom
                 </p>
               )}
             </div>
