@@ -61,40 +61,41 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Insufficient stock' }, { status: 400 });
     }
 
-    // Get buyer's balance from customers table (simpler approach)
-    const buyerResult = await sql`
-      SELECT id, balance
-      FROM customers
-      WHERE id = ${customer.id}
-    `;
-
-    if (!buyerResult.rows || buyerResult.rows.length === 0) {
-      return NextResponse.json({ error: 'Buyer account not found' }, { status: 400 });
-    }
-
-    const buyer = buyerResult.rows[0];
     const totalPrice = amount * quantity;
 
-    console.log('[POST /api/shop/purchase] Buyer balance:', buyer.balance, 'Total price:', totalPrice);
+    // Get buyer's card (black card)
+    const buyerCardResult = await sql`
+      SELECT id, balance FROM user_cards
+      WHERE customer_id = ${customer.id}
+      LIMIT 1
+    `;
+
+    if (!buyerCardResult.rows || buyerCardResult.rows.length === 0) {
+      return NextResponse.json({ error: 'User card not found' }, { status: 404 });
+    }
+
+    const buyerCard = buyerCardResult.rows[0];
+
+    console.log('[POST /api/shop/purchase] Buyer card balance:', buyerCard.balance, 'Total price:', totalPrice);
 
     // Check balance
-    if (Number(buyer.balance) < totalPrice) {
+    if (Number(buyerCard.balance) < totalPrice) {
       return NextResponse.json({ error: 'Insufficient balance' }, { status: 400 });
     }
 
-    // Get seller's account
-    const sellerResult = await sql`
-      SELECT id, balance
-      FROM customers
-      WHERE id = ${sellerId}
+    // Get seller's card
+    const sellerCardResult = await sql`
+      SELECT id FROM user_cards
+      WHERE customer_id = ${sellerId}
+      LIMIT 1
     `;
 
-    if (!sellerResult.rows || sellerResult.rows.length === 0) {
-      console.error('[POST /api/shop/purchase] Seller not found:', sellerId);
-      return NextResponse.json({ error: 'Seller account not found' }, { status: 400 });
+    if (!sellerCardResult.rows || sellerCardResult.rows.length === 0) {
+      console.error('[POST /api/shop/purchase] Seller card not found:', sellerId);
+      return NextResponse.json({ error: 'Seller card not found' }, { status: 404 });
     }
 
-    const seller = sellerResult.rows[0];
+    const sellerCard = sellerCardResult.rows[0];
 
     // Create shop transaction record (for product purchase)
     const shopTransactionResult = await sql`
@@ -128,20 +129,45 @@ export async function POST(request: NextRequest) {
     const shopTransactionId = shopTransactionResult.rows[0].id;
     console.log('[POST /api/shop/purchase] Created shop transaction:', shopTransactionId);
 
-    // Deduct from buyer's balance
-    const newBuyerBalance = Number(buyer.balance) - totalPrice;
+    // Deduct from buyer's card balance
+    const newBuyerBalance = Number(buyerCard.balance) - totalPrice;
     await sql`
-      UPDATE customers
+      UPDATE user_cards
       SET balance = ${newBuyerBalance}
-      WHERE id = ${customer.id}
+      WHERE id = ${buyerCard.id}
     `;
 
-    // Add to seller's balance
-    const newSellerBalance = Number(seller.balance) + totalPrice;
+    // Add to seller's card balance
     await sql`
-      UPDATE customers
-      SET balance = ${newSellerBalance}
-      WHERE id = ${sellerId}
+      UPDATE user_cards
+      SET balance = balance + ${totalPrice}
+      WHERE id = ${sellerCard.id}
+    `;
+
+    // Create transaction records for buyer
+    await sql`
+      INSERT INTO transactions (customer_id, card_id, type, amount, description, created_at)
+      VALUES (
+        ${customer.id},
+        ${buyerCard.id},
+        'product_purchase',
+        ${totalPrice},
+        ${'Покупка продукту: ' + product.title},
+        NOW()
+      )
+    `;
+
+    // Create transaction records for seller
+    await sql`
+      INSERT INTO transactions (customer_id, card_id, type, amount, description, created_at)
+      VALUES (
+        ${sellerId},
+        ${sellerCard.id},
+        'product_sale',
+        ${totalPrice},
+        ${'Продаж продукту: ' + product.title},
+        NOW()
+      )
     `;
 
     // Update product stock and increment sale count
