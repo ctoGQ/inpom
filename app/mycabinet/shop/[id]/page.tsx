@@ -422,11 +422,11 @@ export default function ProductDetailPage() {
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">Ціна</p>
               <div className="flex items-baseline gap-2">
                 <p className="text-4xl font-bold text-foreground">{Number(product.price).toFixed(0)}</p>
-                <p className="text-lg font-semibold text-muted-foreground">{product.currency || 'INPOM'}</p>
+                <p className="text-lg font-semibold text-muted-foreground">INPOM</p>
               </div>
               {product.original_price && Number(product.original_price) > Number(product.price) && (
                 <p className="text-sm text-muted-foreground line-through mt-0.5">
-                  {Number(product.original_price).toFixed(0)} {product.currency || 'INPOM'}
+                  {Number(product.original_price).toFixed(0)} INPOM
                 </p>
               )}
             </div>
@@ -442,26 +442,26 @@ export default function ProductDetailPage() {
               {product.short_description}
             </p>
           )}
-        </div>
 
-        {/* Buy button (non-owner, in-stock) */}
-        {!isOwner && (
-          <div className="w-full px-0 py-4">
-            <button 
-              onClick={handleBuyClick}
-              disabled={purchasing || !shouldShowBuyButton}
-              className="w-full py-4 bg-primary text-primary-foreground font-semibold rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ShoppingCart className="w-5 h-5" />
-              {purchasing ? 'Обробка...' : 'Придбати'}
-            </button>
-            {product.stock_quantity === 0 && (
-              <p className="text-xs text-red-600 mt-2 text-center font-semibold">
-                ❌ Товар закінчився
-              </p>
-            )}
-          </div>
-        )}
+          {/* Buy button inside price card */}
+          {!isOwner && (
+            <div className="w-full pt-3 border-t border-foreground/10">
+              <button 
+                onClick={handleBuyClick}
+                disabled={purchasing || !shouldShowBuyButton}
+                className="w-full py-3 bg-primary text-primary-foreground font-semibold rounded-xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {purchasing ? 'Обробка...' : 'Придбати'}
+              </button>
+              {product.stock_quantity === 0 && (
+                <p className="text-xs text-red-600 mt-2 text-center font-semibold">
+                  ❌ Товар закінчився
+                </p>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Product seller card */}
         <Link href={`/mycabinet/members/${product.seller_id}`}>
