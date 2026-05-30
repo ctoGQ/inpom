@@ -206,13 +206,6 @@ export default function ProductDetailPage() {
           profileRes.json(),
         ]);
 
-        console.log('[ProductDetail] API Response:', {
-          product: productData.product,
-          attributes: productData.attributes,
-          images: productData.images,
-          comments: commentsData.comments
-        });
-
         setProduct(productData.product || null);
         setAttributes(productData.attributes || []);
         setImages(productData.images || []);
@@ -520,23 +513,15 @@ export default function ProductDetailPage() {
         {activeTab === 'attributes' && (
           <div className="rounded-2xl border border-foreground/10 overflow-hidden divide-y divide-foreground/10">
             {attributes && attributes.length > 0 ? (
-              <>
-                <div className="p-2 bg-foreground/5 text-xs text-muted-foreground">
-                  DEBUG: Знайдено {attributes.length} характеристик
+              attributes.map((attr, i) => (
+                <div key={i} className="p-4 flex items-start justify-between gap-4 hover:bg-foreground/5 transition-colors">
+                  <p className="text-sm text-muted-foreground flex-shrink-0">{attr.attribute_name}</p>
+                  <p className="text-sm font-medium text-foreground text-right">{attr.attribute_value}</p>
                 </div>
-                {attributes.map((attr, i) => (
-                  <div key={i} className="p-4 flex items-start justify-between gap-4 hover:bg-foreground/5 transition-colors">
-                    <p className="text-sm text-muted-foreground flex-shrink-0">{attr.attribute_name}</p>
-                    <p className="text-sm font-medium text-foreground text-right">{attr.attribute_value}</p>
-                  </div>
-                ))}
-              </>
+              ))
             ) : (
-              <div className="p-8 text-center space-y-2">
+              <div className="p-8 text-center">
                 <p className="text-sm text-muted-foreground">Характеристики відсутні</p>
-                <p className="text-xs text-muted-foreground">
-                  Стан: attributes = {JSON.stringify(attributes)}
-                </p>
               </div>
             )}
           </div>
