@@ -14,14 +14,12 @@ export async function GET(
 
     console.log(`[Shop Seller API] Fetching seller profile: ${sellerIdNum}`);
 
-    // Get seller info
+    // Get seller info from customers table
     const sellerResult = await sql`
       SELECT 
-        c.id, c.name, c.avatar_url, c.email,
-        sr.average_rating, sr.total_reviews, sr.total_sales, sr.response_time_hours
-      FROM customers c
-      LEFT JOIN shop_seller_ratings sr ON c.id = sr.seller_id
-      WHERE c.id = ${sellerIdNum}
+        id, name, avatar_url, email
+      FROM customers
+      WHERE id = ${sellerIdNum}
     `;
 
     if (!sellerResult.rows || sellerResult.rows.length === 0) {
@@ -29,6 +27,19 @@ export async function GET(
     }
 
     const seller = sellerResult.rows[0];
+
+    // Calculate seller ratings from transactions
+    const statsResult = await sql`
+      SELECT 
+        COUNT(DISTINCT st.id) as total_sales,
+        COALESCE(AVG(sr.rating), 0) as average_rating,
+        COUNT(DISTINCT sr.id) as total_reviews
+      FROM shop_transactions st
+      LEFT JOIN shop_reviews sr ON st.product_id = sr.product_id AND st.seller_id = sr.seller_id
+      WHERE st.seller_id = ${sellerIdNum} AND st.status = 'confirmed'
+    `;
+
+    const stats = statsResult.rows[0] || {};
 
     // Get seller's active products
     const productsResult = await sql`
@@ -54,10 +65,9 @@ export async function GET(
         id: seller.id,
         name: seller.name,
         avatar: seller.avatar_url,
-        rating: seller.average_rating || 0,
-        reviews: seller.total_reviews || 0,
-        sales: seller.total_sales || 0,
-        responseTime: seller.response_time_hours
+        rating: parseFloat(stats.average_rating || 0),
+        reviews: parseInt(stats.total_reviews || 0),
+        sales: parseInt(stats.total_sales || 0),
       },
       products: productsResult.rows || []
     });
