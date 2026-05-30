@@ -15,17 +15,13 @@ export async function GET(
       );
     }
 
-    // Fetch seller profile info
+    // Fetch seller profile info - use only fields that exist
     const sellerResult = await sql`
       SELECT 
         id, 
         name, 
         email,
-        avatar_url,
-        bio,
-        created_at,
-        rating,
-        review_count
+        avatar_url
       FROM customers
       WHERE id = ${sellerId}
     `;
@@ -64,9 +60,11 @@ export async function GET(
         sp.is_featured,
         sp.status,
         sp.category_id,
-        sc.name as category_name
+        sc.name as category_name,
+        spi.image_url as primary_image
       FROM shop_products sp
       LEFT JOIN shop_categories sc ON sp.category_id = sc.id
+      LEFT JOIN shop_product_images spi ON sp.id = spi.product_id AND spi.is_primary = TRUE
       WHERE sp.seller_id = ${sellerId}
         AND sp.status IN ('active', 'moderation')
       ORDER BY sp.created_at DESC
@@ -89,10 +87,6 @@ export async function GET(
         name: seller.name,
         email: seller.email,
         avatar_url: seller.avatar_url,
-        bio: seller.bio || null,
-        created_at: seller.created_at,
-        rating: seller.rating || 0,
-        review_count: seller.review_count || 0,
         product_count: productCount,
       },
       products: productsWithDiscount,
