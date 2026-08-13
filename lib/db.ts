@@ -7,8 +7,12 @@ function getPool(): Pool {
   if (!pool) {
     const databaseUrl = process.env.DATABASE_URL;
     if (!databaseUrl) {
-      throw new Error('DATABASE_URL environment variable is not set');
+      const guidance = `DATABASE_URL environment variable is not set.\n\nFor local development with Neon, create a file named .env.local at the project root and add your Neon connection string:\n\nDATABASE_URL=postgresql://<user>:<password>@<host>/<db>?sslmode=require\n\nSee .env.example for a template.`;
+      throw new Error(guidance);
     }
+
+    // Use the provided connection string. For local development with Neon,
+    // ensure your connection string includes any required SSL parameters.
     pool = new Pool({ connectionString: databaseUrl });
   }
   return pool;

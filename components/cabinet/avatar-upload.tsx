@@ -137,11 +137,31 @@ export function AvatarUpload({
   };
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-display text-foreground">Аватар</h3>
-
+    <div className="space-y-4 ">
       {/* Avatar Preview */}
-      <div className="flex justify-center">
+      <div className="flex justify-center relative">
+        
+        {/* Upload Button */}
+        <div className="absolute bottom-0 z-10 right-1/3">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileSelect}
+            className="hidden"
+            disabled={uploading || deleting}
+          />
+          <Button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={uploading || deleting}
+            className="w-full h-10 flex items-center justify-center"
+            variant="default"
+          >
+            <Upload className="w-4 h-4" />
+            {uploading ? '...' : ''}
+          </Button>
+        </div>
         <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-foreground/10 bg-foreground/5">
           <Image
             src={previewUrl || avatarUrl}
@@ -156,38 +176,19 @@ export function AvatarUpload({
             </div>
           )}
         </div>
+
       </div>
 
+      
+
       {/* Upload Instructions */}
-      <div className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-        <p className="text-xs text-blue-600">
-          Формати: JPG, PNG, WebP. Максимум 5MB.
+      <div className="text-center">
+        <p className="text-xs text-foreground">
+          Формати: JPG, PNG, WebP.<br/>Максимум 5MB.
         </p>
       </div>
 
-      {/* Upload Button */}
-      <div>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleFileSelect}
-          className="hidden"
-          disabled={uploading || deleting}
-        />
-        <Button
-          type="button"
-          onClick={() => fileInputRef.current?.click()}
-          disabled={uploading || deleting}
-          className="w-full"
-          variant="outline"
-        >
-          <Upload className="w-4 h-4 mr-2" />
-          {uploading ? 'Завантаження...' : 'Вибрати фото'}
-        </Button>
-      </div>
-
-      {/* Delete Button */}
+      {/* Delete Button 
       {avatarUrl !== '/placeholder-user.jpg' && (
         <Button
           type="button"
@@ -199,7 +200,7 @@ export function AvatarUpload({
           <Trash2 className="w-4 h-4 mr-2" />
           {deleting ? 'Видалення...' : 'Видалити аватар'}
         </Button>
-      )}
+      )}*/}
     </div>
   );
 }

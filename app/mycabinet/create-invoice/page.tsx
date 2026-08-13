@@ -4,7 +4,11 @@ import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
 import { InvoiceForm } from '@/components/cabinet/invoice-form';
 import { sql } from '@/lib/db';
 
-export default async function CreateInvoicePage() {
+interface PageProps {
+  searchParams: { cardId?: string };
+}
+
+export default async function CreateInvoicePage({ searchParams }: PageProps) {
   const customer = await getSessionCustomer();
 
   if (!customer) {
@@ -13,15 +17,30 @@ export default async function CreateInvoicePage() {
 
   console.log(`[CreateInvoicePage] Page loaded for customer:`, { id: customer.id, email: customer.email });
 
-  // Get first card (should exist from registration)
-  const cardResult = await sql`
-    SELECT id FROM user_cards WHERE customer_id = ${customer.id} LIMIT 1
-  `;
+  // If cardId provided via query, use it; otherwise fall back to first card
+  const queryCardId = searchParams?.cardId ? parseInt(searchParams.cardId, 10) : undefined;
 
-  const card = cardResult.rows?.[0];
+  let cardIdToUse: number | undefined = undefined;
 
-  if (!card) {
-    redirect('/mycabinet');
+  if (queryCardId) {
+    // Validate that this card belongs to the customer
+    const validate = await sql`
+      SELECT id FROM user_cards WHERE id = ${queryCardId} AND customer_id = ${customer.id} LIMIT 1
+    `;
+    if (validate.rows?.[0]) {
+      cardIdToUse = validate.rows[0].id;
+    }
+  }
+
+  if (!cardIdToUse) {
+    const cardResult = await sql`
+      SELECT id FROM user_cards WHERE customer_id = ${customer.id} LIMIT 1
+    `;
+    const card = cardResult.rows?.[0];
+    if (!card) {
+      redirect('/mycabinet');
+    }
+    cardIdToUse = card.id;
   }
 
   return (
@@ -34,7 +53,7 @@ export default async function CreateInvoicePage() {
       showNav={true}
     >
       <div className="space-y-2xl pt-lg">
-        <InvoiceForm customerId={customer.id} cardId={card.id} />
+        <InvoiceForm customerId={customer.id} cardId={cardIdToUse!} />
       </div>
     </CabinetLayout>
   );

@@ -117,7 +117,7 @@ export default async function TransactionsPage() {
       showNav={true}
     >
       <div className="space-y-2xl pt-lg">
-        <ActivitySection transactions={transactions} />
+        <ActivitySection transactions={transactions} customerId={customer.id} />
       </div>
     </CabinetLayout>
   );

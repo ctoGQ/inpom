@@ -15,7 +15,7 @@ import { FooterSection } from "@/components/landing/footer-section";
 export default function Home() {
   return (
     <main className="relative min-h-screen overflow-x-hidden">
-      <Navigation />
+      <Navigation /> 
       <HeroSection />
       <FeaturesSection />
       <HowItWorksSection />
@@ -27,7 +27,7 @@ export default function Home() {
       <TestimonialsSection />
       <PricingSection />
       <CtaSection />
-      <FooterSection />
+      <FooterSection /> 
     </main>
   );
 }

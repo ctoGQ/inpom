@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { formatAmount } from '@/lib/format-amount';
-import { ChevronLeft, ChevronRight, ArrowDown, ArrowUp, Banknote, Bell, User } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowDownLeft, ArrowUpRight, QrCode, Bell, User } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -12,6 +12,7 @@ interface CardData {
   card_type: string;
   balance: number;
   customer_id: number;
+  isOffer?: boolean;
 }
 
 interface CardSliderProps {
@@ -19,6 +20,7 @@ interface CardSliderProps {
   onCardChange: (cardId: number) => void;
   customerAvatar?: string;
   customerName?: string;
+  activeCardId?: number;
 }
 
 export function CardSlider({
@@ -26,8 +28,18 @@ export function CardSlider({
   onCardChange,
   customerAvatar,
   customerName,
+  activeCardId,
 }: CardSliderProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Sync internal index when parent tells us which card is active
+  useEffect(() => {
+    if (activeCardId === undefined) return;
+    const idx = cards.findIndex((c) => c.id === activeCardId);
+    if (idx >= 0 && idx !== currentIndex) {
+      setCurrentIndex(idx);
+    }
+  }, [activeCardId, cards]);
 
   const goToPrevious = useCallback(() => {
     const newIndex = (currentIndex - 1 + cards.length) % cards.length;
@@ -44,39 +56,48 @@ export function CardSlider({
   const currentCard = cards[currentIndex];
 
   const getCardGradient = (type: string) => {
-    const gradients: Record<string, string> = {
-      GOLD: 'from-pink-300 via-pink-200 to-pink-100',
-      'BUSINESS PLUS': 'from-blue-400 via-purple-400 to-pink-400',
+    const key = (type || '').toString().trim().toUpperCase();
+    const colors: Record<string, string> = {
+      BLACK: '#111111',
+      GOLD: '#937616',
+      BUSINESS: '#6B21A8',
+      'BUSINESS PLUS': '#6B21A8',
+      BUSINESS_PLUS: '#6B21A8',
     };
-    return gradients[type] || 'from-pink-300 via-pink-200 to-pink-100';
+
+    return colors[key] || '#111111';
   };
 
   const getCardTypeLabel = (type: string): string => {
+    const key = (type || '').toString().trim().toUpperCase();
     const labels: Record<string, string> = {
       BLACK: 'BLACK CARD',
       GOLD: 'GOLD CARD',
+      BUSINESS: 'BUSINESS PLUS',
       'BUSINESS PLUS': 'BUSINESS PLUS',
+      BUSINESS_PLUS: 'BUSINESS PLUS',
     };
-    return labels[type] || type;
+    return labels[key] || type;
   };
 
   if (!currentCard) return null;
+
+  const normalize = (t?: string) =>
+    (t || '').toString().trim().toUpperCase().replace(/\s+/g, '_');
+
+  const getOfferPath = (type: string) => {
+    const key = normalize(type);
+    if (key === 'GOLD') return '/goldcard';
+    if (key === 'BUSINESS' || key === 'BUSINESS_PLUS' || key === 'BUSINESS+PLUS') return '/businesspluscard';
+    return '/goldcard';
+  };
 
   return (
     <div className="space-y-4">
       {/* Card Container */}
       <motion.div
-        {...(currentCard.card_type === 'BLACK'
-          ? {
-              style: {
-                background: 'linear-gradient(146deg, #FFDC93 10%, #FFCB7E 13%, #FFBE6C 26%, #FF978A 55%, #FF9488 65%, #F58D8B 78%, #F58A89 88%, #EE4E6A 100%)',
-                borderRadius: '8px 8px 40px 40px',
-              },
-              className: 'relative rounded-3xl p-6 shadow-2xl overflow-hidden',
-            }
-          : {
-              className: `relative bg-gradient-to-br ${getCardGradient(currentCard.card_type)} rounded-3xl p-6 shadow-2xl overflow-hidden`,
-            })}
+        style={{ background: getCardGradient(currentCard.card_type) }}
+        className="relative p-6 rounded-b-4xl overflow-hidden"
         layoutId="card-slider"
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
@@ -116,7 +137,7 @@ export function CardSlider({
         <div className="text-center space-y-4">
           {/* Card Type Label */}
           <motion.p
-            className="text-sm font-bold text-black/70 tracking-widest"
+            className="text-sm font-bold text-white/90 tracking-widest"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.1 }}
@@ -124,7 +145,7 @@ export function CardSlider({
             {getCardTypeLabel(currentCard.card_type)}
           </motion.p>
 
-          {/* Balance */}
+          {/* Balance or Offer CTA */}
           <motion.div
             key={currentCard.id}
             initial={{ opacity: 0, y: 20 }}
@@ -132,9 +153,23 @@ export function CardSlider({
             transition={{ duration: 0.4 }}
             className="space-y-1"
           >
-            <p className="text-6xl font-black text-black leading-tight">
-              {formatAmount(currentCard.balance)}
-            </p>
+            { (currentCard as any).isOffer ? (
+              <div className="flex justify-center">
+                <Link href={getOfferPath(currentCard.card_type)}>
+                  <motion.a
+                    className="inline-flex items-center justify-center w-36 h-12 bg-white text-black font-semibold rounded-full shadow-md"
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    Відкрити
+                  </motion.a>
+                </Link>
+              </div>
+            ) : (
+              <p className="text-6xl font-black text-white leading-tight">
+                {formatAmount(currentCard.balance)}
+              </p>
+            ) }
           </motion.div>
         </div>
 
@@ -149,8 +184,8 @@ export function CardSlider({
               }}
               className={`h-2 rounded-full transition-all ${
                 index === currentIndex
-                  ? 'w-8 bg-black/40'
-                  : 'w-2 bg-white/50 hover:bg-white/70'
+                  ? 'w-8 bg-white/80'
+                  : 'w-2 bg-white/40 hover:bg-white/70'
               }`}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -158,67 +193,78 @@ export function CardSlider({
           ))}
         </div>
 
-        {/* Quick Actions Grid */}
-        <div className="grid grid-cols-3 gap-1 pt-6">
-          <Link href="/mycabinet/deposit">
-            <motion.button
-              className="w-full aspect-square bg-black flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
-              style={{ borderRadius: '8px 8px 8px 26px' }}
-              whileHover={{ scale: 1.05, y: -4 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <ArrowDown className="w-6 h-6" />
-              <span className="text-center">ДЕПОЗИТ</span>
-            </motion.button>
-          </Link>
-          <Link href="/mycabinet/create-invoice">
-            <motion.button
-              className="w-full aspect-square bg-black rounded-2xl flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
-              style={{ borderRadius: '8px 8px 8px 8px' }}
-              whileHover={{ scale: 1.05, y: -4 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Banknote className="w-6 h-6" />
-              <span className="text-center">ІНВОЙС</span>
-            </motion.button>
-          </Link>
-          <Link href={`/mycabinet/withdraw?cardId=${currentCard.id}`}>
-            <motion.button
-              className="w-full aspect-square bg-black flex flex-col items-center justify-center gap-2 text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
-              style={{ borderRadius: '8px 8px 26px 8px' }}
-              whileHover={{ scale: 1.05, y: -4 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <ArrowUp className="w-6 h-6" />
-              <span className="text-center">ВИВЕСТИ</span>
-            </motion.button>
-          </Link>
-        </div>
-
-        {/* Navigation Arrows */}
-        {cards.length > 1 && (
-          <div className="flex justify-between items-center mt-4 px-2">
-            <motion.button
-              onClick={goToPrevious}
-              className="text-black/40 hover:text-black/60 transition-colors p-2"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </motion.button>
-            <div className="text-xs text-black/40 font-medium">
-              {currentIndex + 1} / {cards.length}
+        {/* Quick Actions Grid or Offer CTA */}
+        { (currentCard as any).isOffer ? (
+          <div className="pt-6">
+            <div className="grid grid-cols-3 gap-1">
+              <Link href={ `/mycabinet/deposit` }>
+                <motion.button
+                  className="w-full aspect-square bg-white/10 flex items-center justify-center text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+                  style={{ borderRadius: '8px 8px 8px 26px' }}
+                  whileHover={{ scale: 1.05, y: -4 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <ArrowDownLeft className="w-6 h-6" />
+                </motion.button>
+              </Link>
+              <Link href={ `/mycabinet/create-invoice` }>
+                <motion.button
+                  className="w-full aspect-square bg-white/10 flex items-center justify-center text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+                  style={{ borderRadius: '8px 8px 8px 8px' }}
+                  whileHover={{ scale: 1.05, y: -4 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <QrCode className="w-6 h-6" />
+                </motion.button>
+              </Link>
+              <Link href={ `/mycabinet/withdraw` }>
+                <motion.button
+                  className="w-full aspect-square bg-white/10 flex items-center justify-center text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+                  style={{ borderRadius: '8px 8px 26px 8px' }}
+                  whileHover={{ scale: 1.05, y: -4 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <ArrowUpRight className="w-6 h-6" />
+                </motion.button>
+              </Link>
             </div>
-            <motion.button
-              onClick={goToNext}
-              className="text-black/40 hover:text-black/60 transition-colors p-2"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-            >
-              <ChevronRight className="w-6 h-6" />
-            </motion.button>
           </div>
-        )}
+        ) : (
+          <div className="grid grid-cols-3 gap-1 pt-6">
+            <Link href={`/mycabinet/deposit?cardId=${currentCard.id}`}>
+              <motion.button
+                className="w-full aspect-square bg-white/10 flex items-center justify-center text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+                style={{ borderRadius: '8px 8px 8px 26px' }}
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ArrowDownLeft className="w-6 h-6" />
+              </motion.button>
+            </Link>
+            <Link href={`/mycabinet/create-invoice?cardId=${currentCard.id}`}>
+              <motion.button
+                className="w-full aspect-square bg-white/10 flex items-center justify-center text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+                style={{ borderRadius: '8px 8px 8px 8px' }}
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <QrCode className="w-6 h-6" />
+              </motion.button>
+            </Link>
+            <Link href={`/mycabinet/withdraw?cardId=${currentCard.id}`}>
+              <motion.button
+                className="w-full aspect-square bg-white/10 flex items-center justify-center text-white font-semibold text-xs transition-all shadow-lg hover:shadow-xl"
+                style={{ borderRadius: '8px 8px 26px 8px' }}
+                whileHover={{ scale: 1.05, y: -4 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <ArrowUpRight className="w-6 h-6" />
+              </motion.button>
+            </Link>
+          </div>
+        ) }
+
+        {/* Navigation arrows removed - global swipe/keyboard handled by wrapper */}
       </motion.div>
     </div>
   );

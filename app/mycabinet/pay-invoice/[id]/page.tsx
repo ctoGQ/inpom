@@ -114,7 +114,7 @@ export default async function PayInvoicePage({ params }: PageProps) {
       showAvatar={true}
       showNav={true}
     >
-      <div className="space-y-6 pt-6">
+      <div className="space-y-6 pt-6 px-4">
         <div>
           <h1 className="text-2xl font-bold text-slate-900 mb-2">
             Оплата інвойса

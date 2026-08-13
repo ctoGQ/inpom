@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
     }
 
     const result = await sql`
-      SELECT id, creator_customer_id, amount, description, status, created_at, expires_at
+      SELECT id, creator_customer_id, creator_card_id, amount, description, status, created_at, expires_at
       FROM invoices
       WHERE creator_customer_id = ${parseInt(customerId)}
       ORDER BY created_at DESC

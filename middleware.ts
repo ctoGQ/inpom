@@ -14,6 +14,16 @@ export async function middleware(request: NextRequest) {
 
     // Verify session is valid by checking database
     try {
+      if (!process.env.DATABASE_URL) {
+        // In local development, if DATABASE_URL is not set, don't crash the middleware.
+        // If a session token exists, allow the request to proceed so local auth flows can be tested.
+        if (process.env.NODE_ENV !== 'production') {
+          console.warn('DATABASE_URL not set — skipping DB session verification in development');
+          return NextResponse.next();
+        }
+        throw new Error('DATABASE_URL is not set');
+      }
+
       const pool = new Pool({ connectionString: process.env.DATABASE_URL });
       const client = await pool.connect();
       try {

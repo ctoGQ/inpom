@@ -77,6 +77,7 @@ export function InvoiceForm({ customerId, cardId }: InvoiceFormProps) {
     try {
       console.log(`[InvoiceForm] Submitting invoice creation:`, {
         customerId,
+        cardId,
         amount: numAmount,
         description: description.trim(),
         expiryMinutes: parseInt(expiry),
@@ -159,7 +160,7 @@ export function InvoiceForm({ customerId, cardId }: InvoiceFormProps) {
     <div className="px-4 pt-6 pb-24 space-y-6">
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Amount Input */}
-        <div className="space-y-3 rounded-2xl border border-foreground/10 p-6">
+        <div className="space-y-3">
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Сума (inpom) *
           </label>
@@ -171,37 +172,24 @@ export function InvoiceForm({ customerId, cardId }: InvoiceFormProps) {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             required
-            className="w-full px-4 py-3 bg-input border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full px-4 py-3 bg-input border border-input rounded-full text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
-        </div>
-
-        {/* Description */}
-        <div className="space-y-3 rounded-2xl border border-foreground/10 p-6">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Опис *
-          </label>
           <textarea
             placeholder="Опис платежу..."
             rows={3}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
-            className="w-full px-4 py-3 bg-input border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+            className="w-full px-4 py-3 bg-input border border-input rounded-4xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"
           />
           <p className="text-xs text-muted-foreground">
             {description.length}/500 символів
           </p>
-        </div>
 
-        {/* Expiry */}
-        <div className="space-y-3 rounded-2xl border border-foreground/10 p-6">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Термін дії (хвилин)
-          </label>
-          <select
+           <select
             value={expiry}
             onChange={(e) => setExpiry(e.target.value)}
-            className="w-full px-4 py-3 bg-input border border-input rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className="w-full pl-2 pr-8 py-3 bg-input border border-input rounded-full text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="15">15 хвилин</option>
             <option value="30">30 хвилин</option>
@@ -209,22 +197,23 @@ export function InvoiceForm({ customerId, cardId }: InvoiceFormProps) {
             <option value="1440">1 день</option>
             <option value="10080">1 тиждень</option>
           </select>
+
         </div>
 
         {/* Create Button */}
         <Button
           type="submit"
           disabled={!amount || !description.trim() || loading || parseFloat(amount) <= 0}
-          className="w-full bg-primary text-primary-foreground hover:opacity-90 disabled:opacity-50 rounded-2xl py-3"
+          className="w-full bg-primary py-8 text-primary-foreground hover:opacity-90 disabled:opacity-50 rounded-full"
         >
           <QrCode className="w-4 h-4 mr-2" />
           {loading ? 'Створення...' : 'Створити інвойс'}
         </Button>
 
         {/* Info */}
-        <div className="p-4 rounded-2xl border border-foreground/10 bg-card space-y-2">
-          <p className="text-xs font-semibold text-foreground uppercase tracking-wide">Як це працює:</p>
-          <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+        <div className="">
+          <p className="text-lg mb-4 font-semibold text-foreground uppercase tracking-wide">Як це працює:</p>
+          <ol className="text-sm text-muted-foreground space-y-1 list-decimal list-inside">
             <li>Введіть суму платежу</li>
             <li>Натисніть &quot;Створити інвойс&quot;</li>
             <li>Поділітеся QR-кодом з іншим користувачем</li>

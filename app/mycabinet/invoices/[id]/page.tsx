@@ -99,7 +99,7 @@ export default async function InvoiceViewPage({ params }: PageProps) {
       showAvatar={true}
       showNav={true}
     >
-      <div className="space-y-2xl pt-lg">
+      <div className="space-y-2xl pt-8 px-4 pb-24">
         <InvoiceDisplay
           invoiceId={invoice.id}
           amount={invoice.amount}

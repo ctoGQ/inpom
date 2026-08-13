@@ -44,12 +44,16 @@ export default async function AccountPage() {
       showNav={true}
     >
       <div className="px-4 pt-6 pb-24 space-y-6">
+        {/* Avatar Upload */}
+        <AvatarUpload
+          currentAvatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
+          customerName={customer.name}
+        />
+        
+        
         {/* Profile Information */}
         <div className="space-y-3">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Інформація профілю
-          </p>
-          <div className="p-4 rounded-2xl border border-foreground/10 bg-foreground/5 space-y-4">
+          <div className="p-4 rounded-2xl border border-foreground/10 space-y-4">
             {/* Name */}
             <div>
               <p className="text-xs text-muted-foreground mb-1">Ім'я</p>
@@ -75,11 +79,7 @@ export default async function AccountPage() {
           </div>
         </div>
 
-        {/* Avatar Upload */}
-        <AvatarUpload
-          currentAvatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
-          customerName={customer.name}
-        />
+        
 
         {/* Settings Section */}
         <div className="space-y-3">
@@ -95,7 +95,7 @@ export default async function AccountPage() {
                   href={item.href}
                   className="block group"
                 >
-                  <div className="p-4 rounded-2xl border border-foreground/10 bg-foreground/5 hover:bg-foreground/10 hover:border-primary/50 transition-all flex items-center justify-between">
+                  <div className="p-4 rounded-2xl border border-foreground/10 hover:bg-foreground/10 hover:border-primary/50 transition-all flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div className="p-2 rounded-lg bg-foreground/10 group-hover:bg-foreground/20 transition-all">
                         <IconComponent className="w-5 h-5 text-foreground" />
@@ -118,11 +118,8 @@ export default async function AccountPage() {
 
         {/* Danger Zone */}
         <div className="space-y-3 pt-4">
-          <p className="text-xs font-semibold text-destructive/80 uppercase tracking-wide">
-            Небезпечна зона
-          </p>
           <Link href="/auth/signout" className="block">
-            <button className="w-full px-6 py-4 bg-destructive/10 hover:bg-destructive/20 text-destructive font-semibold rounded-2xl border border-destructive/20 transition-all flex items-center justify-center gap-2 active:scale-95">
+            <button className="bg-destructive/10 w-full p-3 rounded-full flex items-center justify-center gap-2">
               <LogOut className="w-5 h-5" />
               Вийти з акаунту
             </button>

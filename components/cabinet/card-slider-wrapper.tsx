@@ -1,8 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { CardSlider } from './card-slider';
 import { ActivitySection } from './activity-section';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 interface CardData {
   id: number;
@@ -37,7 +39,51 @@ export function CardSliderWrapper({
   customerAvatar,
   customerName,
 }: CardSliderWrapperProps) {
-  const [selectedCardId, setSelectedCardId] = useState(cards[0]?.id || 0);
+  // Build display slides: ensure GOLD and BUSINESS_PLUS offer slides exist even if user doesn't own them
+  const displayCards = useMemo(() => {
+    const desiredKeys = ['BLACK', 'GOLD', 'BUSINESS_PLUS'];
+    const normalize = (t?: string) =>
+      (t || '')
+        .toString()
+        .trim()
+        .toUpperCase()
+        .replace(/\s+/g, '_');
+
+    const existingKeys = new Set(cards.map((c) => normalize(c.card_type)));
+    const result: CardData[] & { isOffer?: boolean }[] = [...cards];
+    let placeholderId = -1;
+    const keyToLabel: Record<string, string> = {
+      BLACK: 'BLACK',
+      GOLD: 'GOLD',
+      BUSINESS_PLUS: 'BUSINESS PLUS',
+    };
+
+    for (const key of desiredKeys) {
+      if (!existingKeys.has(key)) {
+        result.push({
+          id: placeholderId--,
+          card_type: keyToLabel[key] || key,
+          balance: 0,
+          customer_id: customerId,
+          isOffer: true,
+        } as any);
+      }
+    }
+
+    // Ensure order: BLACK, GOLD, BUSINESS_PLUS, then any extras
+    const orderMap: Record<string, number> = { BLACK: 0, GOLD: 1, BUSINESS_PLUS: 2 };
+    result.sort((a, b) => {
+      const ak = normalize(a.card_type);
+      const bk = normalize(b.card_type);
+      const av = orderMap[ak] ?? 99;
+      const bv = orderMap[bk] ?? 99;
+      return av - bv;
+    });
+
+    return result;
+  }, [cards, customerId]);
+
+  const [selectedCardId, setSelectedCardId] = useState(displayCards[0]?.id || 0);
   const [transactions, setTransactions] = useState<Transaction[]>(
     initialTransactions
   );
@@ -45,6 +91,13 @@ export function CardSliderWrapper({
 
   const handleCardChange = async (cardId: number) => {
     setSelectedCardId(cardId);
+    // If this is an offer slide (no real card), don't fetch transactions
+    const isOffer = displayCards.find((c) => c.id === cardId && (c as any).isOffer);
+    if (isOffer) {
+      setTransactions([]);
+      return;
+    }
+
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -61,14 +114,106 @@ export function CardSliderWrapper({
     }
   };
 
+  // Global swipe & keyboard handlers to change cards from the page
+  const touchStartX = useRef<number | null>(null);
+  const SWIPE_THRESHOLD = 40;
+
+  const goToIndex = (newIndex: number) => {
+    if (!displayCards || displayCards.length === 0) return;
+    const idx = (newIndex + displayCards.length) % displayCards.length;
+    const id = displayCards[idx].id;
+    handleCardChange(id);
+  };
+
+  const goToNext = () => {
+    const currentIndex = cards.findIndex((c) => c.id === selectedCardId);
+    goToIndex(currentIndex + 1);
+  };
+
+  const goToPrevious = () => {
+    const currentIndex = cards.findIndex((c) => c.id === selectedCardId);
+    goToIndex(currentIndex - 1);
+  };
+
+  useEffect(() => {
+    // Keep selectedCardId in sync if displayCards change
+    if (!selectedCardId && displayCards?.[0]) {
+      setSelectedCardId(displayCards[0].id);
+    }
+  }, [displayCards]);
+
+  useEffect(() => {
+    function onTouchStart(e: TouchEvent) {
+      touchStartX.current = e.touches?.[0]?.clientX ?? null;
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      // If horizontal movement dominates, prevent the browser back/forward edge-swipe
+      if (touchStartX.current === null) return;
+      const moveX = e.touches?.[0]?.clientX ?? null;
+      const moveY = e.touches?.[0]?.clientY ?? null;
+      if (moveX === null || moveY === null) return;
+      const deltaX = moveX - touchStartX.current;
+      // If horizontal swipe and exceeds threshold, prevent default to stop browser navigation
+      if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
+        const deltaY = 0; // we don't track startY; rely on dominant horizontal movement
+        if (Math.abs(deltaX) > Math.abs(deltaY)) {
+          e.preventDefault();
+        }
+      }
+    }
+
+    function onTouchEnd(e: TouchEvent) {
+      if (touchStartX.current === null) return;
+      const endX = e.changedTouches?.[0]?.clientX ?? null;
+      if (endX === null) return;
+      const delta = endX - touchStartX.current;
+      touchStartX.current = null;
+      if (Math.abs(delta) < SWIPE_THRESHOLD) return;
+      if (delta < 0) {
+        // swipe left -> next
+        goToNext();
+      } else {
+        // swipe right -> previous
+        goToPrevious();
+      }
+    }
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'ArrowLeft') {
+        goToPrevious();
+      } else if (e.key === 'ArrowRight') {
+        goToNext();
+      }
+    }
+
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    // touchmove must be non-passive to allow preventDefault()
+    window.addEventListener('touchmove', onTouchMove, { passive: false });
+    window.addEventListener('touchend', onTouchEnd);
+    window.addEventListener('keydown', onKeyDown);
+
+    return () => {
+      window.removeEventListener('touchstart', onTouchStart);
+      window.removeEventListener('touchmove', onTouchMove);
+      window.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [selectedCardId, cards]);
+
   return (
-    <div className="space-y-lg px-sm">
+    <div
+      className="space-y-lg mt-0"
+      style={{ touchAction: 'pan-y', overscrollBehaviorX: 'contain' }}
+    >
       <CardSlider 
-        cards={cards} 
+        cards={displayCards} 
         onCardChange={handleCardChange}
         customerAvatar={customerAvatar}
         customerName={customerName}
+        activeCardId={selectedCardId}
       />
+      
       {isLoading ? (
         <div className="space-y-md">
           {[1, 2, 3].map((i) => (
@@ -79,7 +224,7 @@ export function CardSliderWrapper({
           ))}
         </div>
       ) : (
-        <ActivitySection transactions={transactions} />
+        <ActivitySection transactions={transactions} customerId={customerId} cardId={selectedCardId} />
       )}
     </div>
   );

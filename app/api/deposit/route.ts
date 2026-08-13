@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
+    console.log('[POST /api/deposit] body:', body);
     const { amount, paymentMethod, cardId } = body;
 
     // Validate input
@@ -34,11 +35,13 @@ export async function POST(request: NextRequest) {
         SELECT id, balance, customer_id FROM user_cards WHERE id = ${cardId} AND customer_id = ${customer.id}
       `;
       card = cardResult.rows?.[0];
+      console.log('[POST /api/deposit] looked up card by id:', cardId, 'found:', !!card);
     } else {
       const cardResult = await sql`
         SELECT id, balance, customer_id FROM user_cards WHERE customer_id = ${customer.id} LIMIT 1
       `;
       card = cardResult.rows?.[0];
+      console.log('[POST /api/deposit] no cardId provided, using first card:', card?.id);
     }
 
     if (!card) {
@@ -64,6 +67,16 @@ export async function POST(request: NextRequest) {
     await sql`
       UPDATE user_cards SET balance = ${newBalance}, updated_at = NOW() WHERE id = ${card.id}
     `;
+
+    // Confirm updated card
+    try {
+      const confirm = await sql`
+        SELECT id, card_type, balance FROM user_cards WHERE id = ${card.id}
+      `;
+      console.log('[POST /api/deposit] Updated card:', confirm.rows?.[0]);
+    } catch (err) {
+      console.error('[POST /api/deposit] Error confirming updated card:', err);
+    }
 
     // Create deposit transaction
     const description = `Депозит через ${paymentMethod}`;

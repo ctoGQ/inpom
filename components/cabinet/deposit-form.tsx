@@ -7,6 +7,7 @@ import { CreditCard, Building2, Bitcoin, ChevronRight, Loader } from 'lucide-rea
 
 interface DepositFormProps {
   customerId: number;
+  cardId?: number;
 }
 
 const PAYMENT_METHODS = [
@@ -32,7 +33,7 @@ const PAYMENT_METHODS = [
 
 const QUICK_AMOUNTS = [100, 500, 1000, 5000];
 
-export function DepositForm({ customerId }: DepositFormProps) {
+export function DepositForm({ customerId, cardId }: DepositFormProps) {
   const router = useRouter();
   const [amount, setAmount] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('card');
@@ -58,16 +59,18 @@ export function DepositForm({ customerId }: DepositFormProps) {
     setIsLoading(true);
 
     try {
+      console.log('[DepositForm] Submitting deposit', { customerId, cardId, amount, paymentMethod });
       const response = await fetch('/api/deposit', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          amount: parseFloat(amount),
-          paymentMethod,
-          customerId,
-        }),
+            amount: parseFloat(amount),
+            paymentMethod,
+            customerId,
+            cardId: cardId ?? null,
+          }),
       });
 
       const data = await response.json();
@@ -162,7 +165,7 @@ export function DepositForm({ customerId }: DepositFormProps) {
                 type="button"
                 onClick={() => handleQuickAmount(val)}
                 disabled={isLoading}
-                className="p-4 flex items-center justify-between hover:bg-muted/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="p-4 flex w-full items-center justify-between hover:bg-muted/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <span className="text-sm text-muted-foreground">Швидко: {val} INPOM</span>
                 <span className="text-sm font-medium text-foreground">{val}</span>
@@ -171,7 +174,7 @@ export function DepositForm({ customerId }: DepositFormProps) {
           </div>
 
           {/* Payment Method Selection */}
-          <div className="space-y-3 rounded-2xl border border-foreground/10 p-6">
+          <div className="space-y-3">
             <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               Спосіб оплати
             </p>
@@ -200,18 +203,19 @@ export function DepositForm({ customerId }: DepositFormProps) {
           </div>
 
           {/* Agreement */}
-          <div className="flex items-start gap-3 p-4 rounded-2xl border border-foreground/10 bg-card">
+          <div className="flex items-start gap-3 px-2">
+            
+            <label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
+              Я погоджуюсь з умовами користування та політикою конфіденційності
+            </label>
             <input
               type="checkbox"
               id="terms"
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
               disabled={isLoading}
-              className="w-5 h-5 mt-0.5 cursor-pointer accent-foreground disabled:cursor-not-allowed"
+              className="w-8 h-8 mt-0.5 cursor-pointer accent-foreground disabled:cursor-not-allowed"
             />
-            <label htmlFor="terms" className="text-xs text-muted-foreground leading-relaxed cursor-pointer">
-              Я погоджуюсь з умовами користування та політикою конфіденційності
-            </label>
           </div>
 
           {/* Submit Button */}
@@ -225,9 +229,9 @@ export function DepositForm({ customerId }: DepositFormProps) {
           </button>
 
           {/* Info Box */}
-          <div className="p-4 rounded-2xl border border-foreground/10 bg-card">
+          <div className="text-center">
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Комісія залежить від обраного способу оплати. Зазвичай від 0.5% до 3%.
+              Комісія залежить від обраного способу оплати.<br/> Зазвичай від 0.5% до 3%.
             </p>
           </div>
         </form>
@@ -239,7 +243,7 @@ export function DepositForm({ customerId }: DepositFormProps) {
         onClose={() => setIsMethodModalOpen(false)}
         title="Виберіть спосіб оплати"
       >
-        <div className="px-4 py-6 space-y-2">
+        <div className="px-4 pt-6 pb-24 space-y-2">
           {PAYMENT_METHODS.map((method) => {
             const MethodIcon = method.icon;
             const isSelected = paymentMethod === method.id;
