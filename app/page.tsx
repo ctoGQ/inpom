@@ -1,33 +1,44 @@
-import { Navigation } from "@/components/landing/navigation";
-import { HeroSection } from "@/components/landing/hero-section";
-import { FeaturesSection } from "@/components/landing/features-section";
-import { HowItWorksSection } from "@/components/landing/how-it-works-section";
-import { InfrastructureSection } from "@/components/landing/infrastructure-section";
-import { MetricsSection } from "@/components/landing/metrics-section";
-import { IntegrationsSection } from "@/components/landing/integrations-section";
-import { SecuritySection } from "@/components/landing/security-section";
-import { DevelopersSection } from "@/components/landing/developers-section";
-import { TestimonialsSection } from "@/components/landing/testimonials-section";
-import { PricingSection } from "@/components/landing/pricing-section";
-import { CtaSection } from "@/components/landing/cta-section";
+import { Header } from "@/components/header";
 import { FooterSection } from "@/components/landing/footer-section";
+import { HomeHeroSlider } from "@/components/landing/home-hero-slider";
+import { NewsCarousel } from "@/components/landing/news-carousel";
+import { sql } from "@/lib/db";
 
-export default function Home() {
+export const revalidate = 300;
+
+async function getNewsArticles() {
+  try {
+    const result = await sql`
+      SELECT
+        na.id::text,
+        na.title,
+        na.short_description,
+        na.cover_image_url,
+        na.published_at,
+        nc.name as category_name
+      FROM newsletter_articles na
+      LEFT JOIN newsletter_categories nc ON na.category_id = nc.id
+      WHERE na.status = 'published'
+      ORDER BY na.published_at DESC
+      LIMIT 12
+    `;
+
+    return result.rows;
+  } catch (error) {
+    console.error("Error fetching homepage news:", error);
+    return [];
+  }
+}
+
+export default async function Home() {
+  const articles = await getNewsArticles();
+
   return (
     <main className="relative min-h-screen overflow-x-hidden">
-      <Navigation /> 
-      <HeroSection />
-      <FeaturesSection />
-      <HowItWorksSection />
-      <InfrastructureSection />
-      <MetricsSection />
-      <IntegrationsSection />
-      <SecuritySection />
-      <DevelopersSection />
-      <TestimonialsSection />
-      <PricingSection />
-      <CtaSection />
-      <FooterSection /> 
+      <Header />
+      <HomeHeroSlider />
+      <NewsCarousel articles={articles} />
+      <FooterSection />
     </main>
   );
 }

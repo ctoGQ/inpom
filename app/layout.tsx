@@ -40,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="uk" suppressHydrationWarning className={cn("font-sans", inter.variable, publicSansHeading.variable)}>
       <body className={`${instrumentSans.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           {children}
         </ThemeProvider>
         <Analytics />

@@ -3,29 +3,37 @@
 import { ArrowUpRight } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-const footerLinks = {
-  Продукт: [
-    { name: "Можливості", href: "#features" },
-    { name: "Як це працює", href: "#how-it-works" },
-    { name: "Цінування", href: "#pricing" },
-    { name: "Партнери", href: "#integrations" },
+type FooterLink = {
+  name: string;
+  href: string;
+};
+
+const footerLinks: Record<string, FooterLink[]> = {
+  "Про INPOM": [
+    { name: "Хто ми", href: "/about" },
+    { name: "Наша ідея", href: "#about" },
+    { name: "Як це працює", href: "/about" },
+    { name: "Прозорість і довіра", href: "/transparency" },
   ],
-  Матерям: [
-    { name: "Рекомендації", href: "#developers" },
-    { name: "Ресурси", href: "#" },
-    { name: "Часті питання", href: "#developers" },
-    { name: "Блог", href: "/newsletter" },
+  Можливості: [
+    { name: "Спільнота", href: "/community" },
+    { name: "Розвиток і менторинг", href: "/development" },
+    { name: "Бізнес і послуги", href: "/business" },
+    { name: "Проєкти", href: "/projects" },
+    { name: "Міжнародні можливості", href: "/international" },
   ],
-  Компанія: [
-    { name: "Про нас", href: "#" },
-    { name: "Блог", href: "#" },
-    { name: "Карієра", href: "#", badge: "Наймаємо" },
-    { name: "Контакт", href: "#" },
+  Партнерам: [
+    { name: "Стати партнером", href: "/partnership" },
+    { name: "Підтримати INPOM", href: "/partnership" },
+    { name: "Запропонувати експертизу", href: "/contacts" },
+    { name: "Співтворення INPOM 2.0", href: "/partnership" },
   ],
-  Правові: [
+  Інформація: [
+    { name: "Новини спільноти", href: "/newsletter" },
+    { name: "Поширені запитання", href: "/contacts" },
+    { name: "Контакти", href: "/contacts" },
     { name: "Конфіденційність", href: "#" },
     { name: "Умови", href: "#" },
-    { name: "Захист даних", href: "#security" },
   ],
 };
 
@@ -61,7 +69,7 @@ function AnimatedWaveCanvas() {
       const height = canvas.offsetHeight;
       ctx.clearRect(0, 0, width, height);
 
-      ctx.strokeStyle = "rgba(100, 200, 150, 0.3)";
+      ctx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--primary").trim();
       ctx.lineWidth = 1;
 
       for (let wave = 0; wave < 3; wave++) {
@@ -93,21 +101,9 @@ function AnimatedWaveCanvas() {
 
 export function FooterSection() {
   return (
-    <footer className="relative bg-black">
-      {/* Panoramic banner image */}
-      <div className="relative w-full h-[340px] md:h-[420px] overflow-hidden">
-        <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Upscaled%20Image%20%2810%29-UnDKstODkIENp5xqTYUEpt0Sm8tNOw.png"
-          alt="Bioluminescent landscape"
-          className="w-full h-full object-cover object-center"
-        />
-        {/* Gradient fade to black at bottom */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black" />
-        {/* Subtle dark vignette on sides */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
-      </div>
+    <footer className="relative">
 
-      {/* Footer content — black background, white text */}
+      {/* Footer content */}
       <div className="relative z-10 max-w-[1400px] mx-auto px-6 lg:px-12">
         {/* Main Footer */}
         <div className="py-16 lg:py-20">
@@ -115,12 +111,12 @@ export function FooterSection() {
             {/* Brand Column */}
             <div className="col-span-2">
               <a href="#" className="inline-flex items-center gap-2 mb-6">
-                <span className="text-2xl font-display text-white">MOTHERS</span>
-                <span className="text-xs text-white/40 font-mono">TM</span>
+                <span className="text-2xl font-display text-foreground">INPOM</span>
+                <span className="text-xs text-muted-foreground font-mono">МПМ</span>
               </a>
 
-              <p className="text-white/50 leading-relaxed mb-8 max-w-xs text-sm">
-                Парламент матерей України допомагає матерям всього світу досягнути своїх цілей. Спільнота, менторинг, партнери.
+              <p className="text-muted-foreground leading-relaxed mb-8 max-w-xs text-sm">
+                Міжнародний парламент матерів об'єднує жінок для взаємопідтримки, розвитку та спільної реалізації можливостей.
               </p>
 
               {/* Social Links */}
@@ -129,7 +125,7 @@ export function FooterSection() {
                   <a
                     key={link.name}
                     href={link.href}
-                    className="text-sm text-white/40 hover:text-white transition-colors flex items-center gap-1 group"
+                    className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-1 group"
                   >
                     {link.name}
                     <ArrowUpRight className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
@@ -141,20 +137,15 @@ export function FooterSection() {
             {/* Link Columns */}
             {Object.entries(footerLinks).map(([title, links]) => (
               <div key={title}>
-                <h3 className="text-sm font-medium text-white mb-6">{title}</h3>
+                <h3 className="text-sm font-medium text-foreground mb-6">{title}</h3>
                 <ul className="space-y-4">
                   {links.map((link) => (
                     <li key={link.name}>
                       <a
                         href={link.href}
-                        className="text-sm text-white/40 hover:text-white transition-colors inline-flex items-center gap-2"
+                        className="text-sm text-muted-foreground hover:text-primary transition-colors inline-flex items-center gap-2"
                       >
                         {link.name}
-                        {"badge" in link && link.badge && (
-                          <span className="text-xs px-2 py-0.5 bg-white text-black rounded-full">
-                            {link.badge}
-                          </span>
-                        )}
                       </a>
                     </li>
                   ))}
@@ -165,14 +156,14 @@ export function FooterSection() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="py-8 border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-white/30">
-            &copy; 2025 MOTHERS Parliament Ukraine. Усі права захищені.
+        <div className="py-8 border-t border-foreground/15 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-sm text-muted-foreground">
+            &copy; 2026 INPOM. Міжнародний парламент матерів. Усі права захищені.
           </p>
 
-          <div className="flex items-center gap-4 text-sm text-white/30">
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-[#eca8d6]" />
+              <span className="w-2 h-2 rounded-full bg-primary" />
               Матері активні по світу
             </span>
           </div>
