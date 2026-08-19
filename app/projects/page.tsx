@@ -1,12 +1,2 @@
-import { PublicPageLayout } from "@/components/contentsections/public-page-layout"
-import { FeatureGrid, PublicHero, TransparencySection } from "@/components/contentsections/public-sections"
-
-export default function ProjectsPage() {
-  return (
-    <PublicPageLayout>
-      <PublicHero eyebrow="Проєкти" title="Ідеї, які стають спільною дією" description="Створюйте соціальні, благодійні та міжнародні ініціативи, знаходьте команду, партнерів і ресурси для реалізації." action={{ label: "Створити проєкт", href: "/auth/signup" }} />
-      <FeatureGrid title="Проєктна екосистема" features={[{ title: "Ідея", description: "Опишіть потребу та зміни, яких хочете досягти." }, { title: "Команда", description: "Залучіть людей із потрібними компетенціями." }, { title: "Партнери", description: "Знаходьте організації, бізнес і донорів." }, { title: "Ресурси", description: "Показуйте, що потрібно для наступного кроку." }, { title: "Результат", description: "Фіксуйте прогрес і реальний вплив." }]} />
-      <TransparencySection />
-    </PublicPageLayout>
-  )
-}
+import { PublicBlueprint } from "@/components/contentsections/public-blueprint"
+export default function ProjectsPage() { return <PublicBlueprint data={{ eyebrow: "Можливості / Проєкти", title: "Ідеї, які стають спільною дією", intro: "Соціальні, благодійні та міжнародні ініціативи INPOM починаються з потреби й ростуть через людей, партнерів і прозорий результат.", image: "/images/inpom-support.png", imageAlt: "Команда працює над проєктом", themes: [["Потреба","Починати з реального питання","Проєкт має відповідати життю людей, а не лише красиво звучати.","контекст • слухання"],["Команда","Зібрати різні сили навколо ідеї","Авторка, експертка, партнер і учасниці створюють повнішу картину.","ролі • відповідальність"],["Ресурси","Показати, що потрібно для руху","Від часу й знань до фінансування — чесний запит допомагає знайти підтримку.","ресурси • план"],["Прозорість","Бачити шлях від рішення до результату","Статус, партнери та наступні кроки мають бути зрозумілими всім учасникам.","відкритість • довіра"],["Вплив","Фіксувати зміни, які залишаються","Ми дивимося не тільки на кількість активностей, а й на нові можливості для людей.","результат • навчання"]], actions: [{ label: "Створити проєкт", href: "/auth/signup" }, { label: "Принципи прозорості", href: "/transparency" }] }} /> }
