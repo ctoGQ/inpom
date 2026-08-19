@@ -1,5 +1,3 @@
-import { Navigation } from "@/components/landing/navigation";
-import { FooterSection } from "@/components/landing/footer-section";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { sql } from "@/lib/db";
@@ -64,8 +62,6 @@ export default async function NewsletterPage() {
 
   return (
     <main className="relative min-h-screen overflow-x-hidden">
-      <Navigation />
-      
       {/* Hero Section */}
       <section className="relative bg-background py-24 md:py-32 lg:py-40">
         <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
@@ -171,7 +167,6 @@ export default async function NewsletterPage() {
         </div>
       </section>
 
-      <FooterSection />
     </main>
   );
 }
