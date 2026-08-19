@@ -43,7 +43,7 @@ export default function SignUpPage() {
         {/* Header */}
         <div className="mb-12 text-center">
           <Link href="/" className="inline-flex items-center gap-2 mb-8">
-            <span className="text-2xl font-display text-foreground">MOTHERS</span>
+            <span className="text-2xl font-display text-foreground">INPOM</span>
             <span className="text-xs text-muted-foreground font-mono">TM</span>
           </Link>
           <h1 className="text-4xl font-display text-foreground mb-3">

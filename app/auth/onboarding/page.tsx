@@ -39,7 +39,7 @@ export default function OnboardingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
+      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-8 sm:px-6 lg:py-12"><div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-primary/10" />
         <p className="text-gray-600 text-lg font-medium">Завантаження...</p>
       </div>
     );
@@ -50,7 +50,7 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center p-4">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-8 sm:px-6 lg:py-12"><div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-primary/10" />
       <div className="w-full max-w-2xl">
         <OnboardingQuestionnaire
           customerId={customer.id}
