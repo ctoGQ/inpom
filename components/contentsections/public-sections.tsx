@@ -1,161 +1,27 @@
+import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, Check, Globe2, HeartHandshake, ShieldCheck, Users } from "lucide-react"
+import { ArrowRight, Check, Globe2, HeartHandshake, Quote, ShieldCheck, Sparkles, Users } from "lucide-react"
 
-type HeroProps = {
-  eyebrow: string
-  title: string
-  description: string
-  action?: { label: string; href: string }
-}
-
-export function PublicHero({ eyebrow, title, description, action }: HeroProps) {
-  return (
-    <section className="border-b border-foreground/10 px-6 py-24 md:px-12 md:py-32">
-      <div className="mx-auto max-w-6xl">
-        <p className="mb-6 text-sm uppercase tracking-[0.18em] text-primary">{eyebrow}</p>
-        <h1 className="max-w-4xl text-3xl leading-tight text-foreground md:text-5xl">{title}</h1>
-        <p className="mt-8 max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">{description}</p>
-        {action && (
-          <Link
-            href={action.href}
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm text-primary-foreground transition-colors hover:bg-secondary"
-          >
-            {action.label}
-            <ArrowRight className="size-4" />
-          </Link>
-        )}
-      </div>
-    </section>
-  )
-}
+type HeroProps = { eyebrow: string; title: string; description: string; action?: { label: string; href: string } }
+export function PublicHero({ eyebrow, title, description, action }: HeroProps) { return <section className="border-b border-foreground/10 px-6 py-24 md:px-12 md:py-32"><div className="mx-auto max-w-6xl"><p className="mb-6 text-sm uppercase tracking-[0.18em] text-primary">{eyebrow}</p><h1 className="max-w-4xl text-balance text-3xl leading-tight text-foreground md:text-6xl">{title}</h1><p className="mt-8 max-w-2xl text-pretty text-sm leading-relaxed text-muted-foreground md:text-base">{description}</p>{action && <Link href={action.href} className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm text-primary-foreground transition-colors hover:bg-secondary">{action.label}<ArrowRight className="size-4" /></Link>}</div></section> }
 
 type Feature = { title: string; description: string }
+export function FeatureGrid({ title, description, features }: { title: string; description?: string; features: Feature[] }) { return <section className="px-6 py-16 md:px-12 md:py-24"><div className="mx-auto max-w-6xl"><div className="max-w-2xl"><h2 className="text-balance text-2xl text-foreground md:text-3xl">{title}</h2>{description && <p className="mt-5 text-pretty text-sm leading-relaxed text-muted-foreground md:text-base">{description}</p>}</div><div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">{features.map((feature, index) => <article key={feature.title} className="rounded-2xl bg-card p-6 text-card-foreground ring-1 ring-foreground/10"><span className="font-mono text-xs text-primary">{String(index + 1).padStart(2, "0")}</span><h3 className="mt-5 text-xl">{feature.title}</h3><p className="mt-3 text-sm leading-relaxed text-muted-foreground">{feature.description}</p></article>)}</div></div></section> }
 
-export function FeatureGrid({ title, description, features }: { title: string; description?: string; features: Feature[] }) {
-  return (
-    <section className="px-6 py-16 md:px-12 md:py-24">
-      <div className="mx-auto max-w-6xl">
-        <div className="max-w-2xl">
-          <h2 className="text-2xl text-foreground md:text-3xl">{title}</h2>
-          {description && <p className="mt-5 text-sm leading-relaxed text-muted-foreground md:text-base">{description}</p>}
-        </div>
-        <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature) => (
-            <article key={feature.title} className="rounded-2xl bg-card p-6 text-card-foreground ring-1 ring-foreground/10">
-              <h3 className="text-xl">{feature.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{feature.description}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
+export function ImageSplitSection({ eyebrow, title, description, image, alt, href, linkLabel, reverse = false }: { eyebrow: string; title: string; description: string; image: string; alt: string; href: string; linkLabel: string; reverse?: boolean }) { return <section className="px-6 py-16 md:px-12 md:py-24"><div className={`mx-auto flex max-w-6xl flex-col gap-10 lg:flex-row lg:items-center lg:gap-16 ${reverse ? "lg:flex-row-reverse" : ""}`}><div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-muted lg:w-1/2"><Image src={image} alt={alt} fill className="object-cover" sizes="(min-width: 1024px) 50vw, 100vw" /></div><div className="max-w-xl lg:flex-1"><p className="text-sm uppercase tracking-[0.18em] text-primary">{eyebrow}</p><h2 className="mt-5 text-balance text-2xl leading-tight text-foreground md:text-4xl">{title}</h2><p className="mt-5 text-pretty text-sm leading-relaxed text-muted-foreground md:text-base">{description}</p><Link href={href} className="mt-7 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">{linkLabel}<ArrowRight className="size-4" /></Link></div></div></section> }
 
-export function JourneySection({ steps }: { steps: { title: string; description: string }[] }) {
-  return (
-    <section className="bg-muted px-6 py-16 md:px-12 md:py-24">
-      <div className="mx-auto max-w-6xl">
-        <h2 className="text-2xl text-foreground md:text-3xl">Від потреби — до можливості</h2>
-        <div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          {steps.map((step, index) => (
-            <article key={step.title} className="relative rounded-2xl bg-card p-5 ring-1 ring-foreground/10">
-              <span className="text-sm text-primary">0{index + 1}</span>
-              <h3 className="mt-5 text-lg">{step.title}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{step.description}</p>
-            </article>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
+export function LinkedRouteCards({ title, description, links }: { title: string; description?: string; links: { title: string; description: string; href: string; icon?: React.ReactNode }[] }) { return <section className="bg-muted px-6 py-16 md:px-12 md:py-24"><div className="mx-auto max-w-6xl"><h2 className="text-balance text-2xl text-foreground md:text-3xl">{title}</h2>{description && <p className="mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">{description}</p>}<div className="mt-10 grid gap-4 md:grid-cols-3">{links.map((link) => <Link href={link.href} key={link.href + link.title} className="group rounded-2xl bg-background p-6 ring-1 ring-foreground/10 transition-transform hover:-translate-y-1"><div className="flex items-start justify-between"><span className="text-primary">{link.icon ?? <Sparkles className="size-6" />}</span><ArrowRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-1" /></div><h3 className="mt-8 text-lg text-foreground">{link.title}</h3><p className="mt-3 text-sm leading-relaxed text-muted-foreground">{link.description}</p></Link>)}</div></div></section> }
 
-export function TimelineSection() {
-  const milestones = [
-    ["2021", "Ідея єдиного вікна для жінки"],
-    ["2022", "Мережа підтримки українських родин"],
-    ["Сьогодні", "Міжнародна спільнота та INPOM"],
-    ["Далі", "Цифрова екосистема, створена разом"],
-  ]
+export function ManifestoSection({ quote, detail, href = "/about" }: { quote: string; detail: string; href?: string }) { return <section className="bg-secondary px-6 py-16 text-secondary-foreground md:px-12 md:py-24"><div className="mx-auto max-w-4xl text-center"><Quote className="mx-auto size-9 text-primary-foreground" /><blockquote className="mt-6 text-balance text-2xl leading-tight md:text-4xl">{quote}</blockquote><p className="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-secondary-foreground/70">{detail}</p><Link href={href} className="mt-8 inline-flex items-center gap-2 text-sm text-primary-foreground hover:underline">Дізнатися більше<ArrowRight className="size-4" /></Link></div></section> }
 
-  return (
-    <section className="px-6 py-16 md:px-12 md:py-24">
-      <div className="mx-auto max-w-6xl">
-        <h2 className="text-2xl text-foreground md:text-3xl">Від спільноти — до системи дії</h2>
-        <div className="mt-10 grid gap-4 md:grid-cols-4">
-          {milestones.map(([year, title]) => (
-            <div key={year} className="border-t-2 border-primary pt-5">
-              <p className="text-sm text-primary">{year}</p>
-              <p className="mt-3 text-lg text-foreground">{title}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
+export function ImpactStrip({ items }: { items: { value: string; label: string }[] }) { return <section className="border-y border-foreground/10 px-6 py-10 md:px-12"><div className="mx-auto grid max-w-6xl gap-8 sm:grid-cols-2 lg:grid-cols-4">{items.map((item) => <div key={item.label}><p className="text-3xl text-foreground md:text-4xl">{item.value}</p><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{item.label}</p></div>)}</div></section> }
 
-export function TransparencySection() {
-  const items = ["Проєкт", "Команда", "Партнери", "Ресурси", "Статус", "Результат"]
+export function ContinueExploring({ links }: { links: { label: string; href: string }[] }) { return <section className="px-6 py-16 md:px-12 md:py-24"><div className="mx-auto flex max-w-6xl flex-col gap-6 rounded-3xl bg-primary p-8 text-primary-foreground md:flex-row md:items-center md:justify-between md:p-12"><div><p className="text-sm uppercase tracking-[0.18em] text-primary-foreground/70">Продовжити дослідження</p><h2 className="mt-4 text-2xl md:text-3xl">У INPOM немає ізольованих історій</h2></div><div className="flex flex-wrap gap-2">{links.map((link) => <Link href={link.href} key={link.href} className="inline-flex items-center gap-2 rounded-full bg-card px-4 py-2 text-sm text-card-foreground transition-colors hover:bg-muted">{link.label}<ArrowRight className="size-4" /></Link>)}</div></div></section> }
 
-  return (
-    <section className="bg-secondary px-6 py-16 text-secondary-foreground md:px-12 md:py-24">
-      <div className="mx-auto max-w-6xl">
-        <ShieldCheck className="size-10 text-primary-foreground" />
-        <h2 className="mt-6 text-2xl md:text-3xl">Проєкти мають бути прозорими. Люди — захищеними.</h2>
-        <p className="mt-5 max-w-2xl text-sm leading-relaxed text-secondary-foreground/70 md:text-base">
-          Відкритість для проєктів. Захист для людей. Ми будуємо довіру між учасницями, командами, партнерами та донорами.
-        </p>
-        <div className="mt-10 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-          {items.map((item) => (
-            <div key={item} className="rounded-xl border border-secondary-foreground/20 px-4 py-4 text-sm">
-              {item}
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  )
-}
-
-export function PartnershipSection() {
-  return (
-    <section className="px-6 py-16 md:px-12 md:py-24">
-      <div className="mx-auto flex max-w-6xl flex-col justify-between gap-8 rounded-3xl bg-primary p-8 text-primary-foreground md:flex-row md:items-end md:p-12">
-        <div className="max-w-2xl">
-          <HeartHandshake className="size-10" />
-          <h2 className="mt-6 text-2xl md:text-3xl">Наступний етап INPOM створюємо разом</h2>
-          <p className="mt-5 text-sm leading-relaxed text-primary-foreground/75 md:text-base">
-            Нам потрібні ідеї, експертиза, партнерство та підтримка жінок, громад, бізнесу й міжнародних організацій.
-          </p>
-        </div>
-        <Link href="/contacts" className="inline-flex shrink-0 items-center gap-2 rounded-full bg-card px-5 py-3 text-sm text-card-foreground hover:bg-muted">
-          Стати партнером
-          <ArrowRight className="size-4" />
-        </Link>
-      </div>
-    </section>
-  )
-}
-
-export function PublicPage({ children }: { children: React.ReactNode }) {
-  return <main className="min-h-screen">{children}</main>
-}
-
-export function MissionIcon({ type }: { type: "community" | "global" }) {
-  return type === "community" ? <Users className="size-8 text-primary" /> : <Globe2 className="size-8 text-primary" />
-}
-
-export function CheckList({ items }: { items: string[] }) {
-  return (
-    <ul className="space-y-3 text-sm text-muted-foreground">
-      {items.map((item) => (
-        <li key={item} className="flex gap-3">
-          <Check className="mt-0.5 size-4 shrink-0 text-primary" />
-          <span>{item}</span>
-        </li>
-      ))}
-    </ul>
-  )
-}
+export function JourneySection({ steps }: { steps: { title: string; description: string }[] }) { return <section className="bg-muted px-6 py-16 md:px-12 md:py-24"><div className="mx-auto max-w-6xl"><h2 className="text-2xl text-foreground md:text-3xl">Від потреби — до можливості</h2><div className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-5">{steps.map((step, index) => <article key={step.title} className="rounded-2xl bg-card p-5 ring-1 ring-foreground/10"><span className="text-sm text-primary">0{index + 1}</span><h3 className="mt-5 text-lg">{step.title}</h3><p className="mt-3 text-sm leading-relaxed text-muted-foreground">{step.description}</p></article>)}</div></div></section> }
+export function TimelineSection() { const milestones = [["2021", "Ідея єдиного вікна для жінки"], ["2022", "Мережа підтримки українських родин"], ["Сьогодні", "Міжнародна спільнота та INPOM"], ["Далі", "Цифрова екосистема, створена разом"]]; return <section className="px-6 py-16 md:px-12 md:py-24"><div className="mx-auto max-w-6xl"><h2 className="text-2xl text-foreground md:text-3xl">Від спільноти — до системи дії</h2><div className="mt-10 grid gap-4 md:grid-cols-4">{milestones.map(([year, title]) => <div key={year} className="border-t-2 border-primary pt-5"><p className="text-sm text-primary">{year}</p><p className="mt-3 text-lg text-foreground">{title}</p></div>)}</div></div></section> }
+export function TransparencySection() { const items = ["Проєкт", "Команда", "Партнери", "Ресурси", "Статус", "Результат"]; return <section className="bg-secondary px-6 py-16 text-secondary-foreground md:px-12 md:py-24"><div className="mx-auto max-w-6xl"><ShieldCheck className="size-10 text-primary-foreground" /><h2 className="mt-6 text-2xl md:text-3xl">Проєкти мають бути прозорими. Люди — захищеними.</h2><p className="mt-5 max-w-2xl text-sm leading-relaxed text-secondary-foreground/70 md:text-base">Відкритість для проєктів. Захист для людей. Ми будуємо довіру між учасницями, командами, партнерами та донорами.</p><div className="mt-10 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">{items.map((item) => <div key={item} className="rounded-xl border border-secondary-foreground/20 px-4 py-4 text-sm">{item}</div>)}</div></div></section> }
+export function PartnershipSection() { return <section className="px-6 py-16 md:px-12 md:py-24"><div className="mx-auto flex max-w-6xl flex-col justify-between gap-8 rounded-3xl bg-primary p-8 text-primary-foreground md:flex-row md:items-end md:p-12"><div className="max-w-2xl"><HeartHandshake className="size-10" /><h2 className="mt-6 text-2xl md:text-3xl">Наступний етап INPOM створюємо разом</h2><p className="mt-5 text-sm leading-relaxed text-primary-foreground/75 md:text-base">Нам потрібні ідеї, експертиза, партнерство та підтримка жінок, громад, бізнесу й міжнародних організацій.</p></div><Link href="/contacts" className="inline-flex shrink-0 items-center gap-2 rounded-full bg-card px-5 py-3 text-sm text-card-foreground hover:bg-muted">Стати партнером<ArrowRight className="size-4" /></Link></div></section> }
+export function PublicPage({ children }: { children: React.ReactNode }) { return <main className="min-h-screen">{children}</main> }
+export function MissionIcon({ type }: { type: "community" | "global" }) { return type === "community" ? <Users className="size-8 text-primary" /> : <Globe2 className="size-8 text-primary" /> }
+export function CheckList({ items }: { items: string[] }) { return <ul className="flex flex-col gap-3 text-sm text-muted-foreground">{items.map((item) => <li key={item} className="flex gap-3"><Check className="mt-0.5 size-4 shrink-0 text-primary" /><span>{item}</span></li>)}</ul> }

@@ -1,10 +1,30 @@
 "use client"
 
-import { useState, useEffect } from "react"
 import Image from "next/image"
-import { Plus, LoaderPinwheel, Gem, User } from "lucide-react"
 import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
+import { useEffect, useState } from "react"
+import { AnimatePresence, motion } from "framer-motion"
+import { ChevronDown, Gem, LoaderPinwheel, Plus, X } from "lucide-react"
+
+const primaryLinks = [
+  ["Спільнота", "/community"],
+  ["Розвиток", "/development"],
+  ["Бізнес", "/business"],
+  ["Міжнародні можливості", "/international"],
+  ["Про INPOM", "/about"],
+  ["Партнерство", "/partnership"],
+  ["Новини", "/newsletter"],
+] as const
+
+const menuLinks = [
+  ["Усі можливості", "/projects"],
+  ["Спільнота", "/community"],
+  ["Розвиток", "/development"],
+  ["Проєкти", "/projects"],
+  ["Новини", "/newsletter"],
+  ["Прозорість", "/transparency"],
+  ["Контакти", "/contacts"],
+] as const
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -12,236 +32,57 @@ export function Header() {
   const [user, setUser] = useState<{ name?: string; avatar_url?: string } | null>(null)
 
   useEffect(() => {
-    checkAuth()
-  }, [])
-
-  const checkAuth = async () => {
-    try {
-      const response = await fetch("/api/auth/me")
-      if (response.ok) {
+    fetch("/api/auth/me")
+      .then(async (response) => {
+        if (!response.ok) return
         const data = await response.json()
         setIsAuthenticated(true)
         setUser(data.user)
-      }
-    } catch (err) {
-      console.error("Auth check failed:", err)
-    }
-  }
+      })
+      .catch(() => undefined)
+  }, [])
 
-  const getInitials = (name?: string) => {
-    if (!name) return "U"
-    return name.charAt(0).toUpperCase()
-  }
+  const closeMenu = () => setIsOpen(false)
+  const initials = user?.name?.charAt(0).toUpperCase() || "U"
 
   return (
-    <header className="fixed top-0 z-99 w-full">
-      <nav className="bg-background py-0 px-2 flex items-center justify-between">
+    <header className="fixed top-0 z-50 w-full px-2 pt-2">
+      <nav className="mx-auto flex max-w-[1400px] items-center justify-between rounded-2xl border border-foreground/10 bg-background/90 px-2 py-2 shadow-sm backdrop-blur-xl" aria-label="Головна навігація">
         <div className="flex items-center gap-2">
-          <div className="pl-3 flex items-center gap-2">
-            <Link
-              href="/"
-              className="p-1"
-            >
-            <Image
-              src="/home/inpom-logo.png"
-              alt="Inpom Logo"
-              width={48}
-              height={48}
-              className="w-8 h-8"
-            />
-            </Link>
-          </div>
-          <div className="pl-3 flex items-center gap-1">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="py-1 px-2 rounded-lg text-secondary hover:bg-primary hover:text-primary-foreground flex items-center justify-center cursor-pointer border-0 font-medium transition-all duration-300 ease-in-out"
-            >
-              <Plus className={`w-4 h-4 transition-transform duration-300 ${isOpen ? 'rotate-45' : 'rotate-0'}`} />
-              
-            </button>
-            <Link
-              href="/community"
-              className="md:flex hidden py-1 px-2 text-sm text-primary rounded-lg hover:bg-primary hover:text-primary-foreground font-medium transition-all duration-300 ease-in-out flex items-center justify-center"
-            >
-              Спільнота
-            </Link>
-            <Link
-              href="/development"
-              className="md:flex hidden py-1 px-2 text-sm text-muted-foreground rounded-lg hover:bg-primary hover:text-primary-foreground font-medium transition-all duration-300 ease-in-out flex items-center justify-center"
-            >
-              Розвиток
-            </Link>
-            <Link
-              href="/business"
-              className="md:flex hidden py-1 px-2 text-sm text-muted-foreground rounded-lg hover:bg-primary hover:text-primary-foreground font-medium transition-all duration-300 ease-in-out flex items-center justify-center"
-            >
-              Бізнес
-            </Link>
-            <span className="text-xs text-muted-foreground">|</span>
-            <Link
-              href="/international"
-              className="md:flex hidden py-1 px-2 text-sm text-muted-foreground rounded-lg hover:bg-primary hover:text-primary-foreground font-medium transition-all duration-300 ease-in-out flex items-center justify-center"
-            >
-              Міжнародні можливості
-            </Link>
-            <Link
-              href="/about"
-              className="md:flex hidden py-1 px-2 text-sm text-muted-foreground rounded-lg hover:bg-primary hover:text-primary-foreground font-medium transition-all duration-300 ease-in-out flex items-center justify-center"
-            >
-              Про INPOM
-            </Link>
-            <Link
-              href="/partnership"
-              className="md:flex hidden py-1 px-2 text-sm text-muted-foreground rounded-lg hover:bg-primary hover:text-primary-foreground font-medium transition-all duration-300 ease-in-out flex items-center justify-center"
-            >
-              Партнерство
-            </Link>
-            <Link
-              href="/newsletter"
-              className="md:flex hidden py-1 px-2 text-sm text-muted-foreground rounded-lg hover:bg-primary hover:text-primary-foreground font-medium transition-all duration-300 ease-in-out flex items-center justify-center"
-            >
-              Новини
-            </Link>
+          <Link href="/" onClick={closeMenu} className="rounded-xl p-1" aria-label="INPOM — на головну">
+            <Image src="/home/inpom-logo.png" alt="INPOM" width={48} height={48} className="size-8" />
+          </Link>
+          <button type="button" onClick={() => setIsOpen((value) => !value)} className="inline-flex size-9 items-center justify-center rounded-xl text-secondary transition-colors hover:bg-primary hover:text-primary-foreground" aria-expanded={isOpen} aria-controls="public-menu" aria-label={isOpen ? "Закрити меню" : "Відкрити меню"}>
+            {isOpen ? <X className="size-4" /> : <Plus className="size-4" />}
+          </button>
+          <div className="hidden items-center gap-1 lg:flex">
+            {primaryLinks.map(([label, href], index) => (
+              <span key={href} className="flex items-center gap-1">
+                {index === 3 && <span className="px-1 text-xs text-muted-foreground">/</span>}
+                <Link href={href} className={`rounded-lg px-2 py-1 text-sm font-medium transition-colors hover:bg-primary hover:text-primary-foreground ${index === 0 ? "text-primary" : "text-muted-foreground"}`}>{label}</Link>
+              </span>
+            ))}
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <Link
-              href="/partnership"
-              className="md:flex relative hidden py-1 px-2 text-sm text-primary rounded-lg bg-card hover:text-primary-foreground hover:bg-primary font-medium transition-all duration-300 ease-in-out flex items-center justify-center"
-            >
-            <Gem className="mr-2 w-4 h-4 transition-transform duration-300" />
-            Підтримати INPOM
-            </Link>
-          <Link
-              href="/projects"
-              className="md:flex hidden py-1 px-2 text-sm text-muted-foreground rounded-lg hover:bg-primary hover:text-primary-foreground font-medium transition-all duration-300 ease-in-out flex items-center justify-center"
-            >
-            <LoaderPinwheel className="mr-2 w-4 h-4 transition-transform duration-300" />
-            Проєкти
-            </Link>
-          
+          <Link href="/partnership" className="hidden items-center rounded-lg bg-card px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground md:flex"><Gem className="mr-2 size-4" />Підтримати INPOM</Link>
+          <Link href="/projects" className="hidden items-center rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground md:flex"><LoaderPinwheel className="mr-2 size-4" />Проєкти</Link>
           {isAuthenticated ? (
-            <Link
-              href="/profile"
-              className="md:flex hidden p-1 text-sm text-primary rounded-full bg-card font-medium transition-all duration-300 ease-in-out flex items-center justify-center"
-            >
-              {user?.avatar_url ? (
-                <Image
-                  src={user.avatar_url}
-                  alt="Avatar"
-                  width={24}
-                  height={24}
-                  className="w-6 h-6 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold">
-                  {getInitials(user?.name)}
-                </div>
-              )}
+            <Link href="/mycabinet" aria-label="Мій кабінет" className="hidden size-9 items-center justify-center rounded-full bg-card text-sm font-medium text-primary md:flex">
+              {user?.avatar_url ? <Image src={user.avatar_url} alt="Аватар профілю" width={28} height={28} className="size-7 rounded-full object-cover" /> : <span className="flex size-7 items-center justify-center rounded-full bg-primary text-primary-foreground">{initials}</span>}
             </Link>
           ) : (
-            <>
-              <Link
-                href="/signin"
-                className="md:flex hidden py-1 px-2 text-sm text-primary rounded-lg bg-card font-medium transition-all duration-300 ease-in-out flex items-center justify-center"
-              >
-                Увійти
-              </Link>
-              
-              <Link
-                href="/signup"
-                className="md:flex hidden py-1 px-2 text-sm text-primary-foreground rounded-lg bg-primary font-medium transition-all duration-300 ease-in-out flex items-center justify-center"
-              >
-                Приєднатися
-              </Link>
-            </>
+            <div className="hidden items-center gap-1 md:flex"><Link href="/auth/signin" className="rounded-lg bg-card px-3 py-2 text-sm font-medium text-primary">Увійти</Link><Link href="/auth/signup" className="rounded-lg bg-primary px-3 py-2 text-sm font-medium text-primary-foreground">Приєднатися</Link></div>
           )}
-
-          
         </div>
       </nav>
-
       <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="absolute left-2 right-2 md:left-0 md:right-0 top-full bg-background border-0 text-foreground overflow-hidden"
-          >
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ delay: 0.1, duration: 0.3 }}
-              className="p-6"
-            >
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.3 }}
-                className="space-y-3 md:flex md:flex-wrap md:gap-3 mb-3"
-              >
-                <Link
-                  href="/projects"
-                  className="px-12 h-12 md:h-10 text-md md:text-xs uppercase text-foreground rounded-full bg-card hover:bg-primary hover:text-primary-foreground font-[300] transition-all duration-300 ease-in-out flex items-center justify-center"
-                >
-                  Можливості
-                </Link>
-                {/* <Link
-                  href="/ambassadors"
-                  className="px-12 h-12 md:h-10 text-md md:text-xs uppercase text-foreground rounded-full bg-card hover:bg-primary hover:text-primary-foreground font-[300] transition-all duration-300 ease-in-out flex items-center justify-center"
-                >
-                  Амбасадорки
-                </Link> */}
-                <Link
-                  href="/newsletter"
-                  className="px-12 h-12 md:h-10 text-md md:text-xs uppercase text-foreground rounded-full bg-card hover:bg-primary hover:text-primary-foreground font-[300] transition-all duration-300 ease-in-out flex items-center justify-center"
-                >
-                  Новини
-                </Link>
-                <Link
-                  href="/about"
-                  className="px-12 h-12 md:h-10 text-md md:text-xs uppercase text-foreground rounded-full bg-card hover:bg-primary hover:text-primary-foreground font-[300] transition-all duration-300 ease-in-out flex items-center justify-center"
-                >
-                  Хто ми
-                </Link>
-                <Link
-                  href="/contacts"
-                  className="px-12 h-12 md:h-10 text-md md:text-xs uppercase text-foreground rounded-full bg-card hover:bg-primary hover:text-primary-foreground font-[300] transition-all duration-300 ease-in-out flex items-center justify-center"
-                >
-                  Контакти
-                </Link>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3, duration: 0.3 }}
-                className="my-8 md:my-4 flex justify-center md:justify-start"
-              >
-                <Link href="#" className="text-lg md:text-left text-center md:text-xs text-foreground/70 hover:text-foreground transition-colors duration-300 ease-in-out">
-                  Instagram
-                </Link>
-                {/* <Link href="#" className="text-lg w-1/2 md:text-left text-center md:text-xs text-muted-foreground hover:text-foreground transition-colors duration-300 ease-in-out">
-                  LinkedIn
-                </Link> */}
-              </motion.div>
-
-                <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.3 }}
-                className="md:text-xs text-md md:text-left text-center text-foreground/70"
-              >
-                wbc.vision® - 2026
-                <br />
-                ALL RIGHTS RESERVED.
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        )}
+        {isOpen && <motion.div id="public-menu" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="mx-auto mt-2 max-w-[1400px] rounded-2xl border border-foreground/10 bg-background/95 p-5 shadow-xl backdrop-blur-xl">
+          <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+            {menuLinks.map(([label, href]) => <Link key={href + label} href={href} onClick={closeMenu} className="flex items-center justify-between rounded-xl bg-card px-4 py-4 text-sm text-foreground transition-colors hover:bg-primary hover:text-primary-foreground">{label}<ChevronDown className="size-4 -rotate-90" /></Link>)}
+          </div>
+          <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-foreground/10 pt-4 text-sm text-muted-foreground"><span>Приєднатися до руху:</span><Link href="/auth/signup" onClick={closeMenu} className="text-primary underline-offset-4 hover:underline">створити профіль</Link><Link href="/contacts" onClick={closeMenu} className="text-primary underline-offset-4 hover:underline">поставити запитання</Link></div>
+        </motion.div>}
       </AnimatePresence>
     </header>
   )
