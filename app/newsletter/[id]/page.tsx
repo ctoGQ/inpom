@@ -1,5 +1,3 @@
-import { Header } from "@/components/header";
-import { FooterSection } from "@/components/landing/footer-section";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
@@ -156,8 +154,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
 
   return (
     <main className="relative min-h-screen overflow-x-hidden">
-      <Header />
-
       {/* Article Header */}
       <section className="relative bg-background border-b border-foreground/10">
         <div className="max-w-4xl mx-auto px-6 lg:px-12 py-16 md:py-24">
@@ -290,7 +286,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
         </section>
       )}
 
-      <FooterSection />
     </main>
   );
 }

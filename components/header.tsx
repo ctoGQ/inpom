@@ -4,7 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
-import { ChevronDown, Gem, LoaderPinwheel, Plus, X } from "lucide-react"
+import { ChevronDown, Gem, LoaderPinwheel, Menu, X } from "lucide-react"
 
 const primaryLinks = [
   ["Спільнота", "/community"],
@@ -42,6 +42,15 @@ export function Header() {
       .catch(() => undefined)
   }, [])
 
+  useEffect(() => {
+    if (!isOpen) return
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsOpen(false)
+    }
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [isOpen])
+
   const closeMenu = () => setIsOpen(false)
   const initials = user?.name?.charAt(0).toUpperCase() || "U"
 
@@ -53,7 +62,7 @@ export function Header() {
             <Image src="/home/inpom-logo.png" alt="INPOM" width={48} height={48} className="size-8" />
           </Link>
           <button type="button" onClick={() => setIsOpen((value) => !value)} className="inline-flex size-9 items-center justify-center rounded-xl text-secondary transition-colors hover:bg-primary hover:text-primary-foreground" aria-expanded={isOpen} aria-controls="public-menu" aria-label={isOpen ? "Закрити меню" : "Відкрити меню"}>
-            {isOpen ? <X className="size-4" /> : <Plus className="size-4" />}
+            {isOpen ? <X className="size-4" /> : <Menu className="size-4" />}
           </button>
           <div className="hidden items-center gap-1 lg:flex">
             {primaryLinks.map(([label, href], index) => (
@@ -77,7 +86,7 @@ export function Header() {
         </div>
       </nav>
       <AnimatePresence>
-        {isOpen && <motion.div id="public-menu" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} className="mx-auto mt-2 max-w-[1400px] rounded-2xl border border-foreground/10 bg-background/95 p-5 shadow-xl backdrop-blur-xl">
+        {isOpen && <motion.div id="public-menu" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} role="dialog" aria-label="Меню INPOM" className="mx-2 mt-2 max-h-[calc(100dvh-5.5rem)] overflow-y-auto rounded-2xl border border-foreground/10 bg-background/95 p-4 shadow-xl backdrop-blur-xl sm:mx-auto sm:p-5">
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
             {menuLinks.map(([label, href]) => <Link key={href + label} href={href} onClick={closeMenu} className="flex items-center justify-between rounded-xl bg-card px-4 py-4 text-sm text-foreground transition-colors hover:bg-primary hover:text-primary-foreground">{label}<ChevronDown className="size-4 -rotate-90" /></Link>)}
           </div>

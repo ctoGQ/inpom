@@ -1,12 +1,2 @@
-import { PublicPageLayout } from "@/components/contentsections/public-page-layout"
-import { PublicHero, TransparencySection, FeatureGrid } from "@/components/contentsections/public-sections"
-
-export default function TransparencyPage() {
-  return (
-    <PublicPageLayout>
-      <PublicHero eyebrow="Прозорість і довіра" title="Відкритість для проєктів. Захист для людей." description="Ми закладаємо прозорість не лише у правила роботи організації, а й у цифрову архітектуру платформи. Персональні дані учасниць мають залишатися захищеними." />
-      <TransparencySection />
-      <FeatureGrid title="Що бачать учасники системи" features={[{ title: "Донор", description: "Який проєкт підтримується та як використовуються ресурси." }, { title: "Партнер", description: "Із ким він працює та який внесок робить." }, { title: "Команда", description: "Який статус має проєкт і що потрібно далі." }, { title: "Учасниця", description: "Який результат отримано та як долучитися." }]} />
-    </PublicPageLayout>
-  )
-}
+import { PublicBlueprint } from "@/components/contentsections/public-blueprint"
+export default function TransparencyPage() { return <PublicBlueprint data={{ eyebrow: "Інформація / Прозорість", title: "Відкритість для проєктів. Захист для людей.", intro: "Прозорість INPOM — це зрозумілі рішення, відповідальні команди й захищені персональні дані учасниць.", image: "/images/inpom-trust.png", imageAlt: "Команда переглядає документи проєкту", themes: [["Принципи","Пояснювати, як працює система","Люди мають розуміти, хто приймає рішення і чому.","ясність • відповідальність"],["Проєкти","Показувати шлях від ідеї до результату","Статус, команда, партнери та наступні кроки — частини довіри.","статус • результат"],["Ресурси","Говорити про внесок чесно","Ми прагнемо, щоб підтримка була пов'язана з видимою зміною.","внесок • звітність"],["Дані","Захищати особистий простір","Публічна відкритість не означає відкритість персональних даних.","приватність • безпека"],["Діалог","Приймати незручні запитання","Критика допомагає побачити сліпі зони й посилити практики.","зворотний зв'язок • розвиток"]], actions: [{ label: "Поширені питання", href: "/faq" }, { label: "Контакти", href: "/contacts" }] }} /> }

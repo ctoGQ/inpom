@@ -2,13 +2,13 @@ import Link from "next/link"
 import { ArrowUpRight, Instagram, Linkedin, Facebook } from "lucide-react"
 
 const footerLinks = {
-  "Про INPOM": [["Хто ми", "/about"], ["Наша ідея", "/about#mission"], ["Як це працює", "/projects"], ["Прозорість і довіра", "/transparency"]],
+  "Про INPOM": [["Хто ми", "/who-we-are"], ["Наша ідея", "/idea"], ["Як це працює", "/how-it-works"], ["Прозорість і довіра", "/transparency"]],
   Можливості: [["Спільнота", "/community"], ["Розвиток і менторинг", "/development"], ["Бізнес і послуги", "/business"], ["Проєкти", "/projects"], ["Міжнародні можливості", "/international"]],
-  Партнерам: [["Стати партнером", "/partnership"], ["Підтримати INPOM", "/partnership#support"], ["Запропонувати експертизу", "/contacts"], ["Співтворення INPOM 2.0", "/partnership#inpom-2"]],
-  Інформація: [["Новини спільноти", "/newsletter"], ["Поширені запитання", "/contacts#faq"], ["Контакти", "/contacts"], ["Політика приватності", "/contacts#privacy"], ["Умови", "/contacts#terms"]],
+  Партнерам: [["Стати партнером", "/partnership"], ["Підтримати INPOM", "/support"], ["Запропонувати експертизу", "/expertise"], ["Співтворення INPOM 2.0", "/inpom-2"]],
+  Інформація: [["Новини спільноти", "/newsletter"], ["Поширені запитання", "/faq"], ["Контакти", "/contacts"], ["Політика приватності", "/privacy"], ["Умови", "/terms"]],
 } as const
 
-const socialLinks = [["Facebook", "#", Facebook], ["Instagram", "#", Instagram], ["LinkedIn", "#", Linkedin]] as const
+const socialLinks = [["Facebook", "https://www.facebook.com", Facebook], ["Instagram", "https://www.instagram.com", Instagram], ["LinkedIn", "https://www.linkedin.com", Linkedin]] as const
 
 export function FooterSection() {
   return <footer className="border-t border-foreground/10">

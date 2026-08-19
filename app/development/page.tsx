@@ -1,12 +1,2 @@
-import { PublicPageLayout } from "@/components/contentsections/public-page-layout"
-import { CheckList, FeatureGrid, PublicHero } from "@/components/contentsections/public-sections"
-
-export default function DevelopmentPage() {
-  return (
-    <PublicPageLayout>
-      <PublicHero eyebrow="Розвиток" title="Зростання, яке можна перетворити на дію" description="INPOM допомагає жінці знаходити експертів, менторів і ресурси для особистого, професійного та громадського розвитку." action={{ label: "Знайти можливість", href: "/contacts" }} />
-      <FeatureGrid title="Шлях розвитку" features={[{ title: "Потрібна допомога", description: "Сформулюйте потребу й отримайте орієнтир для наступного кроку." }, { title: "Є компетенція", description: "Запропонуйте свої знання як консультацію, послугу або менторство." }, { title: "Є ідея", description: "Знайдіть команду, партнера та ресурси для її реалізації." }]} />
-      <section className="px-6 pb-20 md:px-12"><div className="mx-auto grid max-w-6xl gap-8 rounded-3xl bg-card p-8 ring-1 ring-foreground/10 md:grid-cols-2 md:p-12"><div><h2 className="text-2xl">Що важливо для старту</h2><p className="mt-5 text-sm leading-relaxed text-muted-foreground">Розвиток починається з безпечного простору, чесного запиту та людини, яка готова поділитися досвідом.</p></div><CheckList items={["Підтримка спільноти", "Доступ до експертизи", "Практичні наступні кроки", "Можливість підтримати інших"]} /></div></section>
-    </PublicPageLayout>
-  )
-}
+import { PublicBlueprint } from "@/components/contentsections/public-blueprint"
+export default function DevelopmentPage() { return <PublicBlueprint data={{ eyebrow: "Можливості / Розвиток", title: "Зростання, яке можна перетворити на дію", intro: "INPOM допомагає знаходити менторів, експертів і ресурси для особистого, професійного та громадського розвитку.", themes: [["Запит","Назвати потребу — вже початок руху","Сформулюйте питання, навіть якщо відповідь поки нечітка.","ясність • безпечний старт"],["Менторство","Не залишатися наодинці з наступним кроком","Знайдіть людину з досвідом, яка допоможе побачити маршрут.","діалог • досвід"],["Навички","Перетворювати знання у впевненість","Навчання має сенс тоді, коли його можна спробувати у власній ситуації.","практика • зворотний зв'язок"],["Експертиза","Ділитися тим, що вже працює","Менторство й консультації — спосіб підтримати іншу жінку.","внесок • взаємність"],["Траєкторія","Зростати у своєму темпі","Ми підтримуємо різні темпи, бо розвиток не має однієї правильної форми.","професія • лідерство"]], actions: [{ label: "Знайти можливість", href: "/contacts" }, { label: "Запропонувати експертизу", href: "/expertise" }] }} /> }

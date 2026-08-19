@@ -1,12 +1,2 @@
-import { PublicPageLayout } from "@/components/contentsections/public-page-layout"
-import { FeatureGrid, JourneySection, PublicHero } from "@/components/contentsections/public-sections"
-
-export default function BusinessPage() {
-  return (
-    <PublicPageLayout>
-      <PublicHero eyebrow="Бізнес" title="Від компетенції — до клієнта і партнера" description="INPOM допомагає жінкам створювати бізнес, пропонувати власні товари й послуги та виходити на нові ринки." action={{ label: "Запропонувати послугу", href: "/shop" }} />
-      <JourneySection steps={[{ title: "Компетенція", description: "Покажіть, що ви вмієте." }, { title: "Послуга", description: "Сформуйте пропозицію." }, { title: "Бізнес", description: "Розвивайте власну справу." }, { title: "Партнери", description: "Знаходьте взаємовигідні зв'язки." }, { title: "Ринки", description: "Виходьте за межі свого міста й країни." }]} />
-      <FeatureGrid title="Економіка можливостей" features={[{ title: "Marketplace", description: "Пропонуйте продукт або послугу всередині спільноти." }, { title: "Партнерства", description: "Знаходьте команди, клієнтів і міжнародні контакти." }, { title: "Видимість", description: "Представляйте свою справу аудиторії, яка шукає рішення." }]} />
-    </PublicPageLayout>
-  )
-}
+import { PublicBlueprint } from "@/components/contentsections/public-blueprint"
+export default function BusinessPage() { return <PublicBlueprint data={{ eyebrow: "Можливості / Бізнес", title: "Від компетенції — до клієнта і партнера", intro: "INPOM допомагає жінкам створювати бізнес, пропонувати власні товари й послуги та виходити на нові ринки.", image: "/images/inpom-partnership.png", imageAlt: "Жінки планують бізнес-проєкт", themes: [["Компетенція","Показати, що ви вмієте","Почніть із досвіду, який уже маєте, а не з ідеального бренду.","профіль • довіра"],["Пропозиція","Перекласти навичку у зрозумілу послугу","Клієнтам і партнерам важливо розуміти, яку проблему ви вирішуєте.","сервіс • цінність"],["Marketplace","Бути видимою всередині спільноти","Представляйте товари та послуги людям, які шукають рішення.","продукт • аудиторія"],["Партнерства","Рости не наодинці","Знаходьте команди, клієнтів та організації для взаємовигідних зв'язків.","колаборація • нові ринки"],["Стійкість","Будувати справу з людським темпом","Підприємництво може підтримувати життя, а не вимагати відмови від нього.","гнучкість • довгий горизонт"]], actions: [{ label: "Переглянути магазин", href: "/shop" }, { label: "Партнерство", href: "/partnership" }] }} /> }

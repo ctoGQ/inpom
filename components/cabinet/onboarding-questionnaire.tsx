@@ -134,7 +134,7 @@ export function OnboardingQuestionnaire({
 
   if (loading) {
     return (
-      <Card className="w-full max-w-2xl mx-auto p-8 bg-white border-none rounded-3xl shadow-md">
+      <Card className="w-full max-w-2xl mx-auto p-8 bg-card border border-foreground/10 rounded-3xl shadow-xl">
         <div className="flex items-center justify-center h-64">
           <p className="text-gray-600 text-lg font-medium">Завантаження питань...</p>
         </div>
@@ -160,7 +160,7 @@ export function OnboardingQuestionnaire({
   const isLastQuestion = currentQuestion === questions.length - 1;
 
   return (
-    <Card className="w-full max-w-2xl mx-auto p-6 sm:p-8 bg-white border-none rounded-3xl shadow-md">
+    <Card className="w-full max-w-2xl mx-auto p-6 sm:p-8 bg-card border border-foreground/10 rounded-3xl shadow-xl">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2 text-slate-900">
@@ -186,7 +186,7 @@ export function OnboardingQuestionnaire({
 
       {/* Category Badge */}
       <div className="mb-8">
-        <span className="inline-block px-4 py-2 bg-gradient-to-r from-blue-50 to-cyan-50 text-blue-600 text-sm font-semibold rounded-full capitalize border border-blue-200">
+        <span className="inline-block px-4 py-2 bg-primary/10 text-primary text-sm font-semibold rounded-full capitalize border border-blue-200">
           {getCategoryLabel(question.category)}
         </span>
       </div>
@@ -211,7 +211,7 @@ export function OnboardingQuestionnaire({
           ].map((option, idx) => (
             <div
               key={idx}
-              className="flex items-start space-x-3 p-5 rounded-2xl border-2 border-gray-200 hover:border-blue-400 hover:bg-blue-50 bg-white cursor-pointer transition-all"
+              className="flex items-start space-x-3 p-5 rounded-2xl border-2 border-foreground/10 hover:border-primary/50 hover:bg-primary/5 bg-card cursor-pointer transition-all"
               onClick={() =>
                 handleAnswer(question.question_number, option)
               }

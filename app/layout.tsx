@@ -5,6 +5,7 @@ import { Analytics } from '@vercel/analytics/next'
 import { ThemeProvider } from '@/components/theme-provider'
 import './globals.css'
 import { cn } from "@/lib/utils";
+import { PublicShell } from "@/components/public-shell";
 
 const publicSansHeading = Public_Sans({subsets:['latin'],variable:'--font-heading'});
 
@@ -27,8 +28,8 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'MOTHERS - Парламент матерів України',
-  description: 'Матері отримують доступ до менторингу, консалтингу та партнерів для розвитку бізнесу. Спільнота 9000+ матерів по всьому світу.',
+  title: 'INPOM — спільнота можливостей для жінок',
+  description: 'INPOM поєднує жінок із менторами, партнерами та можливостями для розвитку, бізнесу й міжнародної співпраці.',
   generator: 'v0.app',
 }
 
@@ -41,7 +42,7 @@ export default function RootLayout({
     <html lang="uk" suppressHydrationWarning className={cn("font-sans", inter.variable, publicSansHeading.variable)}>
       <body className={`${instrumentSans.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
-          {children}
+          <PublicShell>{children}</PublicShell>
         </ThemeProvider>
         <Analytics />
       </body>
