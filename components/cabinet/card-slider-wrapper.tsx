@@ -5,6 +5,7 @@ import { CardSlider } from './card-slider';
 import { ActivitySection } from './activity-section';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { DesktopCardOverview } from './desktop-card-overview';
 
 interface CardData {
   id: number;
@@ -126,12 +127,12 @@ export function CardSliderWrapper({
   };
 
   const goToNext = () => {
-    const currentIndex = cards.findIndex((c) => c.id === selectedCardId);
+    const currentIndex = displayCards.findIndex((c) => c.id === selectedCardId);
     goToIndex(currentIndex + 1);
   };
 
   const goToPrevious = () => {
-    const currentIndex = cards.findIndex((c) => c.id === selectedCardId);
+    const currentIndex = displayCards.findIndex((c) => c.id === selectedCardId);
     goToIndex(currentIndex - 1);
   };
 
@@ -143,6 +144,8 @@ export function CardSliderWrapper({
   }, [displayCards]);
 
   useEffect(() => {
+    if (window.matchMedia('(min-width: 1024px)').matches) return;
+
     function onTouchStart(e: TouchEvent) {
       touchStartX.current = e.touches?.[0]?.clientX ?? null;
     }
@@ -202,8 +205,19 @@ export function CardSliderWrapper({
   }, [selectedCardId, cards]);
 
   return (
+    <>
+    <DesktopCardOverview
+      cards={displayCards}
+      selectedCardId={selectedCardId}
+      onCardChange={handleCardChange}
+      transactions={transactions}
+      customerId={customerId}
+      customerAvatar={customerAvatar}
+      customerName={customerName}
+      isLoading={isLoading}
+    />
     <div
-      className="space-y-lg mt-0"
+      className="mobile-cabinet-view space-y-lg mt-0"
       style={{ touchAction: 'pan-y', overscrollBehaviorX: 'contain' }}
     >
       <CardSlider 
@@ -227,5 +241,6 @@ export function CardSliderWrapper({
         <ActivitySection transactions={transactions} customerId={customerId} cardId={selectedCardId} />
       )}
     </div>
+    </>
   );
 }
