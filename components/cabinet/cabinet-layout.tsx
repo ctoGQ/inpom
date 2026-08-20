@@ -3,6 +3,7 @@
 import { ReactNode } from 'react';
 import { MobileTopNav } from './mobile-top-nav';
 import { MobileBottomNav } from './mobile-bottom-nav';
+import { DesktopSidebar } from './desktop-sidebar';
 
 interface CabinetLayoutProps {
   children: ReactNode;
@@ -29,6 +30,8 @@ export function CabinetLayout({
 }: CabinetLayoutProps) {
   return (
     <div className="mycabinet-container">
+      <DesktopSidebar />
+      <div className="min-w-0 flex-1">
       {showHeader && (
         <MobileTopNav
           title={title}
@@ -43,6 +46,7 @@ export function CabinetLayout({
         {children}
       </main>
       {showNav && <MobileBottomNav />}
+      </div>
     </div>
   );
 }
