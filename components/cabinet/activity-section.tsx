@@ -16,6 +16,8 @@ interface Transaction {
   invoice_id?: number;
   other_customer_name?: string;
   other_customer_avatar?: string;
+  status?: string;
+  donation_reference?: string;
 }
 
 interface ActivitySectionProps {
@@ -45,6 +47,7 @@ const getTransactionTitle = (type: string): string => {
     payment_sent: 'Оплата Інвойсу',
     invoice: 'Інвойс',
     withdraw: 'Вивід',
+    donation_pending: 'Пожертва INPOM',
   };
   
   for (const [key, title] of Object.entries(titles)) {
@@ -56,7 +59,7 @@ const getTransactionTitle = (type: string): string => {
 const getTransactionIcon = (type: string) => {
   if (type.includes('deposit')) return <ArrowDown className="w-5 h-5" />;
   if (type.includes('payment_received') || type.includes('invoice')) return <Banknote className="w-5 h-5" />;
-  if (type.includes('payment_sent') || type.includes('withdraw')) return <ArrowUp className="w-5 h-5" />;
+  if (type.includes('payment_sent') || type.includes('withdraw') || type.includes('donation')) return <ArrowUp className="w-5 h-5" />;
   return <TrendingUp className="w-5 h-5" />;
 };
 
@@ -159,7 +162,7 @@ export function ActivitySection({ transactions, customerId, cardId }: ActivitySe
                             {getTransactionTitle(transaction.type)}
                           </p>
                           <p className="text-xs text-muted-foreground truncate">
-                            {transaction.description || 'inpom'}
+                            {transaction.type === 'donation_pending' ? `Очікує перевірки · ${transaction.donation_reference || 'INPOM'}` : (transaction.description || 'inpom')}
                           </p>
                         </div>
 

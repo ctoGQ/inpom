@@ -28,6 +28,7 @@ async function getTransactions(customerId: number) {
         t.created_at, 
         t.invoice_id,
         t.customer_id,
+        t.donation_reference,
         CASE 
           WHEN t.type = 'payment_sent' THEN i.creator_customer_id
           WHEN t.type = 'payment_received' THEN (
@@ -51,6 +52,14 @@ async function getTransactions(customerId: number) {
     // Post-process to get other customer details
     const enriched = await Promise.all(
       (result.rows || []).map(async (transaction: any) => {
+        if (transaction.type === 'donation_pending') {
+          return {
+            ...transaction,
+            other_customer_name: 'Підтримка INPOM',
+            other_customer_avatar: null,
+          };
+        }
+
         if (transaction.type === 'deposit') {
           return {
             ...transaction,

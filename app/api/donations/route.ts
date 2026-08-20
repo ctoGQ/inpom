@@ -30,6 +30,9 @@ export async function POST(request: NextRequest) {
     const reference = `INPOM-${crypto.randomBytes(4).toString("hex").toUpperCase()}`
     const expiresAt = new Date(Date.now() + Number(row.expires_minutes || 30) * 60000)
     await sql`INSERT INTO donation_orders (reference, user_id, email, donor_name, amount, currency, method_type, payment_method_id, payment_details_snapshot, expires_at) VALUES (${reference}, ${customer?.id ? String(customer.id) : null}, ${body.email || customer?.email || null}, ${body.name || customer?.name || null}, ${amount.toFixed(2)}, ${currency}, ${type}, ${row.id}, ${JSON.stringify({ label: row.label, recipientName: row.recipient_name, details: row.details })}, ${expiresAt})`
+    if (customer?.id) {
+      await sql`INSERT INTO transactions (customer_id, type, amount, description, status, donation_reference) VALUES (${customer.id}, 'donation_pending', ${amount.toFixed(2)}, ${`Пожертва INPOM · ${reference}`}, 'pending', ${reference})`
+    }
     return NextResponse.json({ reference, expiresAt: expiresAt.toISOString(), status: "pending" })
   } catch (error) {
     console.error("[v0] donation order error", error)

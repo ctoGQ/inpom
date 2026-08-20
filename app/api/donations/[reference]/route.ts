@@ -5,5 +5,7 @@ export async function GET(_request: NextRequest, context: { params: Promise<{ re
   const { reference } = await context.params
   const result = await sql`SELECT reference, amount, currency, method_type, status, created_at, updated_at FROM donation_orders WHERE reference = ${reference} LIMIT 1`
   if (!result.rows.length) return NextResponse.json({ error: "Заявку не знайдено" }, { status: 404 })
-  return NextResponse.json({ donation: result.rows[0] })
+  const donation = result.rows[0]
+  await sql`UPDATE transactions SET status = ${donation.status} WHERE donation_reference = ${reference}`
+  return NextResponse.json({ donation })
 }
