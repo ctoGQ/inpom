@@ -23,6 +23,7 @@ const menuLinks = [
   ["Проєкти", "/projects"],
   ["Новини", "/newsletter"],
   ["Прозорість", "/transparency"],
+  ["Підтримати INPOM", "/donation"],
   ["Контакти", "/contacts"],
 ] as const
 
@@ -74,7 +75,7 @@ export function Header() {
           </div>
         </div>
         <div className="flex items-center gap-1">
-          <Link href="/partnership" className="hidden items-center rounded-lg bg-card px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground md:flex"><Gem className="mr-2 size-4" />Підтримати INPOM</Link>
+          <Link href="/donation" className="hidden items-center rounded-lg bg-card px-3 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary hover:text-primary-foreground md:flex"><Gem className="mr-2 size-4" />Підтримати INPOM</Link>
           <Link href="/projects" className="hidden items-center rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-primary hover:text-primary-foreground md:flex"><LoaderPinwheel className="mr-2 size-4" />Проєкти</Link>
           {isAuthenticated ? (
             <Link href="/mycabinet" aria-label="Мій кабінет" className="hidden size-9 items-center justify-center rounded-full bg-card text-sm font-medium text-primary md:flex">
