@@ -747,6 +747,80 @@
   }
 }
 
+/* Desktop cabinet composition */
+.desktop-cabinet-view {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .mobile-cabinet-view {
+    display: none;
+  }
+
+  .desktop-cabinet-view {
+    display: block;
+  }
+
+  .desktop-cabinet-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .desktop-cabinet-heading h1 {
+    margin: .35rem 0 .5rem;
+    font-size: clamp(2rem, 3vw, 3rem);
+    line-height: 1.05;
+    letter-spacing: -.04em;
+  }
+
+  .desktop-eyebrow {
+    color: var(--primary);
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+  }
+
+  .desktop-muted { max-width: 42rem; color: var(--muted-foreground); line-height: 1.6; }
+  .desktop-user-chip { display: flex; align-items: center; gap: .65rem; border: 1px solid var(--border); border-radius: 999px; padding: .45rem .8rem .45rem .45rem; color: var(--muted-foreground); font-size: .85rem; }
+  .desktop-user-avatar { display: grid; place-items: center; width: 2rem; height: 2rem; overflow: hidden; border-radius: 50%; background: var(--muted); color: var(--foreground); }
+  .desktop-user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  .desktop-cabinet-grid { display: grid; grid-template-columns: minmax(25rem, .82fr) minmax(30rem, 1.18fr); gap: 1.25rem; align-items: start; }
+  .desktop-card-panel, .desktop-activity-panel { min-width: 0; border: 1px solid var(--border); border-radius: 1.25rem; background: var(--card); padding: 1.25rem; box-shadow: 0 14px 40px color-mix(in srgb, var(--foreground) 6%, transparent); }
+  .desktop-panel-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; color: var(--foreground); font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+  .desktop-panel-header a { color: var(--primary); font-size: .72rem; letter-spacing: 0; text-transform: none; }
+  .desktop-primary-card { min-height: 18rem; display: flex; flex-direction: column; justify-content: space-between; border-radius: 1rem; padding: 1.5rem; color: var(--primary-foreground); box-shadow: 0 18px 30px color-mix(in srgb, var(--foreground) 18%, transparent); }
+  .desktop-card-black { background: #151515; } .desktop-card-gold { background: #80651b; } .desktop-card-business { background: #57227e; }
+  .desktop-primary-card-top, .desktop-primary-card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+  .desktop-card-label { margin-bottom: .4rem; color: color-mix(in srgb, var(--primary-foreground) 68%, transparent); font-size: .75rem; }
+  .desktop-primary-card strong { display: block; font-size: clamp(2rem, 4vw, 3.15rem); line-height: 1; letter-spacing: -.05em; }
+  .desktop-card-selector { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
+  .desktop-card-selector button { display: inline-flex; align-items: center; gap: .45rem; min-height: 2.25rem; cursor: pointer; border: 1px solid var(--border); border-radius: .65rem; padding: .45rem .65rem; background: var(--background); color: var(--muted-foreground); font-size: .72rem; transition: border-color 160ms ease, color 160ms ease, background 160ms ease; }
+  .desktop-card-selector button:hover, .desktop-card-selector button:focus-visible, .desktop-card-selector button.is-active { border-color: var(--primary); color: var(--foreground); background: color-mix(in srgb, var(--primary) 8%, var(--background)); outline: none; }
+  .desktop-card-dot { width: .65rem; height: .65rem; border-radius: 50%; } .desktop-card-dot.desktop-card-black { background: #151515; } .desktop-card-dot.desktop-card-gold { background: #80651b; } .desktop-card-dot.desktop-card-business { background: #57227e; }
+  .desktop-action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .65rem; }
+  .desktop-action-button { display: flex; min-height: 4.25rem; align-items: center; gap: .55rem; border: 1px solid var(--border); border-radius: .8rem; padding: .75rem; color: var(--foreground); font-size: .78rem; font-weight: 600; transition: border-color 160ms ease, transform 160ms ease, background 160ms ease; }
+  .desktop-action-button:hover, .desktop-action-button:focus-visible { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 8%, var(--background)); transform: translateY(-2px); outline: none; }
+  .desktop-action-arrow { margin-left: auto; color: var(--muted-foreground); }
+  .desktop-activity-panel .cabinet-section { margin: 0; padding: 0; border: 0; background: transparent; box-shadow: none; }
+  .desktop-activity-panel .cabinet-section > div:first-child { display: none; }
+  .desktop-activity-panel .cabinet-list-item { padding: .85rem .25rem; }
+  .desktop-activity-list { display: grid; gap: .2rem; }
+  .desktop-activity-row { display: flex; align-items: center; gap: .75rem; min-height: 3.8rem; border-bottom: 1px solid var(--border); padding: .55rem .25rem; color: var(--foreground); transition: background 160ms ease, padding 160ms ease; }
+  .desktop-activity-row:last-child { border-bottom: 0; }
+  .desktop-activity-row:hover, .desktop-activity-row:focus-visible { border-radius: .6rem; padding-left: .6rem; padding-right: .6rem; background: color-mix(in srgb, var(--primary) 7%, var(--background)); outline: none; }
+  .desktop-activity-icon { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: .55rem; background: var(--muted); color: var(--primary); }
+  .desktop-activity-copy { display: grid; min-width: 0; flex: 1; gap: .2rem; }
+  .desktop-activity-copy strong { overflow: hidden; font-size: .82rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+  .desktop-activity-copy small { color: var(--muted-foreground); font-size: .72rem; }
+  .desktop-activity-positive, .desktop-activity-negative { font-size: .82rem; font-weight: 700; }
+  .desktop-activity-positive { color: var(--chart-2, var(--primary)); } .desktop-activity-negative { color: var(--destructive); }
+  .desktop-empty-activity, .desktop-loading { min-height: 12rem; display: grid; place-items: center; color: var(--muted-foreground); font-size: .85rem; text-align: center; }
+}
+
 /* Dark Mode Smooth Transitions */
 .dark .cabinet-card,
 .dark .cabinet-list-item,
