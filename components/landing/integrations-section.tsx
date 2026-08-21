@@ -111,7 +111,7 @@ export function IntegrationsSection() {
           <span className="w-12 h-px bg-white/20" />
         </span>
 
-        <h2 className={`text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9] transition-all duration-1000 ${
+        <h2 className={`text-6xl md:text-7xl lg:text-[128px] font-display text-white tracking-tight leading-[0.9] transition-all duration-1000 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}>
           INPOM
@@ -205,10 +205,10 @@ export function IntegrationsSection() {
         </div>
 
         {/* Bottom stats row */}
-        <div className={`flex flex-wrap items-center justify-between gap-8 pt-12 border-t border-white/15 transition-all duration-1000 delay-500 pb-32 lg:pb-40 ${
+        <div className={`flex flex-wrap items-center justify-center gap-8 pt-12 border-t border-white/15 transition-all duration-1000 delay-500 pb-12 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          <div className="flex flex-wrap gap-12">
+          <div className="flex flex-wrap gap-12 text-white">
           {[
             { value: "100+", label: "Партнерів" },
             { value: "24/7", label: "Контакт" },
@@ -221,10 +221,7 @@ export function IntegrationsSection() {
             ))}
           </div>
 
-          <a href="#" className="group inline-flex items-center gap-2 text-sm font-mono text-white hover:text-white transition-colors">
-            Переглянути всіх технологічних партнерів
-            <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
-          </a>
+          
         </div>
       </div>
     </section>

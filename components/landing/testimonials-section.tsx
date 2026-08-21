@@ -78,9 +78,9 @@ export function TestimonialsSection() {
   const activeTestimonial = testimonials[activeIndex];
 
   return (
-    <section ref={sectionRef} className="relative py-32 lg:py-40 bg-foreground text-background overflow-hidden">
+    <section ref={sectionRef} className="relative overflow-hidden bg-white py-12 text-black lg:py-10">
       {/* ASCII background pattern */}
-      <div className="absolute inset-0 font-mono text-[10px] text-background/[0.02] leading-tight overflow-hidden whitespace-pre select-none">
+      <div className="absolute inset-0 select-none overflow-hidden whitespace-pre font-mono text-[10px] leading-tight text-black/[0.04]">
         {Array.from({ length: 60 }, (_, i) => 
           Array.from({ length: 100 }, () => 
             Math.random() > 0.7 ? '"' : ' '
@@ -92,15 +92,15 @@ export function TestimonialsSection() {
         {/* Header */}
         <div className="flex items-center justify-between mb-20">
           <div>
-            <span className="inline-flex items-center gap-3 text-sm font-mono text-background/40 mb-4">
-              <span className="w-12 h-px bg-background/20" />
+            <span className="mb-4 inline-flex items-center gap-3 font-mono text-sm text-black/60">
+              <span className="h-px w-12 bg-black/20" />
               Історії матерів
             </span>
             <h2 className={`text-4xl lg:text-5xl font-display transition-all duration-1000 ${
               isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             }`}>
               Довіряють матері
-              <span className="text-background/40"> по всьому світу.</span>
+              <span className="text-black/50"> по всьому світу.</span>
             </h2>
           </div>
           
@@ -108,13 +108,13 @@ export function TestimonialsSection() {
           <div className="hidden lg:flex items-center gap-2">
             <button
               onClick={goPrev}
-              className="p-4 border border-background/20 hover:bg-background/10 transition-colors"
+              className="border border-black/20 p-4 transition-colors hover:bg-black/5"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
             <button
               onClick={goNext}
-              className="p-4 border border-background/20 hover:bg-background/10 transition-colors"
+              className="border border-black/20 p-4 transition-colors hover:bg-black/5"
             >
               <ArrowRight className="w-5 h-5" />
             </button>
@@ -126,7 +126,7 @@ export function TestimonialsSection() {
           {/* Quote side */}
           <div className="lg:col-span-7 relative">
             {/* Large quote mark */}
-            <span className="absolute -left-4 -top-8 text-[200px] font-display text-background/5 leading-none select-none">
+            <span className="absolute -left-4 -top-8 select-none font-display text-[200px] leading-none text-black/[0.06]">
               &ldquo;
             </span>
             
@@ -140,14 +140,14 @@ export function TestimonialsSection() {
 
               {/* Author */}
               <div className="mt-12 flex items-center gap-6">
-                <div className="w-14 h-14 rounded-full bg-background/10 flex items-center justify-center">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-black/10">
                   <span className="font-display text-xl">
                     {activeTestimonial.author.charAt(0)}
                   </span>
                 </div>
                 <div>
                   <p className="text-lg font-medium">{activeTestimonial.author}</p>
-                  <p className="text-background/60">
+                  <p className="text-black/60">
                     {activeTestimonial.role}, {activeTestimonial.company}
                   </p>
                 </div>
@@ -160,12 +160,12 @@ export function TestimonialsSection() {
             {/* Active metric - Large */}
             <div 
               key={`metric-${activeIndex}`}
-              className="p-10 border border-background/20 bg-background/5 animate-fadeSlideIn"
+              className="animate-fadeSlideIn border border-black/15 bg-black/[0.03] p-10"
             >
               <span className="text-7xl lg:text-8xl font-display block mb-4">
                 {activeTestimonial.metric.value}
               </span>
-              <span className="text-lg text-background/60">
+              <span className="text-lg text-black/60">
                 {activeTestimonial.metric.label}
               </span>
             </div>
@@ -176,10 +176,10 @@ export function TestimonialsSection() {
                 <button
                   key={idx}
                   onClick={() => goTo(idx)}
-                  className="flex-1 h-1 bg-background/20 overflow-hidden"
+                  className="h-1 flex-1 overflow-hidden bg-black/15"
                 >
                   <div 
-                    className={`h-full bg-background transition-all duration-300 ${
+                    className={`h-full bg-black transition-all duration-300 ${
                       idx === activeIndex ? "w-full" : idx < activeIndex ? "w-full opacity-50" : "w-0"
                     }`}
                     style={idx === activeIndex ? { animation: "progress 8s linear forwards" } : {}}
@@ -189,8 +189,8 @@ export function TestimonialsSection() {
             </div>
 
             {/* Company list */}
-            <div className="mt-4 pt-6 border-t border-background/10">
-              <span className="text-xs font-mono text-background/30 uppercase tracking-widest block mb-4">
+            <div className="mt-4 border-t border-black/10 pt-6">
+              <span className="mb-4 block font-mono text-xs uppercase tracking-widest text-black/50">
                 Матері, які розповідають свої історії
               </span>
               <div className="flex flex-wrap gap-3">
@@ -200,8 +200,8 @@ export function TestimonialsSection() {
                     onClick={() => goTo(idx)}
                     className={`px-4 py-2 text-sm border transition-all ${
                       idx === activeIndex 
-                        ? "border-background/40 text-background" 
-                        : "border-background/10 text-background/40 hover:border-background/30"
+                        ? "border-black/50 text-black" 
+                        : "border-black/15 text-black/50 hover:border-black/35"
                     }`}
                   >
                     {t.company}

@@ -1,6 +1,7 @@
 import { HomeHeroSlider } from "@/components/landing/home-hero-slider"
 import { HomePathways } from "@/components/landing/home-pathways"
 import { AboutCard } from "@/components/landing/about-card"
+import { TestimonialsSection } from "@/components/landing/testimonials-section"
 import { NewsCarousel } from "@/components/landing/news-carousel"
 import { IntegrationsSection } from "@/components/landing/integrations-section"
 import { ImageSplitSection, ImpactStrip, LinkedRouteCards, ManifestoSection } from "@/components/contentsections/public-sections"
@@ -24,6 +25,7 @@ export default async function Home() {
     <HomeHeroSlider />
     <HomePathways />
     <AboutCard />
+    <TestimonialsSection/>
     <IntegrationsSection/>
     {/* <ImageSplitSection eyebrow="Що таке INPOM" title="Екосистема, у якій жіночі ідеї не залишаються наодинці" description="Міжнародний парламент матерів поєднує спільноту, розвиток, підприємництво та міжнародні зв&apos;язки в один зрозумілий маршрут — від першого запитання до спільної дії." image="/images/inpom-community.png" alt="Жінки разом працюють над ідеями у спільноті" href="/about" linkLabel="Познайомитися з INPOM" /> */}
     {/* <ImpactStrip items={[{ value: "1 простір", label: "для підтримки, розвитку та дії" }, { value: "4 напрями", label: "які допомагають рухатися далі" }, { value: "∞ зв&apos;язків", label: "між жінками, командами та країнами" }, { value: "1 голос", label: "спільноти, що стає сильнішим" }]} /> */}
