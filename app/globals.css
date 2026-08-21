@@ -170,7 +170,7 @@
 
 .hero-rays {
   --hero-stripes: repeating-linear-gradient(100deg, rgba(255,255,255,.94) 0%, rgba(255,255,255,.94) 6%, transparent 10%, transparent 13%, rgba(255,255,255,.94) 17%);
-  --hero-rainbow: repeating-linear-gradient(100deg, #F5F5F7 10%, #A1A1A6 15%, #F5F5F7 20%, #6E6E73 25%, #F5F5F7 30%);
+  --hero-rainbow: repeating-linear-gradient(100deg, #60a5fa 10%, #e879f9 15%, #60a5fa 20%, #5eead4 25%, #60a5fa 30%);
   position: absolute;
   inset: -12%;
   z-index: 1;
@@ -180,7 +180,7 @@
   background-position: 50% 50%, 50% 50%;
   filter: blur(12px) saturate(115%);
   mask-image: radial-gradient(ellipse at 100% 0%, #000 18%, transparent 76%);
-  opacity: .24;
+  opacity: .42;
   mix-blend-mode: screen;
   animation: inpom-hero-rays 60s linear infinite, inpom-hero-blink 4s ease-in-out infinite;
 }
