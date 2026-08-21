@@ -1,14 +1,13 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { QRCodeCanvas } from "qrcode.react"
+import { useEffect, useState } from "react"
 
 const slides = [
   {
     image: "/home/slider/home-slider-1.png",
-    eyebrow: "INPOM 1.0",
     title: "Від спільноти до системи дії",
-    description:
-      "Цифрове єдине вікно для жінок, які шукають підтримку, розвиток, партнерів і можливості.",
     action: "Дізнатися більше",
     href: "/about",
   },
@@ -16,20 +15,24 @@ const slides = [
 
 export function HomeHeroSlider() {
   const slide = slides[0]
+  const [loginUrl, setLoginUrl] = useState("/auth/signin")
+
+  useEffect(() => {
+    setLoginUrl(`${window.location.origin}/auth/signin`)
+  }, [])
 
   return (
     <section className="relative flex h-[925px] w-full items-center justify-center overflow-clip bg-black" aria-label="INPOM">
       <img
-        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-Meq9kGy0fsWCoqeuqOay0gzeNC1Bfy.png"
+        src="/images/inpom-hero-img-new.png"
         alt="Жінка в українській вишиванці дивиться на телефон"
         className="absolute inset-0 size-full object-cover object-center"
       />
-      <div className="absolute inset-0 bg-black/55" />
-      <div className="hero-rays opacity-20" aria-hidden="true" />
+      {/* <div className="hero-rays" aria-hidden="true" /> */}
 
-      <div className="pointer-events-none sticky top-[50vh] z-10 mx-auto -translate-y-1/2 px-6 text-center lg:px-12">
+      <div className="pointer-events-none sticky top-[90vh] z-10 mx-auto -translate-y-1/2 px-6 text-center lg:px-12">
         <motion.div
-          className="max-w-4xl"
+          className="max-w-4xl z-20"
           initial="hidden"
           animate="visible"
           variants={{
@@ -43,16 +46,22 @@ export function HomeHeroSlider() {
           }}
           aria-live="polite"
         >
-          <motion.p variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0 } }} className="mb-5 text-sm font-semibold uppercase tracking-[0.22em] text-white/75">
-            {slide.eyebrow}
-          </motion.p>
-          <motion.h1 variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0 } }} className="text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.045em] text-white drop-shadow-2xl sm:text-6xl lg:text-8xl">
+          <motion.span variants={{ hidden: { opacity: 0, y: 18 }, visible: { opacity: 1, y: 0 } }} className="text-balance leading-[1.05] tracking-[-0.045em] text-white drop-shadow-2xl sm:text-6xl lg:text-[80px]">
             {slide.title}
-          </motion.h1>
-          <motion.p variants={{ hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0 } }} className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-white/85 drop-shadow-lg sm:text-lg">
-            {slide.description}
-          </motion.p>
+          </motion.span>
         </motion.div>
+      </div>
+
+      <div className="absolute bottom-6 left-1/2 z-50 w-[calc(100%-3rem)] -translate-x-1/2 flex items-center gap-4 rounded-4xl border border-white/20 bg-black/10 p-3 text-white backdrop-blur-md sm:bottom-10 sm:w-[calc(100%-5rem)] sm:gap-6 sm:p-4 lg:max-w-xl">
+        <div className="flex justify-center">
+          <div className="rounded-lg bg-white p-2 shadow-2xl">
+            <QRCodeCanvas value={loginUrl} size={104} level="M" includeMargin />
+          </div>
+        </div>
+        <div className="text-left">
+          <span className="mb-12 flex text-md text-white">Цифрове єдине вікно для жінок, які шукають підтримку, розвиток, партнерів і можливості.</span>
+          <p className="mt-2 text-xs leading-relaxed text-white/70 sm:text-sm">Відкрийте камеру та наведіть її на QR-код.</p>
+        </div>
       </div>
     </section>
   )

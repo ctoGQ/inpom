@@ -11,8 +11,8 @@ const footerLinks = {
 const socialLinks = [["Facebook", "https://www.facebook.com", Facebook], ["Instagram", "https://www.instagram.com", Instagram], ["LinkedIn", "https://www.linkedin.com", Linkedin]] as const
 
 export function FooterSection() {
-  return <footer className="border-t border-foreground/10">
-    <div className="mx-auto max-w-[1400px] px-6 lg:px-12">
+  return <footer className="mx-auto max-w-[1280px] border-x border-white/15 border-t border-foreground/10">
+    <div className="mx-auto max-w-[1280px] px-6 lg:px-12">
       <div className="grid gap-12 py-16 md:grid-cols-6 lg:py-20">
         <div className="col-span-2"><Link href="/" className="inline-flex items-center gap-2"><span className="font-display text-2xl text-foreground">INPOM</span><span className="font-mono text-xs text-muted-foreground">МПМ</span></Link><p className="mt-6 max-w-xs text-sm leading-relaxed text-muted-foreground">Міжнародний парламент матерів об&apos;єднує жінок для взаємопідтримки, розвитку та спільної реалізації можливостей.</p><div className="mt-8 flex gap-5">{socialLinks.map(([name, href, Icon]) => <Link key={name} href={href} aria-label={name} className="text-muted-foreground transition-colors hover:text-primary"><Icon className="size-4" /></Link>)}</div></div>
         {Object.entries(footerLinks).map(([title, links]) => <div key={title}><h3 className="mb-5 text-sm font-medium text-foreground">{title}</h3><ul className="flex flex-col gap-3">{links.map(([name, href]) => <li key={name}><Link href={href} className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-primary">{name}<ArrowUpRight className="size-3 opacity-0 transition-opacity group-hover:opacity-100" /></Link></li>)}</ul></div>)}

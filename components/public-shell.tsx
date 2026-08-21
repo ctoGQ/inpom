@@ -16,7 +16,7 @@ export function PublicShell({ children }: { children: React.ReactNode }) {
   return (
     <PublicPage>
       <Header />
-      <div className="pt-16">{children}</div>
+      <div>{children}</div>
       <ContinueExploring links={[{ label: "Спільнота", href: "/community" }, { label: "Проєкти", href: "/projects" }, { label: "Новини", href: "/newsletter" }, { label: "Контакти", href: "/contacts" }]} />
       <FooterSection />
     </PublicPage>
