@@ -1,8 +1,5 @@
 "use client"
 
-import Image from "next/image"
-import Link from "next/link"
-import { ArrowUpRight } from "lucide-react"
 
 const slides = [
   {
@@ -20,36 +17,26 @@ export function HomeHeroSlider() {
   const slide = slides[0]
 
   return (
-    <section className="relative h-[460px] w-full overflow-hidden" aria-label="INPOM">
-      <Image
-        src={slide.image}
-        alt="INPOM digital platform on a mobile phone"
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover object-left"
+    <section className="relative h-[925px] w-full overflow-hidden bg-black" aria-label="INPOM">
+      <img
+        src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/image-Meq9kGy0fsWCoqeuqOay0gzeNC1Bfy.png"
+        alt="Жінка в українській вишиванці дивиться на телефон"
+        className="absolute inset-0 size-full object-cover object-center"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-background/20" />
-      <div className="hero-rays" aria-hidden="true" />
+      <div className="absolute inset-0 bg-black/55" />
+      <div className="hero-rays opacity-20" aria-hidden="true" />
 
-      <div className="relative z-10 mx-auto flex h-full max-w-[1400px] items-center justify-end px-6 lg:px-12">
-        <div className="w-full max-w-[520px] pt-12 md:pt-0">
-          <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-primary">
+      <div className="sticky top-1/2 z-10 mx-auto flex h-0 w-full max-w-[1100px] -translate-y-1/2 items-center justify-center px-6 text-center lg:px-12">
+        <div className="max-w-4xl">
+          <p className="mb-5 text-sm font-semibold uppercase tracking-[0.22em] text-white/75">
             {slide.eyebrow}
           </p>
-          <h1 className="max-w-lg text-3xl font-normal leading-tight tracking-tight text-foreground">
+          <h1 className="text-balance text-4xl font-semibold leading-[1.05] tracking-[-0.045em] text-white drop-shadow-2xl sm:text-6xl lg:text-8xl">
             {slide.title}
           </h1>
-          <p className="mt-5 max-w-md text-base leading-relaxed text-muted-foreground md:text-sm">
+          <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-white/85 drop-shadow-lg sm:text-lg">
             {slide.description}
           </p>
-          <Link
-            href={slide.href}
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-normal text-primary-foreground transition-colors hover:bg-secondary"
-          >
-            {slide.action}
-            <ArrowUpRight className="size-4" />
-          </Link>
         </div>
       </div>
     </section>
