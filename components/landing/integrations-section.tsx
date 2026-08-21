@@ -99,30 +99,30 @@ export function IntegrationsSection() {
   }, []);
 
   return (
-    <section id="integrations" ref={sectionRef} className="relative overflow-hidden">
+    <section id="integrations" ref={sectionRef} className="relative bg-black overflow-hidden">
 
       {/* Header — centré verticalement sur l'image */}
-      <div className="relative z-10 pt-32 lg:pt-40 text-center">
-        <span className={`inline-flex items-center gap-4 text-sm font-mono text-muted-foreground mb-8 transition-all duration-700 justify-center ${
+      <div className="relative z-10 pt-24 text-center">
+          <span className={`inline-flex items-center gap-4 text-sm font-mono text-white mb-8 transition-all duration-700 justify-center ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          <span className="w-12 h-px bg-foreground/20" />
-          Партнери
-          <span className="w-12 h-px bg-foreground/20" />
+          <span className="w-12 h-px bg-white/20" />
+          Технологічні партнери
+          <span className="w-12 h-px bg-white/20" />
         </span>
 
         <h2 className={`text-6xl md:text-7xl lg:text-[128px] font-display tracking-tight leading-[0.9] transition-all duration-1000 ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}>
-          Зв'яжися
+          INPOM
           <br />
-          <span className="text-muted-foreground">з партнерами.</span>
+          <span className="text-white">у світовій технологічній екосистемі.</span>
         </h2>
 
-        <p className={`mt-8 text-xl text-muted-foreground leading-relaxed max-w-lg mx-auto transition-all duration-1000 delay-100 ${
+        <p className={`mt-8 text-xl text-white/65 leading-relaxed max-w-lg mx-auto transition-all duration-1000 delay-100 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
-          Матері підключаються до 100+ компаній, інвесторів та благодійних організацій. Розвивайте з нашою допомогою.
+          Наша організація та застосунок об&apos;єднують найцінніших технологічних партнерів світу, щоб жінки отримували доступ до розвитку, підтримки, бізнесу та нових можливостей в одному просторі.
         </p>
       </div>
 
@@ -146,8 +146,8 @@ export function IntegrationsSection() {
               key={integration.name}
               className={`group relative overflow-hidden p-6 lg:p-8 border transition-all duration-500 cursor-default ${
                 hoveredIndex === index
-                  ? "border-foreground bg-foreground/[0.04] scale-[1.02]"
-                  : "border-foreground/10 hover:border-foreground/30"
+                  ? "border-white bg-white/[0.08] scale-[1.02]"
+                  : "border-white/15 hover:border-white/40"
               } ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}
               style={{
                 transitionDelay: `${index * 30 + 300}ms`,
@@ -179,24 +179,24 @@ export function IntegrationsSection() {
               {/* Category tag */}
               <span className={`absolute top-3 right-3 text-[10px] font-mono px-2 py-0.5 transition-colors ${
                 hoveredIndex === index
-                  ? "bg-foreground text-background"
-                  : "bg-foreground/10 text-muted-foreground"
+                  ? "bg-white text-black"
+                  : "bg-white/10 text-white"
               }`}>
                 {integration.category}
               </span>
 
               {/* Logo */}
               <div className={`w-10 h-10 mb-6 flex items-center justify-center transition-colors ${
-                hoveredIndex === index ? "text-white" : "text-foreground/60"
+                  hoveredIndex === index ? "text-white" : "text-white"
               }`}>
                 {logos[integration.name]}
               </div>
 
-              <span className="font-medium block">{integration.name}</span>
+              <span className="font-medium block text-white">{integration.name}</span>
 
               {/* Animated underline */}
-              <div className="absolute bottom-0 left-0 right-0 h-px bg-foreground/20 overflow-hidden">
-                <div className={`h-full bg-foreground transition-all duration-500 ${
+              <div className="absolute bottom-0 left-0 right-0 h-px bg-white/20 overflow-hidden">
+                <div className={`h-full bg-white transition-all duration-500 ${
                   hoveredIndex === index ? "w-full" : "w-0"
                 }`} />
               </div>
@@ -205,7 +205,7 @@ export function IntegrationsSection() {
         </div>
 
         {/* Bottom stats row */}
-        <div className={`flex flex-wrap items-center justify-between gap-8 pt-12 border-t border-foreground/10 transition-all duration-1000 delay-500 pb-32 lg:pb-40 ${
+        <div className={`flex flex-wrap items-center justify-between gap-8 pt-12 border-t border-white/15 transition-all duration-1000 delay-500 pb-32 lg:pb-40 ${
           isVisible ? "opacity-100" : "opacity-0"
         }`}>
           <div className="flex flex-wrap gap-12">
@@ -216,13 +216,13 @@ export function IntegrationsSection() {
           ].map((stat) => (
               <div key={stat.label} className="flex items-baseline gap-3">
                 <span className="text-3xl font-display">{stat.value}</span>
-                <span className="text-sm text-muted-foreground">{stat.label}</span>
+                <span className="text-sm text-white">{stat.label}</span>
               </div>
             ))}
           </div>
 
-          <a href="#" className="group inline-flex items-center gap-2 text-sm font-mono text-muted-foreground hover:text-foreground transition-colors">
-            Дивись всіх партнерів
+          <a href="#" className="group inline-flex items-center gap-2 text-sm font-mono text-white hover:text-white transition-colors">
+            Переглянути всіх технологічних партнерів
             <span className="group-hover:translate-x-1 transition-transform">&rarr;</span>
           </a>
         </div>
