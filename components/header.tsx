@@ -57,7 +57,7 @@ export function Header() {
 
   return (
     <header className="fixed top-0 z-50 w-full px-2 pt-2">
-      <nav className="mx-auto flex max-w-[1400px] items-center justify-between rounded-2xl border border-foreground/10 bg-background/90 px-2 py-2 shadow-sm backdrop-blur-xl" aria-label="Головна навігація">
+      <nav className="mx-auto flex max-w-[1400px] items-center justify-between rounded-2xl border border-foreground/10 bg-background/75 px-2 py-2 shadow-sm backdrop-blur-xl" aria-label="Головна навігація">
         <div className="flex items-center gap-2">
           <Link href="/" onClick={closeMenu} className="rounded-xl p-1" aria-label="INPOM — на головну">
             <Image src="/home/inpom-logo.png" alt="INPOM" width={48} height={48} className="size-8" />
