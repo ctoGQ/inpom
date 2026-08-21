@@ -31,7 +31,7 @@ export function HomePathways() {
     <section className="w-full overflow-hidden bg-background" aria-label="Напрями INPOM">
       <div className="grid w-full md:grid-cols-3">
           {pathways.map((pathway, index) => (
-            <Link href={pathway.href} key={pathway.href} className="group relative min-h-[30rem] overflow-hidden rounded-full bg-secondary text-secondary-foreground shadow-sm ring-1 ring-foreground/10 transition-transform duration-300 hover:z-10 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 md:min-h-[38rem]">
+            <Link href={pathway.href} key={pathway.href} className="group relative min-h-[30rem] overflow-hidden rounded-none bg-secondary text-secondary-foreground shadow-sm ring-1 ring-foreground/10 transition-transform duration-300 hover:z-10 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 md:min-h-[38rem]">
               <Image src={pathway.image} alt={pathway.alt} fill sizes="(min-width: 768px) 33vw, 100vw" className="object-cover grayscale transition-transform duration-700 group-hover:scale-105" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
               <div className="relative flex min-h-[30rem] flex-col justify-between p-8 md:min-h-[38rem] md:p-10">
