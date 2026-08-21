@@ -30,6 +30,7 @@ export function HomeHeroSlider() {
         className="object-cover object-left"
       />
       <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-background/20" />
+      <div className="hero-rays" aria-hidden="true" />
 
       <div className="relative z-10 mx-auto flex h-full max-w-[1400px] items-center justify-end px-6 lg:px-12">
         <div className="w-full max-w-[520px] pt-12 md:pt-0">
