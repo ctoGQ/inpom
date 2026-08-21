@@ -271,7 +271,7 @@
 
 /* Payment Card Display */
 .payment-card {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary) 100%);
+  background: var(--primary);
   border-radius: calc(var(--radius) * 2);
   padding: 1.5rem;
   color: var(--primary-foreground);
@@ -390,7 +390,7 @@
   text-decoration: none;
   color: var(--foreground);
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 1px 3px color-mix(in srgb, var(--foreground) 6%, transparent);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--foreground) 5%, transparent);
   animation: framer-scale-fade 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -463,9 +463,9 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.875rem 1.25rem;
-  border-radius: 16px;
+  border-radius: 10px;
   border: none;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
   transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
@@ -620,9 +620,9 @@
 .cabinet-form-input,
 .cabinet-form-textarea {
   background: var(--input);
-  border: 2px solid var(--border);
-  border-radius: 14px;
-  padding: 0.875rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem;
   font-size: 16px;
   color: var(--foreground);
   font-family: inherit;
@@ -793,14 +793,14 @@
   .desktop-panel-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; color: var(--foreground); font-size: .8rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
   .desktop-panel-header a { color: var(--primary); font-size: .72rem; letter-spacing: 0; text-transform: none; }
   .desktop-primary-card { min-height: 18rem; display: flex; flex-direction: column; justify-content: space-between; border-radius: 1rem; padding: 1.5rem; color: var(--primary-foreground); box-shadow: 0 18px 30px color-mix(in srgb, var(--foreground) 18%, transparent); }
-  .desktop-card-black { background: #151515; } .desktop-card-gold { background: #80651b; } .desktop-card-business { background: #57227e; }
+  .desktop-card-black { background: #1D1D1F; } .desktop-card-gold { background: #6E6E73; } .desktop-card-business { background: #48484A; }
   .desktop-primary-card-top, .desktop-primary-card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 1rem; font-size: .72rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
   .desktop-card-label { margin-bottom: .4rem; color: color-mix(in srgb, var(--primary-foreground) 68%, transparent); font-size: .75rem; }
   .desktop-primary-card strong { display: block; font-size: clamp(2rem, 4vw, 3.15rem); line-height: 1; letter-spacing: -.05em; }
   .desktop-card-selector { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
   .desktop-card-selector button { display: inline-flex; align-items: center; gap: .45rem; min-height: 2.25rem; cursor: pointer; border: 1px solid var(--border); border-radius: .65rem; padding: .45rem .65rem; background: var(--background); color: var(--muted-foreground); font-size: .72rem; transition: border-color 160ms ease, color 160ms ease, background 160ms ease; }
   .desktop-card-selector button:hover, .desktop-card-selector button:focus-visible, .desktop-card-selector button.is-active { border-color: var(--primary); color: var(--foreground); background: color-mix(in srgb, var(--primary) 8%, var(--background)); outline: none; }
-  .desktop-card-dot { width: .65rem; height: .65rem; border-radius: 50%; } .desktop-card-dot.desktop-card-black { background: #151515; } .desktop-card-dot.desktop-card-gold { background: #80651b; } .desktop-card-dot.desktop-card-business { background: #57227e; }
+  .desktop-card-dot { width: .65rem; height: .65rem; border-radius: 50%; } .desktop-card-dot.desktop-card-black { background: #1D1D1F; } .desktop-card-dot.desktop-card-gold { background: #6E6E73; } .desktop-card-dot.desktop-card-business { background: #48484A; }
   .desktop-action-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .65rem; }
   .desktop-action-button { display: flex; min-height: 4.25rem; align-items: center; gap: .55rem; border: 1px solid var(--border); border-radius: .8rem; padding: .75rem; color: var(--foreground); font-size: .78rem; font-weight: 600; transition: border-color 160ms ease, transform 160ms ease, background 160ms ease; }
   .desktop-action-button:hover, .desktop-action-button:focus-visible { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 8%, var(--background)); transform: translateY(-2px); outline: none; }
