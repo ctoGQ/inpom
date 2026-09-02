@@ -21,7 +21,11 @@ export async function GET(
         id, 
         name, 
         email,
-        avatar_url
+        avatar_url,
+        professional_title, headline, bio, skills, services, industry,
+        years_experience, location, languages, availability,
+        website_url, instagram_url, telegram_url, linkedin_url, portfolio_url,
+        education, certifications, work_history, created_at
       FROM customers
       WHERE id = ${sellerId}
     `;
@@ -42,7 +46,10 @@ export async function GET(
         AND status IN ('active', 'moderation')
     `;
 
-    const productCount = productsCountResult.rows[0]?.count || 0;
+    const productCount = Number(productsCountResult.rows[0]?.count || 0);
+    const ratingResult = await sql`SELECT COALESCE(AVG(rating), 0) AS rating, COUNT(*) AS review_count FROM shop_seller_ratings WHERE seller_id = ${sellerId}`;
+    const rating = Number(ratingResult.rows[0]?.rating || 0);
+    const reviewCount = Number(ratingResult.rows[0]?.review_count || 0);
 
     // Fetch seller's active products with basic info
     const productsResult = await sql`
@@ -86,7 +93,12 @@ export async function GET(
         id: seller.id,
         name: seller.name,
         email: seller.email,
-        avatar_url: seller.avatar_url,
+        ...seller,
+        skills: seller.skills || [],
+        languages: seller.languages || [],
+        work_history: seller.work_history || [],
+        rating,
+        review_count: reviewCount,
         product_count: productCount,
       },
       products: productsWithDiscount,

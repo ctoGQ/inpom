@@ -27,6 +27,23 @@ interface Seller {
   rating: number;
   review_count: number;
   product_count: number;
+  professional_title?: string;
+  headline?: string;
+  services?: string;
+  industry?: string;
+  years_experience?: number;
+  location?: string;
+  skills?: string[];
+  languages?: string[];
+  availability?: string;
+  website_url?: string;
+  instagram_url?: string;
+  telegram_url?: string;
+  linkedin_url?: string;
+  portfolio_url?: string;
+  education?: string;
+  certifications?: string;
+  work_history?: Array<{ title?: string; company?: string; period?: string; description?: string }>;
 }
 
 interface Product {
@@ -222,12 +239,15 @@ export default function SellerProfilePage() {
                   <p className="text-sm text-foreground leading-relaxed">{seller.bio}</p>
                 </div>
               )}
+              {seller.professional_title && <p className="text-sm font-medium text-primary">{seller.professional_title}</p>}
+              {seller.headline && <p className="text-sm text-foreground">{seller.headline}</p>}
+              {seller.industry && <p className="text-sm text-muted-foreground">Ніша: {seller.industry}</p>}
               <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">
-                  Email
-                </p>
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Email</p>
                 <p className="text-sm text-foreground break-all">{seller.email}</p>
               </div>
+              {seller.skills?.length ? <div><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Навички</p><p className="text-sm text-foreground">{seller.skills.join(' · ')}</p></div> : null}
+              {seller.services && <div><p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Послуги</p><p className="text-sm text-foreground whitespace-pre-line">{seller.services}</p></div>}
             </div>
           </div>
         )}
@@ -244,7 +264,7 @@ export default function SellerProfilePage() {
                 },
                 {
                   label: 'Рейтинг',
-                  value: seller.rating.toFixed(1),
+                  value: Number(seller.rating || 0).toFixed(1),
                   icon: <Star className="w-4 h-4 fill-foreground/60 text-foreground/60" />,
                 },
                 {
@@ -274,6 +294,14 @@ export default function SellerProfilePage() {
               ))}
             </div>
 
+            <div className="rounded-2xl border border-foreground/10 p-5 space-y-3">
+              {seller.location && <p className="text-sm text-foreground">Локація: {seller.location}</p>}
+              {seller.years_experience !== null && seller.years_experience !== undefined && <p className="text-sm text-foreground">Досвід: {seller.years_experience} років</p>}
+              {seller.languages?.length ? <p className="text-sm text-foreground">Мови: {seller.languages.join(', ')}</p> : null}
+              {seller.availability && <p className="text-sm text-foreground">Доступність: {seller.availability}</p>}
+              {seller.education && <p className="text-sm text-foreground whitespace-pre-line">Освіта: {seller.education}</p>}
+              {seller.certifications && <p className="text-sm text-foreground whitespace-pre-line">Сертифікати: {seller.certifications}</p>}
+            </div>
             <div className="rounded-2xl border border-foreground/10 p-5 space-y-2">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <TrendingUp className="w-4 h-4" />
