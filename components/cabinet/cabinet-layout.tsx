@@ -29,9 +29,9 @@ export function CabinetLayout({
   backHref,
 }: CabinetLayoutProps) {
   return (
-    <div className="mycabinet-container">
+    <div className="mycabinet-container m-0 p-0">
       <DesktopSidebar />
-      <div className="min-w-0 flex-1">
+      <div className="min-w-0 flex-1 m-0 p-0">
       {showHeader && (
         <MobileTopNav
           title={title}
@@ -42,7 +42,7 @@ export function CabinetLayout({
           backHref={backHref}
         />
       )}
-      <main className="mycabinet-main">
+      <main className="mycabinet-main m-0 p-0">
         {children}
       </main>
       {showNav && <MobileBottomNav />}

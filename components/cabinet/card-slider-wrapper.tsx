@@ -217,7 +217,7 @@ export function CardSliderWrapper({
       isLoading={isLoading}
     />
     <div
-      className="mobile-cabinet-view space-y-lg mt-0"
+      className="mobile-cabinet-view mt-0"
       style={{ touchAction: 'pan-y', overscrollBehaviorX: 'contain' }}
     >
       <CardSlider 

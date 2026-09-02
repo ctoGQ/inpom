@@ -74,7 +74,7 @@ export function DesktopCardOverview({ cards, selectedCardId, onCardChange, trans
       <div className="desktop-cabinet-grid">
         <section className="desktop-card-panel">
           <div className="desktop-panel-header"><span>Мої картки</span><Bell size={17} aria-label="Сповіщення" /></div>
-          <div className={`desktop-primary-card ${cardTone(selected.card_type)}`}>
+          <div className={`desktop-primary-card ${cardTone(selected.card_type)} depth-glow shine-effect`}>
             <div className="desktop-primary-card-top"><span>{selected.card_type}</span><CreditCard size={22} /></div>
             <div>
               <p className="desktop-card-label">{isOffer ? 'Доступна картка' : 'Доступний баланс'}</p>
@@ -86,7 +86,14 @@ export function DesktopCardOverview({ cards, selectedCardId, onCardChange, trans
             {cards.map((card) => <button key={card.id} type="button" role="tab" aria-selected={card.id === selected.id} className={card.id === selected.id ? 'is-active' : ''} onClick={() => onCardChange(card.id)}><span className={`desktop-card-dot ${cardTone(card.card_type)}`} />{card.card_type}{card.id === selected.id && <Check size={15} />}</button>)}
           </div>
           <div className="desktop-action-grid">
-            {actions.map(({ href, label, icon: Icon }) => <Link href={href} key={label} className="desktop-action-button"><Icon size={18} /><span>{label}</span><ArrowUpRight size={14} className="desktop-action-arrow" /></Link>)}
+            {actions.map(({ href, label, icon: Icon }) => (
+              <Link href={href} key={label} className="desktop-action-button">
+                <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center mb-2">
+                  <Icon size={16} className="text-black" />
+                </div>
+                <span className="text-xs font-medium">{label}</span>
+              </Link>
+            ))}
           </div>
         </section>
         <section className="desktop-activity-panel">

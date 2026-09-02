@@ -109,16 +109,16 @@ export function ActivitySection({ transactions, customerId, cardId }: ActivitySe
       transition={{ delay: 0.2 }}
     >
       {/* Tabs */}
-      <div className="flex items-center justify-start px-4 gap-4">
+      <div className="flex items-center justify-center px-4 gap-4 pt-4">
         <button
           onClick={() => setTab('transactions')}
-          className={`px-3 py-2 rounded-full ${tab === 'transactions' ? 'bg-foreground text-white dark:text-black' : 'text-muted-foreground'}`}
+          className={`pt-2 px-4 pb-3 rounded-full ${tab === 'transactions' ? 'bg-card text-foreground dark:text-white' : 'text-muted-foreground'}`}
         >
           Транзакції
         </button>
         <button
           onClick={() => setTab('invoices')}
-          className={`px-3 py-2 rounded-full ${tab === 'invoices' ? 'bg-foreground text-white dark:text-black' : 'text-muted-foreground'}`}
+          className={`pt-2 px-4 pb-3 rounded-full ${tab === 'invoices' ? 'bg-card text-foreground dark:text-white' : 'text-muted-foreground'}`}
         >
           Інвойси
         </button>

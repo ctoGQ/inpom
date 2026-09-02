@@ -151,7 +151,7 @@ export default async function MyCabinetPage() {
       avatarUrl={customer.avatar_url || '/placeholder-user.jpg'}
       userName={customer.name}
     >
-      <div className="space-y-2xl pt-0 mt-0">
+      <div className="pt-0 mt-0">
         {/* Card Slider */}
         <CardSliderWrapper
           cards={cards}
