@@ -31,7 +31,7 @@ const PAYMENT_METHODS = [
   },
 ];
 
-const QUICK_AMOUNTS = [100, 500, 1000, 5000];
+const QUICK_AMOUNTS = [100, 500, 2000, 5000];
 
 export function DepositForm({ customerId, cardId }: DepositFormProps) {
   const router = useRouter();
@@ -120,29 +120,11 @@ export function DepositForm({ customerId, cardId }: DepositFormProps) {
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Amount Display */}
-          <div className="p-6 rounded-2xl border border-foreground/10 space-y-4">
-            <div className="flex items-baseline justify-between">
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                  Сума депозиту
-                </p>
-                <p className="text-4xl font-bold text-foreground">
-                  {amount || '0.00'}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                  Валюта
-                </p>
-                <p className="text-lg font-semibold text-foreground">INPOM</p>
-              </div>
-            </div>
-          </div>
+          
 
           {/* Amount Input Card */}
-          <div className="space-y-0.5 rounded-2xl border border-foreground/10 overflow-hidden divide-y divide-foreground/10">
-            <div className="p-4">
+          <div className="space-y-4">
+            <div>
               <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-3 block">
                 Введіть суму
               </label>
@@ -154,23 +136,24 @@ export function DepositForm({ customerId, cardId }: DepositFormProps) {
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 disabled={isLoading}
-                className="w-full px-3 py-2 bg-input border border-input rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring text-sm"
+                className="w-full px-0 py-2 bg-transparent border-0 text-3xl font-bold text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-0"
               />
             </div>
 
-            {/* Quick Amounts */}
-            {QUICK_AMOUNTS.map((val) => (
-              <button
-                key={val}
-                type="button"
-                onClick={() => handleQuickAmount(val)}
-                disabled={isLoading}
-                className="p-4 flex w-full items-center justify-between hover:bg-muted/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <span className="text-sm text-muted-foreground">Швидко: {val} INPOM</span>
-                <span className="text-sm font-medium text-foreground">{val}</span>
-              </button>
-            ))}
+            {/* Quick Amounts - Horizontal */}
+            <div className="grid grid-cols-4 gap-2">
+              {QUICK_AMOUNTS.map((val) => (
+                <button
+                  key={val}
+                  type="button"
+                  onClick={() => handleQuickAmount(val)}
+                  disabled={isLoading}
+                  className="px-3 py-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-center"
+                >
+                  <span className="text-sm font-medium text-foreground">{val}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Payment Method Selection */}
@@ -218,15 +201,33 @@ export function DepositForm({ customerId, cardId }: DepositFormProps) {
             />
           </div>
 
-          {/* Submit Button */}
-          <button
-            type="submit"
-            disabled={!amount || !agreed || isLoading || success}
-            className="w-full px-6 py-4 bg-primary text-primary-foreground font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95 flex items-center justify-center gap-2"
-          >
-            {isLoading && <Loader className="w-5 h-5 animate-spin" />}
-            {isLoading ? 'Обробка...' : 'Продовжити оплату'}
-          </button>
+          {/* Amount Display */}
+          <div className="py-2 pl-4 pr-2 rounded-2xl border border-foreground/10 space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-xs font-semibold text-muted-foreground tracking-wide">
+                  Сума депозиту
+                </p>
+                <span className="text-xl font-bold text-foreground">
+                  {amount || '0.00'}
+                </span>
+              </div>
+              <div className="">
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={!amount || !agreed || isLoading || success}
+                  className="w-full px-6 py-4 bg-primary text-primary-foreground font-semibold rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 active:scale-95 flex items-center justify-center gap-2"
+                >
+                  {isLoading && <Loader className="w-5 h-5 animate-spin" />}
+                  {isLoading ? 'Обробка...' : 'Продовжити оплату'}
+                </button>
+              </div>
+            </div>
+            
+          </div>
+
+          
 
           {/* Info Box */}
           <div className="text-center">

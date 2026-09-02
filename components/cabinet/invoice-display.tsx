@@ -2,8 +2,7 @@
 
 import { useRef } from 'react';
 import { QRCodeCanvas } from 'qrcode.react';
-import { Copy, CheckCircle2, ArrowRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Copy, CheckCircle2, ArrowRight, Download, Share2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { formatAmount } from '@/lib/format-amount';
 import Link from 'next/link';
@@ -56,51 +55,51 @@ export function InvoiceDisplay({
     }
   };
 
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Інвойс для оплати',
+          text: `Оплатіть інвойс на суму ${formatAmount(amount)} INPOM`,
+          url: paymentUrl,
+        });
+      } catch (error) {
+        console.error('Error sharing:', error);
+      }
+    } else {
+      handleCopyUrl();
+    }
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="px-4 pt-6 pb-24 space-y-6">
       {/* Status Badge */}
       {status === 'pending' && (
-        <div className="flex items-center gap-2 p-4 rounded-2xl border border-foreground/10 bg-card">
-          <div className="w-2 h-2 bg-foreground/40 rounded-full animate-pulse" />
-          <span className="text-sm text-muted-foreground">Очікує оплату</span>
+        <div className="flex justify-between items-center gap-2 p-3 rounded-xl bg-muted/30">
+          <div className="items-center flex gap-2">
+            <div className="w-2 h-2 bg-foreground/40 rounded-full animate-pulse" />
+            <span className="text-sm text-muted-foreground">Очікує оплату</span>
+          </div>
+          <div className="flex gap-1 items-center">
+            <span className="text-md font-bold text-foreground">
+            {formatAmount(amount)}
+            </span>
+            <span className="text-sm text-muted-foreground">inpom</span>
+          </div>
         </div>
       )}
       {status === 'paid' && (
-        <div className="flex items-center gap-2 p-4 rounded-2xl border border-foreground/10 bg-card">
+        <div className="flex items-center gap-2 p-3 rounded-xl bg-muted/30">
           <CheckCircle2 className="w-4 h-4 text-foreground" />
           <span className="text-sm text-foreground">✓ Оплачено</span>
         </div>
       )}
 
-      {/* Invoice Details */}
-      <div className="p-6 rounded-2xl border border-foreground/10 space-y-4">
-        <div className="text-center space-y-3">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">СУМА ІНВОЙСА</p>
-          <p className="text-5xl font-bold text-foreground">
-            {formatAmount(amount)}
-          </p>
-          <p className="text-sm text-muted-foreground">inpom</p>
-        </div>
-
-        <div className="pt-4 border-t border-foreground/10 space-y-2">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">ВИСТАВЛЕНО</p>
-          <p className="text-sm text-foreground">{creatorName}</p>
-        </div>
-
-        {description && (
-          <div className="pt-4 border-t border-foreground/10 space-y-2">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">ОПИС</p>
-            <p className="text-sm text-foreground">{description}</p>
-          </div>
-        )}
-      </div>
+      
 
       {/* QR Code Section */}
-      <div className="p-6 rounded-2xl border border-foreground/10 space-y-4">
-        <p className="text-sm font-semibold text-foreground text-center uppercase tracking-wide">
-          QR-КОД ДЛЯ СКАНУВАННЯ
-        </p>
-        <div className="flex justify-center p-6 bg-card rounded-lg border border-foreground/10" ref={qrRef}>
+      <div className="space-y-4">
+        <div className="flex justify-center p-6 bg-white rounded-xl" ref={qrRef}>
           <QRCodeCanvas
             value={paymentUrl}
             size={256}
@@ -110,47 +109,72 @@ export function InvoiceDisplay({
             bgColor="#ffffff"
           />
         </div>
-        <Button
-          onClick={handleDownloadQR}
-          variant="outline"
-          className="w-full border-foreground/10 text-foreground hover:bg-muted"
-        >
-          Завантажити QR-код
-        </Button>
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={handleDownloadQR}
+            className="px-4 py-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors flex items-center justify-center gap-2"
+          >
+            <Download className="w-4 h-4" />
+            <span className="text-sm font-medium">Завантажити</span>
+          </button>
+          <button
+            onClick={handleShare}
+            className="px-4 py-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors flex items-center justify-center gap-2"
+          >
+            <Share2 className="w-4 h-4" />
+            <span className="text-sm font-medium">Поділитися</span>
+          </button>
+        </div>
       </div>
 
-      {/* Copy URL Section */}
-      <div className="space-y-3 rounded-2xl border border-foreground/10 p-6">
+      {/* Copy URL Section 
+      <div className="space-y-3">
         <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-          АБО ПОДІЛІТЬСЯ ПОСИЛАННЯМ
+          Або поділіться посиланням
         </p>
         <div className="flex gap-2">
           <input
             type="text"
             value={paymentUrl}
             readOnly
-            className="flex-1 px-3 py-2 bg-input border border-input rounded-lg text-sm text-foreground truncate"
+            className="flex-1 px-0 py-2 bg-transparent border-0 text-sm text-foreground truncate focus:outline-none focus:ring-0"
           />
-          <Button
+          <button
             onClick={handleCopyUrl}
-            variant="outline"
-            size="icon"
-            className="flex-shrink-0 border-foreground/10"
+            className="px-4 py-2 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors flex items-center justify-center"
           >
             <Copy className="w-4 h-4" />
-          </Button>
+          </button>
         </div>
-      </div>
+      </div>*/}
 
       {/* Navigation */}
       {status === 'pending' && (
         <Link href={`/mycabinet/invoices/${invoiceId}`}>
-          <Button className="w-full bg-primary text-primary-foreground hover:opacity-90">
+          <button className="w-full px-6 py-4 bg-primary text-primary-foreground font-semibold rounded-lg transition-all hover:opacity-90 active:scale-95 flex items-center justify-center gap-2">
             Переглянути інвойс
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </Link>
       )}
+
+      {/* Invoice Details */}
+      <div className="space-y-1">
+        
+
+        {description && (
+          <div className="pt-4 space-y-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Опис</p>
+            <span className="text-lg text-foreground">{description}</span>
+          </div>
+        )}
+        <div className="pt-4 space-y-2">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Виставлено</p>
+          <p className="text-sm text-foreground">{creatorName}</p>
+        </div>
+      </div>
+
+      
     </div>
   );
 }

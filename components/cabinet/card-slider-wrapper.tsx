@@ -117,6 +117,7 @@ export function CardSliderWrapper({
 
   // Global swipe & keyboard handlers to change cards from the page
   const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
   const SWIPE_THRESHOLD = 40;
 
   const goToIndex = (newIndex: number) => {
@@ -148,32 +149,42 @@ export function CardSliderWrapper({
 
     function onTouchStart(e: TouchEvent) {
       touchStartX.current = e.touches?.[0]?.clientX ?? null;
+      touchStartY.current = e.touches?.[0]?.clientY ?? null;
     }
 
     function onTouchMove(e: TouchEvent) {
       // If horizontal movement dominates, prevent the browser back/forward edge-swipe
-      if (touchStartX.current === null) return;
+      if (touchStartX.current === null || touchStartY.current === null) return;
       const moveX = e.touches?.[0]?.clientX ?? null;
       const moveY = e.touches?.[0]?.clientY ?? null;
       if (moveX === null || moveY === null) return;
       const deltaX = moveX - touchStartX.current;
-      // If horizontal swipe and exceeds threshold, prevent default to stop browser navigation
-      if (Math.abs(deltaX) > SWIPE_THRESHOLD) {
-        const deltaY = 0; // we don't track startY; rely on dominant horizontal movement
-        if (Math.abs(deltaX) > Math.abs(deltaY)) {
-          e.preventDefault();
-        }
+      const deltaY = moveY - touchStartY.current;
+
+      // Only prevent default if horizontal movement is clearly dominant
+      if (Math.abs(deltaX) > SWIPE_THRESHOLD && Math.abs(deltaX) > Math.abs(deltaY) * 2) {
+        e.preventDefault();
       }
     }
 
     function onTouchEnd(e: TouchEvent) {
-      if (touchStartX.current === null) return;
+      if (touchStartX.current === null || touchStartY.current === null) return;
       const endX = e.changedTouches?.[0]?.clientX ?? null;
-      if (endX === null) return;
-      const delta = endX - touchStartX.current;
+      const endY = e.changedTouches?.[0]?.clientY ?? null;
+      if (endX === null || endY === null) return;
+
+      const deltaX = endX - touchStartX.current;
+      const deltaY = endY - touchStartY.current;
+
       touchStartX.current = null;
-      if (Math.abs(delta) < SWIPE_THRESHOLD) return;
-      if (delta < 0) {
+      touchStartY.current = null;
+
+      // Only trigger card change if horizontal movement is clearly dominant
+      // and exceeds threshold
+      if (Math.abs(deltaX) < SWIPE_THRESHOLD) return;
+      if (Math.abs(deltaX) <= Math.abs(deltaY) * 1.5) return; // Not clearly horizontal
+
+      if (deltaX < 0) {
         // swipe left -> next
         goToNext();
       } else {

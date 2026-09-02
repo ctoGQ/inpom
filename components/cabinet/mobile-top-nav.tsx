@@ -57,9 +57,9 @@ export function MobileTopNav({
 
       {/* Center: Title */}
       {title && (
-        <h1 className="cabinet-top-nav-title">
+        <span className="cabinet-top-nav-title">
           {title}
-        </h1>
+        </span>
       )}
 
       {/* Right: More Menu Button or Spacer */}

@@ -83,10 +83,10 @@ export default async function WithdrawPage({ searchParams }: PageProps) {
 
   return (
     <CabinetLayout title="Вивід коштів" showBack>
-      <div className="px-4 pt-6 space-y-6">
+      <div className="pt-0 mt-0">
         {/* Card Info */}
-        <div className="rounded-2xl p-6 border border-foreground/10 bg-card space-y-4">
-          <div className="flex items-center gap-3">
+        <div className="px-4 pt-6 space-y-2">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30">
             <div className="p-2 rounded-lg bg-muted">
               <ArrowDown className="w-5 h-5 text-foreground" />
             </div>
@@ -95,14 +95,14 @@ export default async function WithdrawPage({ searchParams }: PageProps) {
               <p className="font-semibold text-foreground">{card.card_type}</p>
             </div>
           </div>
-          <div className="pt-4 border-t border-foreground/10">
+          <div className="pt-2">
             <p className="text-xs text-muted-foreground uppercase tracking-wide font-semibold mb-1">Доступний баланс</p>
             <p className="text-3xl font-bold text-foreground">{typeof card.balance === 'string' ? parseFloat(card.balance).toFixed(2) : Number(card.balance).toFixed(2)}</p>
           </div>
         </div>
 
         {/* Withdrawal Form */}
-        <WithdrawForm 
+        <WithdrawForm
           cardId={card.id}
           customerId={customer.id}
           availableBalance={typeof card.balance === 'string' ? parseFloat(card.balance) : card.balance}

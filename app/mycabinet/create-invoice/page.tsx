@@ -52,7 +52,7 @@ export default async function CreateInvoicePage({ searchParams }: PageProps) {
       userName={customer.name}
       showNav={true}
     >
-      <div className="space-y-2xl pt-lg">
+      <div className="pt-0 mt-0">
         <InvoiceForm customerId={customer.id} cardId={cardIdToUse!} />
       </div>
     </CabinetLayout>

@@ -670,7 +670,8 @@
 }
 
 .cabinet-form-input,
-.cabinet-form-textarea {
+.cabinet-form-textarea,
+.cabinet-form-select {
   background: var(--input);
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -682,7 +683,8 @@
 }
 
 .cabinet-form-input:focus,
-.cabinet-form-textarea:focus {
+.cabinet-form-textarea:focus,
+.cabinet-form-select:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.05);
@@ -692,6 +694,25 @@
 .cabinet-form-input::placeholder,
 .cabinet-form-textarea::placeholder {
   color: var(--muted-foreground);
+}
+
+/* Custom transparent input styles */
+.custom-transparent-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0;
+  color: var(--foreground);
+}
+
+.custom-transparent-input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.custom-transparent-input::placeholder {
+  color: var(--muted-foreground);
+  opacity: 0.5;
 }
 
 /* Responsive Design */
