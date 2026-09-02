@@ -47,7 +47,14 @@ export async function GET(
     `;
 
     const productCount = Number(productsCountResult.rows[0]?.count || 0);
-    const ratingResult = await sql`SELECT COALESCE(AVG(rating), 0) AS rating, COUNT(*) AS review_count FROM shop_seller_ratings WHERE seller_id = ${sellerId}`;
+    const ratingResult = await sql`
+      SELECT
+        COALESCE(average_rating, 0) AS rating,
+        COALESCE(total_reviews, 0) AS review_count
+      FROM shop_seller_ratings
+      WHERE seller_id = ${sellerId}
+      LIMIT 1
+    `;
     const rating = Number(ratingResult.rows[0]?.rating || 0);
     const reviewCount = Number(ratingResult.rows[0]?.review_count || 0);
 
