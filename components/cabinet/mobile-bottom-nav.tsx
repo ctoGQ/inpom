@@ -1,6 +1,6 @@
 'use client';
 
-import { CreditCard, ArrowRightLeft, ShoppingBag, Calendar } from 'lucide-react';
+import { CreditCard, ArrowRightLeft, ShoppingBag, Calendar, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
@@ -9,6 +9,11 @@ const NAV_ITEMS = [
     href: '/mycabinet',
     icon: CreditCard,
     label: 'Карта',
+  },
+  {
+    href: '/mycabinet/pick',
+    icon: Sparkles,
+    label: 'Pick',
   },
   {
     href: '/mycabinet/transactions',
