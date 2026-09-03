@@ -3,10 +3,11 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, UserRound, ArrowLeftRight, Store, HeartHandshake, Settings, LogOut } from "lucide-react"
+import { LayoutDashboard, UserRound, ArrowLeftRight, Store, HeartHandshake, Settings, LogOut, Sparkles } from "lucide-react"
 const items = [
   { href: "/mycabinet", label: "Огляд", icon: LayoutDashboard, exact: true },
   { href: "/mycabinet/account", label: "Профіль", icon: UserRound },
+  { href: "/pick", label: "Pick інтересів", icon: Sparkles },
   { href: "/mycabinet/transactions", label: "Транзакції", icon: ArrowLeftRight },
   { href: "/mycabinet/shop", label: "Магазин", icon: Store },
   { href: "/donation", label: "Пожертви", icon: HeartHandshake },
