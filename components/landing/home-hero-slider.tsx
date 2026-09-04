@@ -24,12 +24,6 @@ export function HomeHeroSlider() {
 
   return (
     <section className="relative flex h-[925px] w-full items-center justify-center overflow-clip bg-black" aria-label="INPOM">
-      <img
-        src="/images/inpom-hero-img-new.png"
-        alt=""
-        aria-hidden="true"
-        className="absolute inset-0 size-full object-cover object-center opacity-55"
-      />
       <div className="hero-rays" aria-hidden="true" />
       <div className="hero-portrait-wrap" aria-hidden="true">
         <img
