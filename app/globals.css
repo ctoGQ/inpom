@@ -196,6 +196,35 @@
   animation: inpom-hero-rays 42s linear infinite reverse;
 }
 
+.hero-portrait-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero-portrait {
+  width: min(62vw, 760px);
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  filter: drop-shadow(0 24px 48px rgba(0, 0, 0, .42));
+  mix-blend-mode: screen;
+  opacity: .96;
+}
+
+@media (max-width: 640px) {
+  .hero-portrait {
+    width: min(108vw, 560px);
+    height: 88%;
+    object-position: center bottom;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hero-rays, .hero-rays::after { animation: none; }
 }
