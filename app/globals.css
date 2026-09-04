@@ -159,41 +159,30 @@
 }
 
 @keyframes inpom-hero-rays {
-  from { background-position: 50% 50%, 50% 50%; }
-  to { background-position: 350% 50%, 350% 50%; }
-}
-
-@keyframes inpom-hero-blink {
-  0%, 100% { opacity: var(--hero-blink-opacity, 1); }
-  50% { opacity: .72; }
+  from { transform: translate3d(-4%, 0, 0); }
+  to { transform: translate3d(4%, 0, 0); }
 }
 
 .hero-rays {
-  --hero-stripes: repeating-linear-gradient(100deg, rgba(255,255,255,.94) 0%, rgba(255,255,255,.94) 6%, transparent 10%, transparent 13%, rgba(255,255,255,.94) 17%);
-  --hero-rainbow: repeating-linear-gradient(100deg, #60a5fa 10%, #e879f9 15%, #60a5fa 20%, #5eead4 25%, #60a5fa 30%);
   position: absolute;
-  inset: -12%;
-  z-index: 1;
+  inset: -8%;
+  z-index: 0;
   pointer-events: none;
-  background-image: var(--hero-stripes), var(--hero-rainbow);
-  background-size: 260% 260%, 180% 180%;
-  background-position: 50% 50%, 50% 50%;
-  filter: blur(12px) saturate(115%);
-  mask-image: radial-gradient(ellipse at 100% 0%, #000 18%, transparent 76%);
+  background: repeating-linear-gradient(
+    112deg,
+    transparent 0%,
+    transparent 24%,
+    rgba(255, 255, 255, .18) 31%,
+    rgba(96, 165, 250, .28) 36%,
+    rgba(232, 121, 249, .2) 40%,
+    transparent 48%,
+    transparent 100%
+  );
+  background-size: 180% 100%;
   opacity: .42;
-  mix-blend-mode: screen;
-  animation: inpom-hero-rays 60s linear infinite, inpom-hero-blink 4s ease-in-out infinite;
-}
-
-.hero-rays::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background-image: var(--hero-stripes), var(--hero-rainbow);
-  background-size: 190% 190%, 120% 120%;
-  background-attachment: fixed;
-  mix-blend-mode: overlay;
-  animation: inpom-hero-rays 42s linear infinite reverse;
+  will-change: transform;
+  transform: translate3d(-4%, 0, 0);
+  animation: inpom-hero-rays 24s ease-in-out infinite alternate;
 }
 
 .hero-portrait-wrap {
@@ -226,7 +215,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-rays, .hero-rays::after { animation: none; }
+  .hero-rays { animation: none; }
 }
 
 @layer base {
