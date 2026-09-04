@@ -26,10 +26,19 @@ export function HomeHeroSlider() {
     <section className="relative flex h-[925px] w-full items-center justify-center overflow-clip bg-black" aria-label="INPOM">
       <img
         src="/images/inpom-hero-img-new.png"
-        alt="Жінка в українській вишиванці дивиться на телефон"
-        className="absolute inset-0 size-full object-cover object-center"
+        alt=""
+        aria-hidden="true"
+        className="absolute inset-0 size-full object-cover object-center opacity-55"
       />
-      {/* <div className="hero-rays" aria-hidden="true" /> */}
+      <div className="hero-rays" aria-hidden="true" />
+      <div className="hero-portrait-wrap" aria-hidden="true">
+        <img
+          src="/images/inpom-hero-portrait.png"
+          alt=""
+          className="hero-portrait"
+        />
+      </div>
+      <div className="absolute inset-0 z-[2] bg-[radial-gradient(ellipse_at_center,transparent_24%,rgba(0,0,0,.34)_78%,rgba(0,0,0,.72)_100%)]" aria-hidden="true" />
 
       <div className="pointer-events-none sticky top-[90vh] z-10 mx-auto -translate-y-1/2 px-6 text-center lg:px-12">
         <motion.div
