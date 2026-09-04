@@ -8,5 +8,5 @@ export const metadata = { title: 'Pick — INPOM', description: 'Настрой�
 export default async function PickPage() {
   const customer = await getSessionCustomer()
   if (!customer) redirect('/auth/signin')
-  return <CabinetLayout title="Pick" showAvatar showHeader={false} avatarUrl={customer.avatar_url || '/placeholder-user.jpg'} userName={customer.name}><PickDeck /></CabinetLayout>
+  return <CabinetLayout title="Pick" showAvatar showHeader={false} showSidebar={false} bottomNavAlwaysVisible avatarUrl={customer.avatar_url || '/placeholder-user.jpg'} userName={customer.name}><PickDeck /></CabinetLayout>
 }

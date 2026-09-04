@@ -32,11 +32,11 @@ const NAV_ITEMS = [
   },
 ];
 
-export function MobileBottomNav() {
+export function MobileBottomNav({ alwaysVisible = false }: { alwaysVisible?: boolean }) {
   const pathname = usePathname();
 
   return (
-    <nav className="cabinet-bottom-nav">
+    <nav className={`cabinet-bottom-nav${alwaysVisible ? ' cabinet-bottom-nav-always' : ''}`}>
       <div className="w-full flex items-center justify-around">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;

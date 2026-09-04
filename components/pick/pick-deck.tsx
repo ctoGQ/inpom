@@ -4,32 +4,48 @@ import { useEffect, useRef, useState } from 'react'
 import { Check, Sparkles, WalletCards } from 'lucide-react'
 
 type Card = { id: number; title: string; description: string; image_url: string; category: string }
-type Transaction = { id: number; amount: number; description: string; created_at: string }
-
 type Position = { x: number; y: number }
+
+type PickResponse = {
+  cards: Card[]
+  nextCursor: string | null
+  hasMore: boolean
+  progress: { response_count: number; rewarded_at: string | null }
+}
 
 export function PickDeck() {
   const [cards, setCards] = useState<Card[]>([])
   const [progress, setProgress] = useState(0)
-  const [transactions, setTransactions] = useState<Transaction[]>([])
+  const [nextCursor, setNextCursor] = useState<string | null>(null)
+  const [hasMore, setHasMore] = useState(true)
   const [loading, setLoading] = useState(true)
+  const [loadingMore, setLoadingMore] = useState(false)
   const [rewarded, setRewarded] = useState(false)
   const [drag, setDrag] = useState<Position>({ x: 0, y: 0 })
   const [dragging, setDragging] = useState(false)
   const origin = useRef<Position | null>(null)
   const sending = useRef(false)
 
-  async function load() {
-    const response = await fetch('/api/pick')
+  async function load(cursor?: string | null) {
+    const response = await fetch(cursor ? `/api/pick?cursor=${encodeURIComponent(cursor)}` : '/api/pick')
     if (!response.ok) return
-    const data = await response.json()
-    setCards(data.cards)
+    const data = await response.json() as PickResponse
+    setCards((current) => cursor ? [...current, ...data.cards] : data.cards)
+    setNextCursor(data.nextCursor)
+    setHasMore(data.hasMore)
     setProgress(Number(data.progress.response_count) || 0)
-    setTransactions(data.transactions)
+    setRewarded(Boolean(data.progress.rewarded_at))
     setLoading(false)
+    setLoadingMore(false)
   }
 
   useEffect(() => { load() }, [])
+
+  async function loadMore() {
+    if (!nextCursor || !hasMore || loadingMore) return
+    setLoadingMore(true)
+    await load(nextCursor)
+  }
 
   async function choose(choice: 'like' | 'dislike') {
     if (sending.current) return
@@ -43,8 +59,9 @@ export function PickDeck() {
     if (!response.ok) return
     const data = await response.json()
     setProgress(data.responseCount)
-    if (data.rewarded) { setRewarded(true); setTimeout(load, 700) }
-    else if (cards.length <= 2) load()
+    if (data.rewarded) setRewarded(true)
+    setDrag({ x: 0, y: 0 })
+    if (cards.length <= 2) loadMore()
   }
 
   function pointerDown(event: React.PointerEvent<HTMLElement>) {
@@ -68,21 +85,17 @@ export function PickDeck() {
     else setDrag({ x: 0, y: 0 })
   }
 
-  if (loading) return <div className="flex min-h-[520px] items-center justify-center text-muted-foreground">Загружаем новые интересы…</div>
+  if (loading) return <div className="flex min-h-[calc(100dvh-5rem)] items-center justify-center text-muted-foreground">Загружаем новые интересы…</div>
   const card = cards[0]
   const percent = Math.min(progress / 50 * 100, 100)
-  return <div className="mx-auto flex w-full max-w-5xl flex-col gap-5 pb-20">
-    <div className="flex flex-wrap items-end justify-between gap-4">
-      <div><p className="font-mono text-xs uppercase tracking-[0.24em] text-primary">INPOM / discovery</p><h1 className="mt-2 text-3xl font-semibold tracking-tight">Что тебе близко?</h1><p className="mt-2 text-sm text-muted-foreground">Потяни карточку влево или вправо — только свайпом.</p></div>
-      {!rewarded && <div className="min-w-56 rounded-2xl border border-border bg-card p-4"><div className="flex items-center justify-between text-sm"><span>Дневная миссия</span><span className="font-mono text-primary">{progress}/50</span></div><div className="mt-3 h-2 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${percent}%` }} /></div><p className="mt-2 text-xs text-muted-foreground">50 ответов = +5 INPOM</p></div>}
+
+  return <div className="relative flex min-h-[calc(100dvh-5rem)] w-full flex-col items-center px-4 pb-24 pt-24">
+    <div className="fixed inset-x-0 top-0 z-30 border-b border-border/70 bg-background/95 px-4 py-3 backdrop-blur">
+      <div className="mx-auto flex max-w-xl items-center gap-3"><Sparkles className="size-4 shrink-0 text-primary" /><div className="min-w-0 flex-1"><div className="flex items-center justify-between text-xs"><span className="font-medium">Дневная миссия</span><span className="font-mono text-primary">{progress}/50</span></div><div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${percent}%` }} /></div></div>{rewarded && <Check className="size-5 text-primary" />}</div>
     </div>
-    {rewarded && <div className="mission-complete rounded-2xl border border-primary/30 bg-primary/10 p-5 text-primary"><div className="flex items-center gap-3"><span className="flex size-10 items-center justify-center rounded-full bg-primary text-primary-foreground"><Check /></span><div><p className="font-semibold">Дневная миссия выполнена</p><p className="mt-1 text-sm text-primary/80">+5 INPOM начислено. Продолжайте — новые интересы уже ждут.</p></div></div></div>}
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_280px]">
-      <section className="flex min-h-[560px] flex-col items-center justify-center overflow-hidden rounded-3xl border border-border bg-card/60 p-5">
-        {card ? <div className="relative w-full max-w-[340px] touch-none select-none" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} style={{ transform: `translate3d(${drag.x}px, ${drag.y}px, 0) rotate(${drag.x / 18}deg)`, transition: dragging ? 'none' : 'transform 420ms cubic-bezier(.2,.8,.2,1)' }}><div className="pointer-events-none absolute left-5 top-6 z-10 rotate-[-12deg] rounded-lg border-2 border-primary px-3 py-1 text-xl font-black tracking-widest text-primary" style={{ opacity: Math.min(Math.max(drag.x / 100, 0), 1) }}>LIKE</div><div className="pointer-events-none absolute right-5 top-6 z-10 rotate-[12deg] rounded-lg border-2 border-destructive px-3 py-1 text-xl font-black tracking-widest text-destructive" style={{ opacity: Math.min(Math.max(-drag.x / 100, 0), 1) }}>NOPE</div><article className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-muted shadow-2xl"><img draggable={false} src={card.image_url} alt={`Иллюстрация категории ${card.title}`} className="size-full object-cover" /><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/85 to-transparent p-6 pt-24"><p className="font-mono text-xs uppercase tracking-widest text-primary">{card.category}</p><h2 className="mt-2 text-2xl font-semibold text-foreground">{card.title}</h2><p className="mt-2 text-sm leading-6 text-foreground/80">{card.description}</p></div></article></div> : <div className="text-center"><WalletCards className="mx-auto size-10 text-primary" /><h2 className="mt-4 text-xl font-semibold">Все доступные карточки просмотрены</h2><p className="mt-2 text-sm text-muted-foreground">Новые категории появятся в следующем обновлении.</p></div>}
-        <p className="mt-5 text-center text-xs text-muted-foreground">Свайпни вправо, если нравится · влево, если нет</p>
-      </section>
-      <aside className="rounded-3xl border border-border bg-card p-5"><div className="flex items-center gap-2"><WalletCards className="size-4 text-primary" /><h2 className="font-semibold">Последние бонусы</h2></div><div className="mt-5 flex flex-col gap-3">{transactions.length ? transactions.map((transaction) => <div key={transaction.id} className="flex items-center justify-between border-b border-border pb-3 text-sm"><div><p>{transaction.description}</p><p className="mt-1 text-xs text-muted-foreground">{new Date(transaction.created_at).toLocaleDateString('ru-RU')}</p></div><span className="font-mono text-primary">+{transaction.amount}</span></div>) : <p className="text-sm leading-6 text-muted-foreground">Здесь появится депозит после 50 выборов.</p>}</div></aside>
+    <div className="flex min-h-[min(72vh,620px)] w-full max-w-[360px] flex-1 items-center justify-center">
+      {card ? <div className="relative w-full touch-none select-none" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} style={{ transform: `translate3d(${drag.x}px, ${drag.y}px, 0) rotate(${drag.x / 18}deg)`, transition: dragging ? 'none' : 'transform 420ms cubic-bezier(.2,.8,.2,1)' }}><div className="pointer-events-none absolute left-5 top-6 z-10 rotate-[-12deg] rounded-lg border-2 border-primary px-3 py-1 text-xl font-black tracking-widest text-primary" style={{ opacity: Math.min(Math.max(drag.x / 100, 0), 1) }}>LIKE</div><div className="pointer-events-none absolute right-5 top-6 z-10 rotate-[12deg] rounded-lg border-2 border-destructive px-3 py-1 text-xl font-black tracking-widest text-destructive" style={{ opacity: Math.min(Math.max(-drag.x / 100, 0), 1) }}>NOPE</div><article className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-muted shadow-2xl"><img draggable={false} src={card.image_url} alt={`Иллюстрация категории ${card.title}`} className="size-full object-cover" /><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/85 to-transparent p-6 pt-24"><p className="font-mono text-xs uppercase tracking-widest text-primary">{card.category}</p><h2 className="mt-2 text-2xl font-semibold text-foreground">{card.title}</h2><p className="mt-2 text-sm leading-6 text-foreground/80">{card.description}</p></div></article></div> : <div className="text-center"><WalletCards className="mx-auto size-10 text-primary" /><h2 className="mt-4 text-xl font-semibold">Карточки закончились</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Мы показали все доступные интересы. Новые карточки появятся позже.</p></div>}
     </div>
+    {loadingMore && <p className="mt-3 text-xs text-muted-foreground">Загружаем ещё…</p>}
   </div>
 }
