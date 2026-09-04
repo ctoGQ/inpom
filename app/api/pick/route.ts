@@ -5,32 +5,56 @@ import { getSessionCustomer } from '@/lib/auth'
 import { sql } from '@/lib/db'
 
 const DAILY_LIMIT = 50
+const PAGE_SIZE = 8
 
-export async function GET() {
+type Cursor = { displayOrder: number; id: number }
+
+function parseCursor(value: string | null): Cursor | null {
+  if (!value) return null
+  try {
+    const parsed = JSON.parse(Buffer.from(value, 'base64url').toString('utf8'))
+    if (Number.isInteger(parsed.displayOrder) && Number.isInteger(parsed.id)) return parsed
+  } catch {}
+  return null
+}
+
+function encodeCursor(card: { display_order: number; id: number }) {
+  return Buffer.from(JSON.stringify({ displayOrder: card.display_order, id: card.id })).toString('base64url')
+}
+
+export async function GET(request: Request) {
   const customer = await getSessionCustomer()
   if (!customer) return NextResponse.json({ error: 'Необходима авторизация' }, { status: 401 })
 
+  const cursor = parseCursor(new URL(request.url).searchParams.get('cursor'))
   const progress = await sql`
     SELECT response_count, rewarded_at FROM pick_daily_progress
     WHERE customer_id = ${customer.id} AND day_key = CURRENT_DATE
   `
-  const cards = await sql`
-    SELECT p.id, p.title, p.description, p.image_url, c.name AS category
-    FROM pick_cards p JOIN shop_categories c ON c.id = p.category_id
-    WHERE p.is_active = true AND NOT EXISTS (
-      SELECT 1 FROM pick_responses r WHERE r.customer_id = ${customer.id} AND r.pick_card_id = p.id
-    )
-    ORDER BY p.display_order, p.id LIMIT 3
-  `
-  const transactions = await sql`
-    SELECT id, amount, description, created_at FROM transactions
-    WHERE customer_id = ${customer.id} AND type = 'deposit' AND description ILIKE '%Pick%'
-    ORDER BY created_at DESC LIMIT 10
-  `
+  const cards = cursor
+    ? await sql`
+      SELECT p.id, p.title, p.description, p.image_url, c.name AS category, p.display_order
+      FROM pick_cards p JOIN shop_categories c ON c.id = p.category_id
+      WHERE p.is_active = true AND NOT EXISTS (
+        SELECT 1 FROM pick_responses r WHERE r.customer_id = ${customer.id} AND r.pick_card_id = p.id
+      ) AND (p.display_order > ${cursor.displayOrder} OR (p.display_order = ${cursor.displayOrder} AND p.id > ${cursor.id}))
+      ORDER BY p.display_order, p.id LIMIT ${PAGE_SIZE}
+    `
+    : await sql`
+      SELECT p.id, p.title, p.description, p.image_url, c.name AS category, p.display_order
+      FROM pick_cards p JOIN shop_categories c ON c.id = p.category_id
+      WHERE p.is_active = true AND NOT EXISTS (
+        SELECT 1 FROM pick_responses r WHERE r.customer_id = ${customer.id} AND r.pick_card_id = p.id
+      )
+      ORDER BY p.display_order, p.id LIMIT ${PAGE_SIZE}
+    `
+
+  const lastCard = cards.rows[cards.rows.length - 1]
   return NextResponse.json({
-    cards: cards.rows,
+    cards: cards.rows.map(({ display_order: _displayOrder, ...card }) => card),
+    nextCursor: lastCard && cards.rows.length === PAGE_SIZE ? encodeCursor(lastCard) : null,
+    hasMore: cards.rows.length === PAGE_SIZE,
     progress: progress.rows[0] || { response_count: 0, rewarded_at: null },
-    transactions: transactions.rows,
     dailyLimit: DAILY_LIMIT,
   })
 }
@@ -72,9 +96,7 @@ export async function POST(request: Request) {
         INSERT INTO transactions (customer_id, card_id, type, amount, description, created_at)
         VALUES (${customer.id}, ${activeCardId}, 'deposit', 5, 'Pick daily reward — 50 choices', NOW()) RETURNING id
       `
-      await sql`
-        UPDATE user_cards SET balance = balance + 5 WHERE id = ${activeCardId} AND customer_id = ${customer.id}
-      `
+      await sql`UPDATE user_cards SET balance = balance + 5 WHERE id = ${activeCardId} AND customer_id = ${customer.id}`
       await sql`
         UPDATE pick_daily_progress SET rewarded_at = NOW(), reward_transaction_id = ${transaction.rows[0].id}, updated_at = NOW()
         WHERE customer_id = ${customer.id} AND day_key = CURRENT_DATE AND rewarded_at IS NULL

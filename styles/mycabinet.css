@@ -808,6 +808,10 @@
     display: none;
   }
 
+  .cabinet-bottom-nav.cabinet-bottom-nav-always {
+    display: flex;
+  }
+
   .mycabinet-main {
     padding-bottom: 2rem;
   }

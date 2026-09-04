@@ -12,6 +12,8 @@ interface CabinetLayoutProps {
   showAvatar?: boolean;
   showNav?: boolean;
   showHeader?: boolean;
+  showSidebar?: boolean;
+  bottomNavAlwaysVisible?: boolean;
   avatarUrl?: string;
   userName?: string;
   backHref?: string;
@@ -24,13 +26,15 @@ export function CabinetLayout({
   showAvatar = false,
   showNav = true,
   showHeader = true,
+  showSidebar = true,
+  bottomNavAlwaysVisible = false,
   avatarUrl = '/placeholder-user.jpg',
   userName = '',
   backHref,
 }: CabinetLayoutProps) {
   return (
     <div className="mycabinet-container m-0 p-0">
-      <DesktopSidebar />
+      {showSidebar && <DesktopSidebar />}
       <div className="min-w-0 flex-1 m-0 p-0">
       {showHeader && (
         <MobileTopNav
@@ -45,7 +49,7 @@ export function CabinetLayout({
       <main className="mycabinet-main m-0 p-0">
         {children}
       </main>
-      {showNav && <MobileBottomNav />}
+      {showNav && <MobileBottomNav alwaysVisible={bottomNavAlwaysVisible} />}
       </div>
     </div>
   );
