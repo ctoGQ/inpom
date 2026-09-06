@@ -29,7 +29,7 @@ export function OnboardingSuccess({
       onComplete?.();
       
       // Redirect to dashboard
-      router.push('/mycabinet');
+      router.push('/mycabinet/dashboard');
     } catch (error) {
       console.error('Error continuing:', error);
       toast({

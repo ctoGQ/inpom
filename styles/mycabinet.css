@@ -1,4 +1,66 @@
 /* ======================================
+   Dashboard landing screen
+   ====================================== */
+.dashboard-screen {
+  min-height: 100svh;
+  height: 100svh;
+  overflow: hidden;
+  color: #f5f4f8;
+  background: linear-gradient(180deg, #000000 0%, #181725 100%);
+  position: relative;
+  isolation: isolate;
+}
+
+.dashboard-topbar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 50;
+  height: 4.5rem;
+  padding: 0.75rem max(1.25rem, calc((100vw - 32rem) / 2));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.dashboard-logo { width: 10.75rem; height: auto; object-fit: contain; }
+.dashboard-avatar-link { position: relative; display: inline-flex; }
+.dashboard-avatar { width: 2.5rem; height: 2.5rem; border-radius: 999px; object-fit: cover; border: 2px solid rgba(255,255,255,.75); }
+.dashboard-online { position: absolute; right: -0.05rem; bottom: 0.05rem; width: 0.55rem; height: 0.55rem; border-radius: 999px; background: #e00070; border: 2px solid #000; }
+.dashboard-content { height: 100%; max-width: 32rem; margin: 0 auto; padding: 4.5rem 1rem 6.25rem; display: flex; flex-direction: column; justify-content: center; gap: 1.35rem; }
+.dashboard-welcome { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .45rem; text-align: center; animation: dashboard-fade-in .8s ease both; transition: opacity .7s ease, transform .7s ease; pointer-events: none; }
+.dashboard-welcome p { margin: 0; font-size: clamp(1.75rem, 6vw, 2.5rem); line-height: 1.1; font-weight: 500; }
+.dashboard-welcome span { font-size: 1rem; font-weight: 500; }
+.dashboard-welcome-hidden { opacity: 0; transform: translateY(-.75rem); }
+.dashboard-article { width: min(100%, 19.5rem); aspect-ratio: .82; margin: 0 auto; opacity: 0; transform: translateY(1rem); transition: opacity .8s ease, transform .8s ease; pointer-events: none; }
+.dashboard-article-visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.dashboard-article-link { display: block; position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 1.25rem; background: #13121d; }
+.dashboard-article-image { object-fit: cover; object-position: center; }
+.dashboard-article-gradient { position: absolute; inset: 35% 0 0; background: linear-gradient(180deg, transparent, rgba(15,14,26,.98) 72%); }
+.dashboard-article-copy { position: absolute; inset: auto 1rem 1.15rem; display: flex; flex-direction: column; align-items: center; gap: .7rem; text-align: center; }
+.dashboard-article-copy strong { font-size: 1.25rem; line-height: 1.15; }
+.dashboard-article-copy small { color: #0df08a; font-size: .68rem; display: inline-flex; align-items: center; gap: .2rem; }
+.dashboard-article-copy svg { width: .8rem; height: .8rem; }
+.dashboard-tasks { width: 100%; }
+.dashboard-tasks-heading { display: flex; align-items: center; gap: .6rem; color: rgba(245,244,248,.6); font-size: .72rem; margin: 0 0 .65rem .25rem; }
+.dashboard-tasks-line { height: 1px; flex: 1; background: rgba(255,255,255,.12); }
+.dashboard-task-rail { display: flex; gap: .6rem; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: none; padding: .1rem .1rem .35rem; }
+.dashboard-task-rail::-webkit-scrollbar { display: none; }
+.dashboard-task-card { flex: 0 0 13.45rem; min-height: 8rem; padding: 1rem .9rem .85rem; display: flex; flex-direction: column; justify-content: space-between; border-radius: 1rem; background: #fbfbfc; color: #101015; text-decoration: none; transition: transform .2s ease; }
+.dashboard-task-card:hover, .dashboard-task-card:focus-visible { transform: translateY(-.2rem); outline: 2px solid #0df08a; outline-offset: 2px; }
+.dashboard-task-topline { display: flex; align-items: center; justify-content: space-between; font-size: .62rem; font-weight: 700; }
+.dashboard-progress { width: 1.65rem; height: 1.65rem; display: inline-flex; align-items: center; justify-content: center; gap: .05rem; border: 2px solid #d7d7d9; border-radius: 999px; font-size: .6rem; }
+.dashboard-progress svg { width: .55rem; height: .55rem; color: #0bba6b; }
+.dashboard-task-card strong { font-size: .95rem; line-height: 1.15; }
+.dashboard-task-reward { display: inline-flex; align-items: center; gap: .35rem; color: #8b8b91; font-size: .62rem; font-weight: 700; }
+.dashboard-task-reward svg { width: .8rem; height: .8rem; }
+.dashboard-screen .cabinet-bottom-nav { background: transparent; border-top-color: transparent; box-shadow: none; color: rgba(245,244,248,.58); }
+.dashboard-screen .cabinet-nav-item.active { color: #26a9ff; }
+.dashboard-screen .cabinet-nav-item:hover { color: #f5f4f8; }
+@keyframes dashboard-fade-in { from { opacity: 0; transform: translateY(.6rem); } to { opacity: 1; transform: translateY(0); } }
+@media (min-width: 768px) { .dashboard-content { padding-inline: 1.5rem; } }
+@media (prefers-reduced-motion: reduce) { .dashboard-welcome, .dashboard-welcome-hidden, .dashboard-article, .dashboard-article-visible { animation: none; transition: none; } }
+
+/* ======================================
    MyCabinet Global Styles
    All pages under /mycabinet route
    iOS-First Mobile Design System + Framer Motion
