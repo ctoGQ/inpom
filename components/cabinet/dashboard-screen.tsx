@@ -52,7 +52,7 @@ export function DashboardScreen({ userName, avatarUrl }: DashboardScreenProps) {
         <Link href="/" aria-label="INPOM — на головну">
           <Image src="/images/inpom-logo-full.png" alt="International Parliament of Mothers" width={178} height={45} className="dashboard-logo" priority />
         </Link>
-        <Link href="/mycabinet/profile" className="dashboard-avatar-link" aria-label="Відкрити профіль">
+        <Link href="/mycabinet/account" className="dashboard-avatar-link" aria-label="Відкрити акаунт">
           <Image src={avatarUrl} alt={`Фото профілю ${userName}`} width={40} height={40} className="dashboard-avatar" />
           <span className="dashboard-online" aria-hidden="true" />
         </Link>
@@ -64,7 +64,7 @@ export function DashboardScreen({ userName, avatarUrl }: DashboardScreenProps) {
           <span>Раді бачити Вас знову!</span>
         </section>
 
-        <section className={`dashboard-article ${showArticle ? 'dashboard-article-visible' : ''}`} aria-label="Рекомендована стаття">
+        <section className="dashboard-article dashboard-article-visible" aria-label="Рекомендована стаття">
           <Link href="/newsletter" className="dashboard-article-link">
             <Image src="/images/inpom-leader.jpg" alt="Інтерв’ю про сучасних жінок" fill sizes="(max-width: 700px) 100vw, 420px" className="dashboard-article-image" priority />
             <span className="dashboard-article-gradient" />
