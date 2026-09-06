@@ -29,7 +29,7 @@ export default function SignInPage() {
       setError(result.error);
       setLoading(false);
     } else if (result?.success) {
-      router.push('/mycabinet');
+      router.push('/mycabinet/dashboard');
     }
   };
 
