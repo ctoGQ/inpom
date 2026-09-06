@@ -59,20 +59,22 @@ export function DashboardScreen({ userName, avatarUrl }: DashboardScreenProps) {
       </header>
 
       <main className="dashboard-content">
-        <section className={`dashboard-welcome ${showArticle ? 'dashboard-welcome-hidden' : ''}`} aria-live="polite">
-          <p>Пані, {userName}</p>
-          <span>Раді бачити Вас знову!</span>
-        </section>
+        <section className="dashboard-hero" aria-live="polite">
+          <div className={`dashboard-welcome ${showArticle ? 'dashboard-welcome-hidden' : ''}`}>
+            <p>Пані, {userName}</p>
+            <span>Раді бачити Вас знову!</span>
+          </div>
 
-        <section className="dashboard-article dashboard-article-visible" aria-label="Рекомендована стаття">
-          <Link href="/newsletter" className="dashboard-article-link">
+          <section className={`dashboard-article ${showArticle ? 'dashboard-article-visible' : ''}`} aria-label="Рекомендована стаття">
+            <Link href="/newsletter" className="dashboard-article-link">
             <Image src="/images/inpom-leader.jpg" alt="Інтерв’ю про сучасних жінок" fill sizes="(max-width: 700px) 100vw, 420px" className="dashboard-article-image" priority />
             <span className="dashboard-article-gradient" />
             <span className="dashboard-article-copy">
               <strong>Як сучасні жінки<br />реагують на новини</strong>
               <small>Інтерв’ю <ArrowUpRight aria-hidden="true" /></small>
             </span>
-          </Link>
+                      </Link>
+          </section>
         </section>
 
         <section className="dashboard-tasks" aria-label="Завдання">

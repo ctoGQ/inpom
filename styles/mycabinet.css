@@ -27,11 +27,13 @@
 .dashboard-avatar { width: clamp(3.2rem, 9vw, 5.5rem); height: clamp(3.2rem, 9vw, 5.5rem); border-radius: 999px; object-fit: cover; border: 2px solid rgba(255,255,255,.75); }
 .dashboard-online { position: absolute; right: -.1rem; bottom: .05rem; width: clamp(.8rem, 2.4vw, 1.2rem); height: clamp(.8rem, 2.4vw, 1.2rem); border-radius: 999px; background: #e00070; border: 2px solid #000; }
 .dashboard-content { height: 100%; width: min(100%, 43rem); margin: 0 auto; padding: 12.5rem max(1.25rem, 5.5vw) 9.5rem; display: flex; flex-direction: column; justify-content: flex-start; gap: clamp(4rem, 9vw, 7.5rem); overflow: hidden; }
+.dashboard-hero { position: relative; width: 100%; aspect-ratio: .79; }
 .dashboard-welcome { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .45rem; text-align: center; animation: dashboard-fade-in .8s ease both; transition: opacity .7s ease, transform .7s ease; pointer-events: none; z-index: 2; }
 .dashboard-welcome p { margin: 0; font-size: clamp(1.75rem, 6vw, 2.5rem); line-height: 1.1; font-weight: 500; }
 .dashboard-welcome span { font-size: 1rem; font-weight: 500; }
 .dashboard-welcome-hidden { opacity: 0; transform: translateY(-.75rem); }
-.dashboard-article { width: 100%; aspect-ratio: .79; margin: 0 auto; opacity: 1; transform: none; transition: opacity .8s ease, transform .8s ease; pointer-events: auto; }
+.dashboard-article { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0 auto; opacity: 0; transform: translateY(1rem); transition: opacity .8s ease, transform .8s ease; pointer-events: none; }
+.dashboard-article-visible { opacity: 1; transform: translateY(0); pointer-events: auto; }
 .dashboard-article-link { display: block; position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 3rem; background: #13121d; }
 .dashboard-article-image { object-fit: cover; object-position: center; }
 .dashboard-article-gradient { position: absolute; inset: 35% 0 0; background: linear-gradient(180deg, transparent, rgba(15,14,26,.98) 72%); }
