@@ -2,43 +2,51 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowUpRight, Check, CircleUserRound, CreditCard, Sparkles } from 'lucide-react';
+import { ArrowUpRight, Check, CircleUserRound, CreditCard, FileText, Package, ShoppingBag, Sparkles } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { MobileBottomNav } from '@/components/cabinet/mobile-bottom-nav';
+
+interface DashboardTask {
+  task_key: string;
+  title: string;
+  description: string;
+  reward: number;
+  progress_percent: number;
+  completed_at: string | null;
+}
+
+interface DashboardArticle {
+  id: string;
+  title: string;
+  cover_image_url: string | null;
+  category_name: string | null;
+}
 
 interface DashboardScreenProps {
   userName: string;
   avatarUrl: string;
+  tasks: DashboardTask[];
+  article: DashboardArticle | null;
 }
 
-const tasks = [
-  {
-    href: '/mycabinet/profile',
-    eyebrow: 'Мій Профіль',
-    title: 'Заповни свій профіль\nв просторі парламенту',
-    reward: '+200 INPOM',
-    progress: '25',
-    icon: CircleUserRound,
-  },
-  {
-    href: '/mycabinet/cards',
-    eyebrow: 'Мої Картки',
-    title: 'Відкрий\nДоступ до Gold',
-    reward: '+500 INPOM',
-    progress: '40',
-    icon: CreditCard,
-  },
-  {
-    href: '/mycabinet/pick',
-    eyebrow: 'Мій Pick',
-    title: 'Обери свої\nможливості',
-    reward: '+100 INPOM',
-    progress: '60',
-    icon: Sparkles,
-  },
-];
+const taskRoutes: Record<string, { href: string; icon: typeof CircleUserRound }> = {
+  complete_profile: { href: '/mycabinet/account/edit', icon: CircleUserRound },
+  open_gold_card: { href: '/mycabinet/cards', icon: CreditCard },
+  first_50_picks: { href: '/pick', icon: Sparkles },
+  create_first_invoice: { href: '/mycabinet/invoices', icon: FileText },
+  create_first_product: { href: '/mycabinet/shop', icon: Package },
+  buy_first_product: { href: '/mycabinet/shop', icon: ShoppingBag },
+};
 
-export function DashboardScreen({ userName, avatarUrl }: DashboardScreenProps) {
+const fallbackArticle: DashboardArticle = {
+  id: '',
+  title: 'Як сучасні жінки реагують на новини',
+  cover_image_url: '/images/inpom-leader.jpg',
+  category_name: 'Інтерв’ю',
+};
+
+export function DashboardScreen({ userName, avatarUrl, tasks, article }: DashboardScreenProps) {
+  const activeArticle = article ?? fallbackArticle;
   const [showArticle, setShowArticle] = useState(false);
 
   useEffect(() => {
@@ -66,12 +74,12 @@ export function DashboardScreen({ userName, avatarUrl }: DashboardScreenProps) {
           </div>
 
           <section className={`dashboard-article ${showArticle ? 'dashboard-article-visible' : ''}`} aria-label="Рекомендована стаття">
-            <Link href="/newsletter" className="dashboard-article-link">
-            <Image src="/images/inpom-leader.jpg" alt="Інтерв’ю про сучасних жінок" fill sizes="(max-width: 700px) 100vw, 420px" className="dashboard-article-image" priority />
+            <Link href={activeArticle.id ? `/newsletter/${activeArticle.id}` : '/newsletter'} className="dashboard-article-link">
+            <Image src={activeArticle.cover_image_url || '/images/inpom-leader.jpg'} alt={activeArticle.title} fill sizes="(max-width: 700px) 100vw, 420px" className="dashboard-article-image" priority />
             <span className="dashboard-article-gradient" />
             <span className="dashboard-article-copy">
-              <strong>Як сучасні жінки<br />реагують на новини</strong>
-              <small>Інтерв’ю <ArrowUpRight aria-hidden="true" /></small>
+              <strong>{activeArticle.title}</strong>
+              <small>{activeArticle.category_name || 'Інтерв’ю'} <ArrowUpRight aria-hidden="true" /></small>
             </span>
                       </Link>
           </section>
@@ -84,15 +92,16 @@ export function DashboardScreen({ userName, avatarUrl }: DashboardScreenProps) {
           </div>
           <div className="dashboard-task-rail">
             {tasks.map((task) => {
-              const Icon = task.icon;
+              const taskRoute = taskRoutes[task.task_key] || { href: '/mycabinet/dashboard', icon: Sparkles };
+              const Icon = taskRoute.icon;
               return (
-                <Link href={task.href} className="dashboard-task-card" key={task.href}>
+                <Link href={taskRoute.href} className="dashboard-task-card" key={task.task_key}>
                   <div className="dashboard-task-topline">
-                    <span>{task.eyebrow}</span>
-                    <span className="dashboard-progress"><Check aria-hidden="true" />{task.progress}</span>
+                    <span>{task.title}</span>
+                    <span className="dashboard-progress"><Check aria-hidden="true" />{task.progress_percent}</span>
                   </div>
-                  <strong>{task.title.split('\n').map((line) => <span key={line}>{line}<br /></span>)}</strong>
-                  <span className="dashboard-task-reward"><Icon aria-hidden="true" />{task.reward}</span>
+                  <strong>{task.description}</strong>
+                  <span className="dashboard-task-reward"><Icon aria-hidden="true" />+{task.reward} INPOM</span>
                 </Link>
               );
             })}
