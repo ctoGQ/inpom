@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { sql } from '@/lib/db';
+import { getSessionCustomer } from '@/lib/auth';
+import { updateCabinetTask } from '@/lib/cabinet-tasks';
 
 export async function POST(request: NextRequest) {
   try {
@@ -7,7 +9,9 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     console.log(`[POST /api/invoices] Body:`, body);
     
+    const sessionCustomer = await getSessionCustomer();
     const { customerId, cardId, amount, description, expiryMinutes } = body;
+    if (!sessionCustomer || Number(customerId) !== Number(sessionCustomer.id)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     // Validate required fields
     if (!customerId || !cardId || amount === undefined) {
@@ -66,6 +70,7 @@ export async function POST(request: NextRequest) {
     }
 
     const invoice = result.rows[0];
+    await updateCabinetTask(sessionCustomer.id, 'create_first_invoice', 100);
     console.log(`[POST /api/invoices] ✅ Invoice created:`, invoice);
     
     const paymentUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://lummetra.com'}/mycabinet/pay-invoice/${invoice.id}`;

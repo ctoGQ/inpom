@@ -3,6 +3,7 @@
 
 import { sql } from '@/lib/db';
 import { getSessionCustomer } from '@/lib/auth';
+import { updateCabinetTask } from '@/lib/cabinet-tasks';
 import { NextRequest, NextResponse } from 'next/server';
 
 interface CreateProductRequest {
@@ -91,6 +92,7 @@ export async function POST(request: NextRequest) {
     }
 
     const productId = productResult.rows[0].id;
+    await updateCabinetTask(customer.id, 'create_first_product', 100);
 
     // Insert attributes if provided
     if (body.attributes && body.attributes.length > 0) {

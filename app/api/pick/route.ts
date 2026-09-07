@@ -3,6 +3,7 @@
 import { NextResponse } from 'next/server'
 import { getSessionCustomer } from '@/lib/auth'
 import { sql } from '@/lib/db'
+import { updateCabinetTask } from '@/lib/cabinet-tasks'
 
 const DAILY_LIMIT = 50
 const PAGE_SIZE = 8
@@ -104,5 +105,7 @@ export async function POST(request: Request) {
       rewarded = true
     }
   }
-  return NextResponse.json({ success: true, responseCount: current.response_count, rewarded })
+  const totalPicks = await sql<{ count: string }>`SELECT COUNT(*)::text AS count FROM pick_responses WHERE customer_id = ${customer.id}`
+  const taskReward = await updateCabinetTask(customer.id, 'first_50_picks', Math.min(100, (Number(totalPicks.rows[0]?.count || 0) / 50) * 100))
+  return NextResponse.json({ success: true, responseCount: current.response_count, rewarded, taskRewarded: taskReward.rewarded })
 }

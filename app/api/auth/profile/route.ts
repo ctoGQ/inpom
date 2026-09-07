@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionCustomer } from '@/lib/auth';
 import { sql } from '@/lib/db';
+import { syncProfileTask } from '@/lib/cabinet-tasks';
 
 const fields = ['professional_title', 'headline', 'bio', 'services', 'industry', 'location', 'availability', 'website_url', 'instagram_url', 'telegram_url', 'linkedin_url', 'portfolio_url', 'education', 'certifications'] as const;
 const jsonFields = ['skills', 'languages', 'work_history'] as const;
@@ -43,7 +44,9 @@ export async function PUT(request: NextRequest) {
     const urls = ['website_url', 'instagram_url', 'telegram_url', 'linkedin_url', 'portfolio_url'];
     for (const key of urls) if (data[key] && !/^https?:\/\//i.test(String(data[key]))) return NextResponse.json({ error: `Посилання ${key} має починатися з http:// або https://` }, { status: 400 });
     await sql`UPDATE customers SET name=${data.name}, professional_title=${data.professional_title}, headline=${data.headline}, bio=${data.bio}, skills=${data.skills}::jsonb, services=${data.services}, industry=${data.industry}, years_experience=${data.years_experience}, location=${data.location}, languages=${data.languages}::jsonb, availability=${data.availability}, website_url=${data.website_url}, instagram_url=${data.instagram_url}, telegram_url=${data.telegram_url}, linkedin_url=${data.linkedin_url}, portfolio_url=${data.portfolio_url}, education=${data.education}, certifications=${data.certifications}, work_history=${data.work_history}::jsonb, updated_at=NOW() WHERE id=${customer.id}`;
-    return NextResponse.json({ message: 'Profile updated successfully', customer: { ...customer, ...data, skills: JSON.parse(String(data.skills)), languages: JSON.parse(String(data.languages)), work_history: JSON.parse(String(data.work_history)) } });
+    const updatedCustomer = { ...customer, ...data, skills: JSON.parse(String(data.skills)), languages: JSON.parse(String(data.languages)), work_history: JSON.parse(String(data.work_history)) };
+    await syncProfileTask(updatedCustomer);
+    return NextResponse.json({ message: 'Profile updated successfully', customer: updatedCustomer });
   } catch (error) {
     console.error('Error updating profile:', error);
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Internal server error' }, { status: 400 });
