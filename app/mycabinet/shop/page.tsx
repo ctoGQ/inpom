@@ -67,7 +67,7 @@ function CarouselProductCard({ product }: { product: Product }) {
 
   return (
     <Link href={`/mycabinet/shop/${product.id}`} className="block flex-shrink-0 w-40">
-      <div className="rounded-2xl border border-foreground/10 bg-card overflow-hidden hover:bg-foreground/5 transition-colors">
+      <div className="rounded-2xl border border-foreground/10 bg-transparent overflow-hidden hover:bg-foreground/5 transition-colors">
         {/* Image */}
         <div className="relative w-full aspect-square bg-foreground/5">
           {product.primary_image ? (
@@ -344,7 +344,7 @@ export default function ShopMarketplacePage() {
                 <div className="grid grid-cols-2 gap-3">
                   {categories.slice(0, 12).map((cat) => (
                     <Link key={cat.id} href={`/mycabinet/shop/category/${cat.slug}`}>
-                      <div className="p-4 rounded-2xl border border-foreground/10 bg-card hover:bg-foreground/5 transition-colors flex items-center gap-3 h-14">
+                      <div className="p-4 rounded-2xl border border-foreground/10 bg-transparent hover:bg-foreground/5 transition-colors flex items-center gap-3 h-14">
                         {cat.icon_url ? (
                           <Image
                             src={cat.icon_url}
@@ -370,7 +370,7 @@ export default function ShopMarketplacePage() {
           </section>
 
           {/* ── 5. Останні Новинки ── */}
-          <section>
+          <section className="bg-transparent">
             <SectionHeader title="Останні Новинки" icon={Package} href="/shop?sortBy=newest" />
             <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide">
               {loading ? (
@@ -384,7 +384,7 @@ export default function ShopMarketplacePage() {
           </section>
 
           {/* ── 6. Акції та Знижки ── */}
-          <section>
+          <section className="bg-transparent">
             <SectionHeader title="Акції та Знижки" icon={Percent} />
             <div className="flex gap-3 overflow-x-auto px-4 pb-2 scrollbar-hide">
               {loading ? (
@@ -393,7 +393,7 @@ export default function ShopMarketplacePage() {
                 discountProducts.map((p) => <CarouselProductCard key={p.id} product={p} />)
               ) : (
                 <div className="flex-shrink-0 w-72">
-                  <div className="rounded-2xl border border-foreground/10 bg-card p-6 text-center">
+                  <div className="rounded-2xl border border-foreground/10 bg-transparent p-6 text-center">
                     <Percent className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
                     <p className="text-sm text-muted-foreground">Зараз немає акцій</p>
                   </div>
@@ -405,7 +405,7 @@ export default function ShopMarketplacePage() {
           {/* ── CTA: Add your product ── */}
           <div className="px-4">
             <Link href="/mycabinet/shop/create">
-              <div className="rounded-2xl border border-foreground/10 bg-card p-5 flex items-center justify-between hover:bg-foreground/5 transition-colors">
+              <div className="rounded-2xl border border-foreground/10 bg-transparent p-5 flex items-center justify-between hover:bg-foreground/5 transition-colors">
                 <div>
                   <p className="font-semibold text-foreground">Додайте свій товар</p>
                   <p className="text-sm text-muted-foreground mt-0.5">Почніть продавати на платформі</p>

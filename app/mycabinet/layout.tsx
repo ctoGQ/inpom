@@ -9,7 +9,9 @@ export default function MyCabinetLayout({
 }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-      {children}
+      <div className="min-h-screen bg-[#F5F5F7] dark:bg-gradient-to-b dark:from-black dark:to-[#181725]">
+        {children}
+      </div>
     </ThemeProvider>
   );
 }
