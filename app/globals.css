@@ -222,12 +222,17 @@
   * {
     @apply border-border outline-ring/50;
   }
-  body {
-    @apply bg-background text-foreground m-0 p-0;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-  }
+html,
+body {
+  min-height: 100%;
+  background: linear-gradient(180deg, #000000 0%, #181725 100%);
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: var(--foreground);
+}
   ::selection {
     background: color-mix(in srgb, var(--primary) 22%, transparent);
     color: var(--foreground);
