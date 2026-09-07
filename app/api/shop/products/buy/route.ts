@@ -3,6 +3,7 @@
 
 import { sql } from '@/lib/db';
 import { getSessionCustomer } from '@/lib/auth';
+import { updateCabinetTask } from '@/lib/cabinet-tasks';
 import { NextRequest, NextResponse } from 'next/server';
 
 interface BuyProductRequest {
@@ -188,6 +189,7 @@ export async function POST(request: NextRequest) {
       WHERE id = ${body.productId}
     `;
 
+    await updateCabinetTask(customer.id, 'buy_first_product', 100);
     console.log(
       `[Buy Product API] ✅ Purchase completed: Transaction ID=${transactionId}, Total=${totalPrice} INPOM`
     );

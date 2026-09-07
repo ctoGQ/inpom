@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getSessionCustomer } from '@/lib/auth';
 import { sql } from '@/lib/db';
+import { updateCabinetTask } from '@/lib/cabinet-tasks';
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,8 +25,9 @@ export async function POST(request: NextRequest) {
     `;
 
     const newCard = result.rows?.[0];
+    const taskReward = cardType === 'gold' ? await updateCabinetTask(customer.id, 'open_gold_card', 100) : null;
 
-    return NextResponse.json({ success: true, card: newCard });
+    return NextResponse.json({ success: true, card: newCard, taskRewarded: taskReward?.rewarded ?? false });
   } catch (error) {
     console.error('Error creating user card:', error);
     const message = (error as any)?.message || String(error);
