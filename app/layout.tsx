@@ -41,7 +41,7 @@ export default function RootLayout({
   return (
     <html lang="uk" suppressHydrationWarning className={cn("font-sans", inter.variable, publicSansHeading.variable)}>
       <body className={`${instrumentSans.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} mx-auto max-w-[1280px] border-x border-black/15 font-sans antialiased m-0 p-0`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           <PublicShell>{children}</PublicShell>
         </ThemeProvider>
         <Analytics />
