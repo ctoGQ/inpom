@@ -1,6 +1,26 @@
 "use client"
 
-import { ArrowRight, Asterisk, Check, CornerDownRight, Plus } from "lucide-react"
+import {
+  ArrowRight,
+  Asterisk,
+  BarChart3,
+  BrainCircuit,
+  BriefcaseBusiness,
+  Check,
+  CornerDownRight,
+  Database,
+  FileText,
+  GraduationCap,
+  ImageIcon,
+  LayoutTemplate,
+  MonitorSmartphone,
+  Plus,
+  Search,
+  Sparkles,
+  TrendingUp,
+  UsersRound,
+  Video,
+} from "lucide-react"
 import { motion } from "framer-motion"
 import { useEffect, useRef, useState } from "react"
 import { Badge } from "@/components/ui/badge"
@@ -78,7 +98,7 @@ export function BusinessCompliance() {
   ]
 
   return (
-    <section className="bg-muted/50 py-20 sm:py-20 px-24">
+    <section className="bg-muted py-20 sm:py-20 px-24">
       <div className="container grid gap-12 lg:grid-cols-2 lg:gap-20">
         <div className="flex flex-col gap-5">
           <Badge variant="outline" className="w-fit gap-2 bg-background"><span className="size-1.5 rounded-full bg-green-500" /> Сертифікація INPOM</Badge>
@@ -121,6 +141,104 @@ export function BusinessProcess() {
                 <Asterisk className="absolute -right-12 -top-3 size-8 text-blue-400" />
             </div>
             <p className="mt-7 max-w-sm text-white/55">Від першої ідеї до партнерства, клієнтів і нового масштабу.</p><Button variant="ghost" className="mt-7 px-0 text-white hover:bg-transparent hover:text-blue-300"><CornerDownRight className="mr-2 text-blue-400" /> Почати розмову</Button></div><ol className="lg:col-span-4">{process.map((item) => <li key={item.step} className="flex flex-col gap-5 border-t border-white/20 py-8 sm:flex-row sm:gap-10"><span className="flex size-12 shrink-0 items-center justify-center bg-white/10 text-sm tracking-widest">{item.step}</span><div><h3 className="text-2xl font-medium">{item.title}</h3><p className="mt-3 max-w-xl text-white/55">{item.description}</p></div></li>)}</ol></div></section>
+}
+
+export function BusinessServiceStack() {
+  const services = [
+    { label: "Ai-Agent", icon: Sparkles, left: "18%", top: "30%" },
+    { label: "Сайт", icon: MonitorSmartphone, left: "14%", top: "53%" },
+    { label: "Контент", icon: FileText, left: "18%", top: "76%" },
+    { label: "SEO", icon: Search, right: "5%", top: "30%" },
+    { label: "CRM", icon: Database, right: "1%", top: "53%" },
+    { label: "B2B контакти", icon: UsersRound, right: "5%", top: "76%" },
+  ]
+
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-b from-slate-50 via-white to-slate-100 px-6 py-20 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 dark:text-slate-100 sm:px-10 lg:px-24">
+      <div className="container flex flex-col items-center">
+        <div className="text-center">
+          <p className="text-xs font-medium uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">INPOM accelerator</p>
+          <h2 className="mt-5 text-4xl font-medium tracking-tight text-slate-900 dark:text-slate-100 md:text-5xl lg:text-6xl">
+            Що отримує <span className="font-semibold text-blue-600">партнер</span>?
+          </h2>
+        </div>
+
+        <div className="relative mt-12 h-[420px] w-full max-w-[900px]">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="h-[300px] w-[300px] rounded-full border border-slate-200 bg-slate-50/80 shadow-[inset_0_0_20px_rgba(15,23,42,0.05)] dark:border-slate-700 dark:bg-slate-900/80 dark:shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]" />
+            <div className="absolute h-[210px] w-[210px] rounded-full border border-slate-200 bg-white/80 dark:border-slate-700 dark:bg-slate-800/80" />
+            <div className="absolute h-[110px] w-[110px] rounded-full border border-slate-200 bg-white shadow-[0_20px_30px_rgba(15,23,42,0.1)] dark:border-slate-700 dark:bg-slate-800 dark:shadow-[0_20px_30px_rgba(2,6,23,0.45)]" />
+          </div>
+
+          <svg viewBox="0 0 900 420" className="absolute inset-0 h-full w-full text-slate-700 dark:text-slate-300" aria-hidden="true">
+            {[
+              "M 450 210 C 320 210, 230 120, 180 120",
+              "M 450 210 C 320 210, 220 210, 150 210",
+              "M 450 210 C 320 210, 230 300, 180 300",
+              "M 450 210 C 580 210, 670 120, 720 120",
+              "M 450 210 C 580 210, 690 210, 760 210",
+              "M 450 210 C 580 210, 670 300, 720 300",
+            ].map((d, index) => (
+              <motion.path
+                key={d}
+                d={d}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                initial={{ pathLength: 0, opacity: 0.15 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{
+                  duration: 1.2,
+                  delay: 0.15 + index * 0.18,
+                  ease: "easeInOut",
+                  repeat: Infinity,
+                  repeatDelay: 1.8,
+                  repeatType: "reverse",
+                }}
+              />
+            ))}
+          </svg>
+
+          <motion.div
+            animate={{ scale: [1, 1.06, 1], rotate: [0, 2, 0] }}
+            transition={{ duration: 3.2, ease: "easeInOut", repeat: Infinity }}
+            className="absolute left-1/2 top-1/2 z-10 flex h-24 w-24 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-[28px] bg-slate-900 text-white shadow-[0_25px_40px_rgba(15,23,42,0.18)] dark:bg-slate-100 dark:text-slate-900 dark:shadow-[0_25px_40px_rgba(15,23,42,0.38)]"
+          >
+            <BrainCircuit className="h-10 w-10" strokeWidth={1.8} />
+          </motion.div>
+
+          {services.map((service, index) => {
+            const Icon = service.icon
+            const isRight = service.right !== undefined
+            const positionStyle = isRight
+              ? { right: service.right, top: service.top }
+              : { left: service.left, top: service.top }
+
+            return (
+              <motion.div
+                key={`${service.label}-${index}`}
+                className="absolute z-20 w-[120px] -translate-x-1/2 -translate-y-1/2 text-center"
+                style={positionStyle}
+                animate={{ y: [0, -8, 0], rotate: index % 2 === 0 ? [0, 2, 0] : [0, -2, 0] }}
+                transition={{ duration: 2.8 + index * 0.2, repeat: Infinity, ease: "easeInOut", delay: index * 0.12 }}
+              >
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl border border-slate-200 bg-slate-900 text-white shadow-[10px_15px_25px_rgba(15,23,42,0.18),inset_2px_2px_5px_rgba(255,255,255,0.12),inset_-2px_-2px_5px_rgba(15,23,42,0.5)] dark:border-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:shadow-[10px_15px_25px_rgba(2,6,23,0.35),inset_2px_2px_5px_rgba(255,255,255,0.35),inset_-2px_-2px_5px_rgba(15,23,42,0.15)]">
+                  <Icon className="h-7 w-7" strokeWidth={1.8} />
+                </div>
+                <span className="mt-2 block text-[9px] font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">{service.label}</span>
+              </motion.div>
+            )
+          })}
+        </div>
+
+        <div className="mt-8 flex flex-col items-center gap-3 text-center text-slate-600 dark:text-slate-300">
+          <p className="text-sm font-medium uppercase tracking-[0.35em] text-slate-500 dark:text-slate-400">Цифровізація процесів</p>
+          <p className="text-lg font-medium text-slate-700 dark:text-slate-200">Цу крок у напрямку розвитку сучасного бізнесу</p>
+        </div>
+      </div>
+    </section>
+  )
 }
 
 export function BusinessDemo() {

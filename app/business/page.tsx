@@ -6,12 +6,14 @@ import {
   BusinessIndustries,
   BusinessLogos,
   BusinessProcess,
+  BusinessServiceStack,
 } from "@/components/landing/business-sections"
 
 export default function BusinessPage() {
   return (
     <>
       <BusinessHero />
+      <BusinessServiceStack />
       <BusinessCompliance />
       <BusinessIndustries />
       <BusinessProcess />
