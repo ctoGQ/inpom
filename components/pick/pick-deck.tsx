@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Check, Sparkles, WalletCards } from 'lucide-react'
+import { Check, ShieldAlert, ShieldCheck, Sparkles, WalletCards } from 'lucide-react'
 
 type Card = { id: number; title: string; description: string; image_url: string; category: string }
 type Position = { x: number; y: number }
@@ -21,6 +21,7 @@ export function PickDeck() {
   const [loading, setLoading] = useState(true)
   const [loadingMore, setLoadingMore] = useState(false)
   const [rewarded, setRewarded] = useState(false)
+  const [submitError, setSubmitError] = useState('')
   const [drag, setDrag] = useState<Position>({ x: 0, y: 0 })
   const [dragging, setDragging] = useState(false)
   const origin = useRef<Position | null>(null)
@@ -47,21 +48,32 @@ export function PickDeck() {
     await load(nextCursor)
   }
 
-  async function choose(choice: 'like' | 'dislike') {
+  async function choose(choice: 'safe' | 'unsafe') {
     if (sending.current) return
     const card = cards[0]
     if (!card) return
     sending.current = true
-    setCards((current) => current.slice(1))
-    setDrag({ x: choice === 'like' ? 900 : -900, y: drag.y })
-    const response = await fetch('/api/pick', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cardId: card.id, choice }) })
-    sending.current = false
-    if (!response.ok) return
-    const data = await response.json()
-    setProgress(data.responseCount)
-    if (data.rewarded) setRewarded(true)
-    setDrag({ x: 0, y: 0 })
-    if (cards.length <= 2) loadMore()
+    setSubmitError('')
+    setDrag({ x: choice === 'safe' ? 900 : -900, y: drag.y })
+    try {
+      const response = await fetch('/api/pick', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ cardId: card.id, choice }) })
+      const data = await response.json()
+      if (!response.ok) {
+        setSubmitError(data.error || 'Не удалось сохранить оценку. Попробуйте ещё раз.')
+        setDrag({ x: 0, y: 0 })
+        return
+      }
+      setCards((current) => current.filter((currentCard) => currentCard.id !== card.id))
+      setProgress(data.responseCount)
+      if (data.rewarded) setRewarded(true)
+      setDrag({ x: 0, y: 0 })
+      if (cards.length <= 2) loadMore()
+    } catch {
+      setSubmitError('Не удалось сохранить оценку. Проверьте подключение и попробуйте ещё раз.')
+      setDrag({ x: 0, y: 0 })
+    } finally {
+      sending.current = false
+    }
   }
 
   function pointerDown(event: React.PointerEvent<HTMLElement>) {
@@ -81,7 +93,7 @@ export function PickDeck() {
     const x = drag.x
     origin.current = null
     setDragging(false)
-    if (Math.abs(x) > 110) choose(x > 0 ? 'like' : 'dislike')
+    if (Math.abs(x) > 110) choose(x > 0 ? 'safe' : 'unsafe')
     else setDrag({ x: 0, y: 0 })
   }
 
@@ -94,8 +106,17 @@ export function PickDeck() {
       <div className="mx-auto flex max-w-xl items-center gap-3"><Sparkles className="size-4 shrink-0 text-primary" /><div className="min-w-0 flex-1"><div className="flex items-center justify-between text-xs"><span className="font-medium">Дневная миссия</span><span className="font-mono text-primary">{progress}/50</span></div><div className="mt-2 h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all duration-500" style={{ width: `${percent}%` }} /></div></div>{rewarded && <Check className="size-5 text-primary" />}</div>
     </div>
     <div className="pick-card-stage flex min-h-0 w-full min-w-0 max-w-[360px] flex-1 items-center justify-center overflow-visible">
-      {card ? <div className="relative w-full touch-none select-none" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} style={{ transform: `translate3d(${drag.x}px, ${drag.y}px, 0) rotate(${drag.x / 18}deg)`, transition: dragging ? 'none' : 'transform 420ms cubic-bezier(.2,.8,.2,1)' }}><div className="pointer-events-none absolute left-5 top-6 z-10 rotate-[-12deg] rounded-lg border-2 border-primary px-3 py-1 text-xl font-black tracking-widest text-primary" style={{ opacity: Math.min(Math.max(drag.x / 100, 0), 1) }}>LIKE</div><div className="pointer-events-none absolute right-5 top-6 z-10 rotate-[12deg] rounded-lg border-2 border-destructive px-3 py-1 text-xl font-black tracking-widest text-destructive" style={{ opacity: Math.min(Math.max(-drag.x / 100, 0), 1) }}>NOPE</div><article className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-muted shadow-2xl"><img draggable={false} src={card.image_url} alt={`Иллюстрация категории ${card.title}`} className="size-full object-cover" /><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/85 to-transparent p-6 pt-24"><p className="font-mono text-xs uppercase tracking-widest text-primary">{card.category}</p><h2 className="mt-2 text-2xl font-semibold text-foreground">{card.title}</h2><p className="mt-2 text-sm leading-6 text-foreground/80">{card.description}</p></div></article></div> : <div className="text-center"><WalletCards className="mx-auto size-10 text-primary" /><h2 className="mt-4 text-xl font-semibold">Карточки закончились</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Мы показали все доступные интересы. Новые карточки появятся позже.</p></div>}
+      {card ? <div className="relative w-full touch-none select-none" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={pointerUp} onPointerCancel={pointerUp} style={{ transform: `translate3d(${drag.x}px, ${drag.y}px, 0) rotate(${drag.x / 18}deg)`, transition: dragging ? 'none' : 'transform 420ms cubic-bezier(.2,.8,.2,1)' }}><div className="pointer-events-none absolute left-5 top-6 z-10 rotate-[-12deg] rounded-lg border-2 border-primary px-3 py-1 text-lg font-black tracking-widest text-primary" style={{ opacity: Math.min(Math.max(drag.x / 100, 0), 1) }}><ShieldCheck className="mr-1 inline size-5" />БЕЗОПАСНО</div><div className="pointer-events-none absolute right-5 top-6 z-10 rotate-[12deg] rounded-lg border-2 border-destructive px-3 py-1 text-lg font-black tracking-widest text-destructive" style={{ opacity: Math.min(Math.max(-drag.x / 100, 0), 1) }}><ShieldAlert className="mr-1 inline size-5" />НЕБЕЗОПАСНО</div><article className="relative aspect-[3/4] overflow-hidden rounded-2xl border border-border bg-muted shadow-2xl"><img draggable={false} src={card.image_url} alt={`Иллюстрация категории ${card.title}`} className="size-full object-cover" /><div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background via-background/85 to-transparent p-6 pt-24"><p className="font-mono text-xs uppercase tracking-widest text-primary">{card.category}</p><h2 className="mt-2 text-2xl font-semibold text-foreground">{card.title}</h2><p className="mt-2 text-sm leading-6 text-foreground/80">{card.description}</p></div></article></div> : <div className="text-center"><WalletCards className="mx-auto size-10 text-primary" /><h2 className="mt-4 text-xl font-semibold">Карточки закончились</h2><p className="mt-2 text-sm leading-6 text-muted-foreground">Мы показали все доступные интересы. Новые карточки появятся позже.</p></div>}
     </div>
+    {card && <div className="mt-4 flex w-full max-w-[360px] gap-3">
+      <button type="button" onClick={() => choose('unsafe')} disabled={sending.current} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm font-semibold text-destructive transition-colors hover:bg-destructive/20 disabled:opacity-50" aria-label="Отметить как небезопасное">
+        <ShieldAlert className="size-5 shrink-0" aria-hidden="true" />Небезопасно
+      </button>
+      <button type="button" onClick={() => choose('safe')} disabled={sending.current} className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl border border-primary/40 bg-primary/10 px-3 py-2 text-sm font-semibold text-primary transition-colors hover:bg-primary/20 disabled:opacity-50" aria-label="Отметить как безопасное">
+        <ShieldCheck className="size-5 shrink-0" aria-hidden="true" />Безопасно
+      </button>
+    </div>}
+    {submitError && <p role="alert" className="mt-3 max-w-[360px] text-center text-sm text-destructive">{submitError}</p>}
     {loadingMore && <p className="mt-3 text-xs text-muted-foreground">Загружаем ещё…</p>}
   </div>
 }

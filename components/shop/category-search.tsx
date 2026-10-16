@@ -87,7 +87,7 @@ export function CategorySearch({
 
   return (
     <div ref={containerRef} className="relative">
-      <div className="relative">
+      <div className="relative mt-2 ">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
         <input
           ref={inputRef}
@@ -99,7 +99,7 @@ export function CategorySearch({
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          className="w-full pl-10 pr-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+          className="w-full pl-10 pr-4 py-3 bg-foreground/5 border-3 border-foreground/10 rounded-2xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
         />
       </div>
 

@@ -139,7 +139,7 @@ export function CharacteristicSearch({ value, onChange }: CharacteristicSearchPr
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 text-center">
       {/* Search Input */}
       <div>
         <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide block mb-2">
@@ -149,7 +149,7 @@ export function CharacteristicSearch({ value, onChange }: CharacteristicSearchPr
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"
-            placeholder="Введіть назву характеристики (напр. Розмір, Колір...)"
+            placeholder="Введіть назву (Розмір, Колір...)"
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -157,7 +157,7 @@ export function CharacteristicSearch({ value, onChange }: CharacteristicSearchPr
             }}
             onFocus={() => setShowSuggestions(true)}
             onKeyDown={handleKeyDown}
-            className="w-full pl-10 pr-4 py-3 bg-foreground/5 border border-foreground/10 rounded-xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
+            className="w-full pl-10 pr-4 py-3 bg-foreground/5 border-3 border-foreground/10 rounded-2xl text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary transition-all"
             disabled={loading}
           />
 

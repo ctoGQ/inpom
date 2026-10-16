@@ -1,12 +1,12 @@
 'use client';
 
-import { Compass, Heart, ScanQrCode, ShoppingBag, CreditCard } from 'lucide-react';
+import { Compass, ShieldCheck, ScanQrCode, ShoppingBag, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const NAV_ITEMS = [
   { href: '/mycabinet/dashboard', icon: Compass, label: 'Головна' },
-  { href: '/mycabinet/pick', icon: Heart, label: 'Мій Вибір' },
+  { href: '/mycabinet/pick', icon: ShieldCheck, label: 'Безпека' },
   { href: '/mycabinet/shop', icon: ShoppingBag, label: 'Простір' },
   { href: '/mycabinet/', icon: CreditCard, label: 'Баланс' },
 ];

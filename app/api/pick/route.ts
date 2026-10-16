@@ -66,7 +66,7 @@ export async function POST(request: Request) {
   const body = await request.json().catch(() => null)
   const cardId = Number(body?.cardId)
   const choice = body?.choice
-  if (!Number.isInteger(cardId) || !['like', 'dislike'].includes(choice)) {
+  if (!Number.isInteger(cardId) || !['safe', 'unsafe'].includes(choice)) {
     return NextResponse.json({ error: 'Некорректный выбор' }, { status: 400 })
   }
 

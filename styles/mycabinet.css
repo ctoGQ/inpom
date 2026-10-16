@@ -169,12 +169,11 @@
   top: 0;
   z-index: 50;
   background: var(--background);
-  border-bottom: 1px solid var(--border);
-  padding: 0.625rem 1rem;
+  padding: 3;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 3rem;
+  height: 44;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
@@ -183,7 +182,7 @@
 }
 
 .cabinet-top-nav-title {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--foreground);
   flex: 1;

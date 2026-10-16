@@ -47,9 +47,9 @@ export function MobileTopNav({
             <Image
               src="/inpom-logo.png"
               alt="INPOM"
-              width={32}
-              height={32}
-              className="w-8 h-8 object-contain"
+              width={24}
+              height={24}
+              className="w-5 h-5 object-contain"
             />
           </Link>
         )}
@@ -69,7 +69,7 @@ export function MobileTopNav({
             className="cabinet-top-nav-menu-btn"
             aria-label="More options"
           >
-            <MoreVertical className="w-6 h-6" />
+            <MoreVertical className="w-5 h-5" />
           </button>
         ) : (
           <div className="w-10" />

@@ -3,12 +3,11 @@
 
 'use client';
 
-import { Heart, Star, ShoppingCart } from 'lucide-react';
+import { Heart, Package, Star } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState } from 'react';
 import { useToast } from '@/components/ui/use-toast';
-import { Button } from '@/components/ui/button';
 
 interface ShopProductCardProps {
   id: number;
@@ -21,8 +20,8 @@ interface ShopProductCardProps {
   reviewCount: number;
   primaryImage?: string;
   sellerName: string;
-  sellerId: number;
   saleCount: number;
+  categoryName?: string;
   isFeatured?: boolean;
 }
 
@@ -37,8 +36,8 @@ export function ShopProductCard({
   reviewCount,
   primaryImage,
   sellerName,
-  sellerId,
   saleCount,
+  categoryName,
   isFeatured
 }: ShopProductCardProps) {
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -83,120 +82,81 @@ export function ShopProductCard({
     : 0;
 
   return (
-    <Link href={`/shop/${slug}`}>
-      <div className="group relative overflow-hidden rounded-lg border border-input hover:border-primary/50 transition-all hover:shadow-lg cursor-pointer h-full flex flex-col bg-card">
-        {/* Image container */}
-        <div className="relative w-full aspect-square overflow-hidden bg-muted">
+    <article className="group relative h-full overflow-hidden rounded-2xl border border-foreground/10 bg-transparent transition-colors hover:border-primary/30 hover:bg-foreground/5">
+      <Link href={`/shop/${slug}`} className="flex h-full flex-col">
+        <div className="relative aspect-square w-full overflow-hidden bg-foreground/5">
           {primaryImage ? (
             <Image
               src={primaryImage}
               alt={title}
               fill
-              className="object-cover group-hover:scale-105 transition-transform"
+              sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
-              Немає фото
+            <div className="flex size-full items-center justify-center">
+              <Package className="size-8 text-muted-foreground/30" aria-hidden="true" />
+              <span className="sr-only">Немає фото</span>
             </div>
           )}
-
-          {/* Badges */}
-          <div className="absolute top-2 left-2 flex gap-2">
+          <div className="absolute left-2 top-2 flex flex-wrap gap-1.5">
             {isFeatured && (
-              <div className="px-2 py-1 bg-primary text-primary-foreground text-xs font-semibold rounded">
-                ⭐ Популярно
-              </div>
+              <span className="rounded-md bg-background/90 px-2 py-1 text-[10px] font-semibold text-foreground backdrop-blur">
+                Популярне
+              </span>
             )}
             {discount > 0 && (
-              <div className="px-2 py-1 bg-destructive text-destructive-foreground text-xs font-semibold rounded">
+              <span className="rounded-md bg-destructive px-2 py-1 text-[10px] font-bold text-destructive-foreground">
                 -{discount}%
-              </div>
-            )}
-          </div>
-
-          {/* Wishlist button */}
-          <button
-            onClick={handleWishlist}
-            disabled={isLoading}
-            className="absolute top-2 right-2 p-2 rounded-full bg-background/80 hover:bg-background transition-colors disabled:opacity-50"
-          >
-            <Heart
-              className={`w-5 h-5 ${
-                isWishlisted
-                  ? 'fill-destructive text-destructive'
-                  : 'text-muted-foreground'
-              }`}
-            />
-          </button>
-
-          {/* Sale count */}
-          {saleCount > 0 && (
-            <div className="absolute bottom-2 left-2 text-xs text-muted-foreground bg-background/80 px-2 py-1 rounded">
-              📦 Продано: {saleCount}
-            </div>
-          )}
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 flex flex-col p-3">
-          {/* Title */}
-          <h3 className="font-semibold text-sm line-clamp-2 group-hover:text-primary transition-colors mb-2">
-            {title}
-          </h3>
-
-          {/* Seller */}
-          <p className="text-xs text-muted-foreground mb-2 line-clamp-1">
-            від {sellerName}
-          </p>
-
-          {/* Rating */}
-          <div className="flex items-center gap-1 mb-3">
-            <div className="flex items-center">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={`w-3 h-3 ${
-                    i < Math.round(Number(rating) || 0)
-                      ? 'fill-yellow-400 text-yellow-400'
-                      : 'text-muted-foreground'
-                  }`}
-                />
-              ))}
-            </div>
-            <span className="text-xs text-muted-foreground">
-              {(Number(rating) || 0).toFixed(1)} ({reviewCount})
-            </span>
-          </div>
-
-          {/* Price */}
-          <div className="flex items-baseline gap-2 mt-auto mb-3">
-            <span className="text-lg font-bold">
-              {(Number(price) || 0).toLocaleString('uk-UA')} {currency}
-            </span>
-            {originalPrice && Number(originalPrice) > Number(price) && (
-              <span className="text-xs text-muted-foreground line-through">
-                {(Number(originalPrice) || 0).toLocaleString('uk-UA')}
               </span>
             )}
           </div>
-
-          {/* Add to cart button */}
-          <Button
-            size="sm"
-            className="w-full"
-            onClick={(e) => {
-              e.preventDefault();
-              toast({
-                title: 'Функція в розробці',
-                description: 'Функція добавлення в кошик незабаром буде доступна'
-              });
-            }}
-          >
-            <ShoppingCart className="w-4 h-4 mr-2" />
-            Додати
-          </Button>
+          {saleCount > 0 && (
+            <span className="absolute bottom-2 left-2 rounded-md bg-background/85 px-2 py-1 text-[10px] text-foreground backdrop-blur">
+              Продано: {saleCount}
+            </span>
+          )}
         </div>
-      </div>
-    </Link>
+
+        <div className="flex flex-1 flex-col gap-1.5 p-3">
+          {categoryName && (
+            <span className="truncate text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+              {categoryName}
+            </span>
+          )}
+          <h3 className="line-clamp-2 text-xs font-medium leading-snug text-foreground transition-colors group-hover:text-primary sm:text-sm">
+            {title}
+          </h3>
+          <p className="truncate text-[11px] text-muted-foreground">від {sellerName}</p>
+          <div className="flex items-center gap-1">
+            <Star className="size-3 fill-foreground/60 text-foreground/60" aria-hidden="true" />
+            <span className="text-xs text-muted-foreground">
+              {(Number(rating) || 0).toFixed(1)}{reviewCount > 0 ? ` (${reviewCount})` : ''}
+            </span>
+          </div>
+          <div className="mt-auto pt-1">
+            <p className="text-sm font-bold text-foreground sm:text-base">
+              {(Number(price) || 0).toLocaleString('uk-UA')} {currency || 'INPOM'}
+            </p>
+            {originalPrice && Number(originalPrice) > Number(price) && (
+              <p className="text-xs text-muted-foreground line-through">
+                {Number(originalPrice).toLocaleString('uk-UA')} {currency || 'INPOM'}
+              </p>
+            )}
+          </div>
+        </div>
+      </Link>
+
+      <button
+        type="button"
+        onClick={handleWishlist}
+        disabled={isLoading}
+        aria-label={isWishlisted ? 'Видалити з улюблених' : 'Додати в улюблені'}
+        aria-pressed={isWishlisted}
+        className="absolute right-2 top-2 rounded-full bg-background/90 p-2 text-muted-foreground shadow-sm backdrop-blur transition-colors hover:text-destructive disabled:opacity-50"
+      >
+        <Heart className={`size-4 ${isWishlisted ? 'fill-destructive text-destructive' : ''}`} aria-hidden="true" />
+      </button>
+    </article>
   );
 }

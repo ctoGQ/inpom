@@ -160,26 +160,17 @@ function SellerCircle({ seller }: { seller: Seller }) {
 function SectionHeader({
   title,
   icon: Icon,
-  href,
 }: {
   title: string;
   icon: React.ElementType;
-  href?: string;
 }) {
   return (
     <div className="flex items-center justify-between px-4 mb-3">
       <div className="flex items-center gap-2">
-        <Icon className="w-5 h-5 text-foreground" />
-        <h2 className="text-base font-bold text-foreground">{title}</h2>
+        <Icon className="w-4 h-4 text-foreground" />
+        <h5 className="text-base font-bold text-foreground">{title}</h5>
       </div>
-      {href && (
-        <Link
-          href={href}
-          className="flex items-center gap-0.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
-        >
-          Всі <ChevronRight className="w-3 h-3" />
-        </Link>
-      )}
+      
     </div>
   );
 }
@@ -275,22 +266,22 @@ export default function ShopMarketplacePage() {
   }, []);
 
   return (
-    <CabinetLayout title="Маркетплейс" showAvatar showNav>
-      <div className="pb-28">
+    <CabinetLayout title="Простір" showAvatar showNav>
+      <div className="pb-28 pt-4">
         {/* ── Search bar ── */}
-        <div className="px-4 pt-4 pb-6">
+        {/* <div className="px-3 mt-3 mb-6">
           <Link href="/shop">
-            <div className="flex items-center gap-3 px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl">
+            <div className="flex items-center gap-3 px-3 py-3 bg-foreground/5 border-3 border-foreground/10 rounded-2xl">
               <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
               <span className="text-sm text-muted-foreground">Пошук товарів та послуг...</span>
             </div>
           </Link>
-        </div>
+        </div> */}
 
         <div className="space-y-10">
-          {/* ── 1. Кращі Продавці ── */}
+          {/* ── 1. Топ Селлери ── */}
           <section>
-            <SectionHeader title="Кращі Продавці" icon={Store} />
+            <SectionHeader title="Топ Селлери" icon={Store} />
             <div className="flex gap-4 overflow-x-auto px-4 pb-2 scrollbar-hide">
               {loading ? (
                 <SellerSkeletons />
@@ -392,8 +383,8 @@ export default function ShopMarketplacePage() {
               ) : discountProducts.length > 0 ? (
                 discountProducts.map((p) => <CarouselProductCard key={p.id} product={p} />)
               ) : (
-                <div className="flex-shrink-0 w-72">
-                  <div className="rounded-2xl border border-foreground/10 bg-transparent p-6 text-center">
+                <div className="flex-shrink-0 w-full">
+                  <div className="rounded-2xl border-3 border-foreground/10 bg-transparent p-6 text-center">
                     <Percent className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
                     <p className="text-sm text-muted-foreground">Зараз немає акцій</p>
                   </div>
@@ -405,7 +396,7 @@ export default function ShopMarketplacePage() {
           {/* ── CTA: Add your product ── */}
           <div className="px-4">
             <Link href="/mycabinet/shop/create">
-              <div className="rounded-2xl border border-foreground/10 bg-transparent p-5 flex items-center justify-between hover:bg-foreground/5 transition-colors">
+              <div className="rounded-2xl border-3 border-dashed border-foreground/10 bg-transparent p-5 flex items-center justify-between hover:bg-foreground/5 transition-colors">
                 <div>
                   <p className="font-semibold text-foreground">Додайте свій товар</p>
                   <p className="text-sm text-muted-foreground mt-0.5">Почніть продавати на платформі</p>

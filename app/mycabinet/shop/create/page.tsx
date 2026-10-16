@@ -9,7 +9,7 @@ import { CabinetLayout } from '@/components/cabinet/cabinet-layout';
 import { CategorySearch } from '@/components/shop/category-search';
 import { CharacteristicSearch } from '@/components/shop/characteristic-search';
 import { useToast } from '@/components/ui/use-toast';
-import { Upload, Trash2 } from 'lucide-react';
+import { Briefcase, Laptop, Package, Repeat, Trash2, Upload } from 'lucide-react';
 
 interface ProductAttribute {
   name: string;
@@ -194,10 +194,44 @@ export default function CreateProductPage() {
       showNav={true}
     >
       <form onSubmit={handleSubmit} className="px-4 pt-6 pb-24 space-y-6">
-        {/* Title */}
-        <div className="space-y-2">
+        
+
+        {/* Product type */}
+        <div className="space-y-2 text-center">
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Назва товару *
+            Тип оголошення
+          </label>
+          <div className="grid grid-cols-4 gap-1">
+            {([
+              { value: 'goods', label: 'Товар', icon: Package },
+              { value: 'service', label: 'Послуга', icon: Briefcase },
+              { value: 'digital', label: 'Цифровий', icon: Laptop },
+              { value: 'subscription', label: 'Підписка', icon: Repeat },
+            ] as const).map(({ value, label, icon: Icon }) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, productType: value }))}
+                aria-pressed={formData.productType === value}
+                className={`mt-2 flex flex-col items-center justify-center gap-1.5 px-2 py-3 rounded-2xl border text-[10px] font-bold transition-all text-center ${
+                  formData.productType === value
+                    ? 'border-primary border-3 bg-primary/10 text-primary'
+                    : 'border-foreground/10 border-3 bg-foreground/5 text-muted-foreground hover:border-foreground/20'
+                }`}
+              >
+                <div className="flex items-center justify-center p-2 rounded-full bg-foreground/5">
+                  <Icon className="size-4" aria-hidden="true" />
+                </div>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Title */}
+        <div className="space-y-2 text-center">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Назва товару
           </label>
           <input
             type="text"
@@ -207,75 +241,19 @@ export default function CreateProductPage() {
               setFormData(prev => ({ ...prev, title: e.target.value }))
             }
             required
-            className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-        </div>
-
-        {/* Product type */}
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Тип оголошення *
-          </label>
-          <div className="grid grid-cols-4 gap-2">
-            {([
-              { value: 'goods', label: '📦 Товар' },
-              { value: 'service', label: '🛠️ Послуга' },
-              { value: 'digital', label: '💾 Цифровий' },
-              { value: 'subscription', label: '🔁 Підписка' },
-            ] as const).map(({ value, label }) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() => setFormData(prev => ({ ...prev, productType: value }))}
-                className={`px-2 py-2.5 rounded-2xl border text-xs font-medium transition-all text-center ${
-                  formData.productType === value
-                    ? 'border-primary bg-primary/10 text-primary'
-                    : 'border-foreground/10 bg-foreground/5 text-muted-foreground hover:border-foreground/20'
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Category */}
-        <div className="space-y-3">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Категорія *
-          </label>
-          <CategorySearch
-            value={formData.categoryId}
-            categoryName={formData.categoryName}
-            onChange={handleSelectCategory}
+            className="w-full mt-2 text-sm px-3 py-3 bg-foreground/20 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
         {/* Price */}
         <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
+          
+          <div className="space-y-2 text-center">
             <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Ціна (INPOM) *
+              Ціна
             </label>
             <input
-              type="number"
-              placeholder="0.00"
-              step="0.01"
-              min="0"
-              value={formData.price}
-              onChange={(e) =>
-                setFormData(prev => ({ ...prev, price: e.target.value }))
-              }
-              required
-              className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Оригінальна ціна
-            </label>
-            <input
-              type="number"
+              type="text"
               placeholder="0.00"
               step="0.01"
               min="0"
@@ -286,90 +264,35 @@ export default function CreateProductPage() {
                   originalPrice: e.target.value
                 }))
               }
-              className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full mt-2 text-sm px-3 py-3 bg-foreground/20 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
-        </div>
-
-        {/* Description */}
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Опис товару *
-          </label>
-          <textarea
-            placeholder="Детальний опис товару"
-            value={formData.description}
-            onChange={(e) =>
-              setFormData(prev => ({ ...prev, description: e.target.value }))
-            }
-            rows={4}
-            required
-            className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
-          />
-        </div>
-
-        {/* Short description */}
-        <div className="space-y-2">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Короткий опис
-          </label>
-          <input
-            type="text"
-            placeholder="Одна строка опису для переліку"
-            value={formData.shortDescription}
-            onChange={(e) =>
-              setFormData(prev => ({
-                ...prev,
-                shortDescription: e.target.value
-              }))
-            }
-            maxLength={500}
-            className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-          />
-        </div>
-
-        {/* Stock and SKU */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
+          <div className="space-y-2 text-center">
             <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              Кількість в наявності
-            </label>
-            <input
-              type="number"
-              placeholder="0"
-              min="0"
-              value={formData.stockQuantity}
-              onChange={(e) =>
-                setFormData(prev => ({
-                  ...prev,
-                  stockQuantity: e.target.value
-                }))
-              }
-              className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-            />
-          </div>
-          <div className="space-y-2">
-            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-              SKU
+              Зі знижкою
             </label>
             <input
               type="text"
-              placeholder="Артикул товару"
-              value={formData.sku}
+              placeholder="0.00"
+              
+              min="0"
+              value={formData.price}
               onChange={(e) =>
-                setFormData(prev => ({ ...prev, sku: e.target.value }))
+                setFormData(prev => ({ ...prev, price: e.target.value }))
               }
-              className="w-full px-4 py-3 bg-foreground/5 border border-foreground/10 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              required
+              className="w-full mt-2 text-sm px-3 py-3 bg-foreground/20 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
+          
         </div>
 
         {/* Images */}
-        <div className="space-y-3">
+        <div className="space-y-3 text-center">
           <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
             Фото товару
           </label>
-          <label className="flex items-center justify-center gap-2 p-6 border-2 border-dashed border-foreground/20 rounded-2xl cursor-pointer hover:border-primary/50 transition-colors">
+          <label className="mt-2 flex items-center justify-center gap-2 p-6 border-3 border-dashed border-foreground/20 rounded-2xl cursor-pointer hover:border-primary/50 transition-colors">
             <Upload className="w-5 h-5 text-muted-foreground" />
             <span className="text-sm font-medium text-muted-foreground">
               Завантажити фото
@@ -404,31 +327,115 @@ export default function CreateProductPage() {
           )}
         </div>
 
+
+        {/* Description */}
+        <div className="space-y-2 text-center mt-12 pt-4 border-t-3 border-foreground/10">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Опис товару
+          </label>
+          <textarea
+            placeholder="Детальний опис товару"
+            value={formData.description}
+            onChange={(e) =>
+              setFormData(prev => ({ ...prev, description: e.target.value }))
+            }
+            rows={4}
+            required
+            className="w-full mt-2 px-4 py-3 bg-foreground/20 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        {/* Short description */}
+        <div className="">
+          <input
+            type="text"
+            placeholder="Опис в одну строку"
+            value={formData.shortDescription}
+            onChange={(e) =>
+              setFormData(prev => ({
+                ...prev,
+                shortDescription: e.target.value
+              }))
+            }
+            maxLength={500}
+            className="w-full mt-2 text-sm px-3 py-3 bg-foreground/20 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+          />
+        </div>
+
+        
+
+        {/* Stock and SKU */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2 text-center">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              Наявність
+            </label>
+            <input
+              type="text"
+              placeholder="0"
+              min="0"
+              value={formData.stockQuantity}
+              onChange={(e) =>
+                setFormData(prev => ({
+                  ...prev,
+                  stockQuantity: e.target.value
+                }))
+              }
+              className="w-full mt-2 text-sm px-3 py-3 bg-foreground/20 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+          <div className="space-y-2 text-center">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              SKU
+            </label>
+            <input
+              type="text"
+              placeholder="Артикул"
+              value={formData.sku}
+              onChange={(e) =>
+                setFormData(prev => ({ ...prev, sku: e.target.value }))
+              }
+              className="w-full mt-2 text-sm px-3 py-3 bg-foreground/20 rounded-2xl text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+        </div>
+
+        {/* Category */}
+        <div className="space-y-3 text-center mt-12 pt-4 border-t-3 border-foreground/10">
+          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Категорія
+          </label>
+          <CategorySearch
+            value={formData.categoryId}
+            categoryName={formData.categoryName}
+            onChange={handleSelectCategory}
+          />
+        </div>
+        
         {/* Characteristics */}
         <div className="space-y-3">
-          <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-            Характеристики
-          </label>
           <CharacteristicSearch
             value={formData.attributes}
             onChange={(attrs) => setFormData(prev => ({ ...prev, attributes: attrs }))}
           />
         </div>
+        
 
         {/* Buttons */}
-        <div className="flex gap-3 pt-6">
-          <Link href="/mycabinet/shop" className="flex-1">
-            <button type="button" className="w-full px-6 py-4 text-foreground font-semibold rounded-2xl border border-foreground/10 hover:bg-foreground/5 transition-all">
-              Скасувати
-            </button>
-          </Link>
+        <div className="pt-6 space-y-3 mt-12 pt-4 border-t-3 border-foreground/10">
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 px-6 py-4 bg-primary text-primary-foreground font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg active:scale-95"
+            className="flex w-full justify-center px-4 py-3 bg-primary text-primary-foreground font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg active:scale-95"
           >
             {loading ? 'Створення...' : 'Створити товар'}
           </button>
+
+          <Link href="/mycabinet/shop" className="flex-1">
+            <button type="button" className="w-full px-4 py-3 text-foreground/50 font-semibold rounded-2xl bg-foreground/5 hover:bg-foreground/5 transition-all">
+              Скасувати
+            </button>
+          </Link>
         </div>
       </form>
     </CabinetLayout>
