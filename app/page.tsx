@@ -1,5 +1,6 @@
 import { HomeHeroSlider } from "@/components/landing/home-hero-slider"
 import { AboutCard } from "@/components/landing/about-card"
+import { InpomAppSection } from "@/components/landing/inpom-app-section"
 import { TestimonialsSection } from "@/components/landing/testimonials-section"
 import { NewsCarousel } from "@/components/landing/news-carousel"
 import { IntegrationsSection } from "@/components/landing/integrations-section"
@@ -22,6 +23,7 @@ export default async function Home() {
   const articles = await getNewsArticles()
   return <main className="relative min-h-screen overflow-x-hidden ">
     <HomeHeroSlider />
+      <InpomAppSection />
       <AboutCard />
     <TestimonialsSection/>
     <IntegrationsSection/>
