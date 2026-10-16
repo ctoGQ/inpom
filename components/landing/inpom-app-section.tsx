@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react"
+import { ArrowRight, CheckCircle2 } from "lucide-react"
 
 const benefits = [
   "знаходити спільноту, партнерів і можливості для розвитку",
@@ -38,33 +38,12 @@ export function InpomAppSection() {
             </div>
           </div>
 
-          <div className="order-2 flex w-full justify-center">
-            <div className="relative w-full max-w-xl overflow-hidden rounded-md border border-border bg-muted/30 p-4 shadow-sm sm:p-6">
-              <div className="rounded-md border border-border bg-background p-5 sm:p-8">
-                <div className="flex items-center justify-between border-b border-border pb-5">
-                  <div>
-                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">INPOM</p>
-                    <p className="mt-2 text-xl font-semibold">Ваш простір можливостей</p>
-                  </div>
-                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary" aria-hidden="true">
-                    <Sparkles className="size-5" />
-                  </div>
-                </div>
-                <div className="grid gap-3 py-6 sm:grid-cols-2">
-                  {["Спільнота", "Розвиток", "Проєкти", "Партнерство"].map((item, index) => (
-                    <div key={item} className="rounded-md border border-border p-4">
-                      <span className="font-mono text-xs text-muted-foreground">0{index + 1}</span>
-                      <p className="mt-5 font-medium">{item}</p>
-                      <p className="mt-1 text-sm text-muted-foreground">Відкривайте нові можливості</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="flex items-center gap-3 rounded-md bg-primary/10 p-4 text-sm text-primary">
-                  <span className="size-2 rounded-full bg-primary" aria-hidden="true" />
-                  Ваш наступний крок уже поруч
-                </div>
-              </div>
-            </div>
+          <div className="order-2 flex w-full justify-center lg:justify-end">
+            <img
+              src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/inpom-Artboard-home-ufGtQQvT1dFEAdhYqeVFAi6mxs4t5x.png"
+              alt="Застосунок INPOM на смартфоні"
+              className="h-auto w-full max-w-2xl object-contain"
+            />
           </div>
         </div>
       </div>
