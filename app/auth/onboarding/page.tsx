@@ -39,8 +39,9 @@ export default function OnboardingPage() {
 
   if (loading) {
     return (
-      <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-8 sm:px-6 lg:py-12"><div className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-primary/10" />
-        <p className="text-gray-600 text-lg font-medium">Завантаження...</p>
+      <div className="relative flex min-h-dvh items-center justify-center overflow-hidden bg-background px-3 py-3 sm:px-6">
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-primary/10" />
+        <p className="text-sm font-medium text-muted-foreground">Завантаження...</p>
       </div>
     );
   }

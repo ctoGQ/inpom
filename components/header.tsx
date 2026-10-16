@@ -6,26 +6,7 @@ import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { ChevronDown, Gem, LoaderPinwheel, Menu, X } from "lucide-react"
 
-const primaryLinks = [
-  ["Спільнота", "/community"],
-  ["Розвиток", "/development"],
-  ["Бізнес", "/business"],
-  ["Міжнародні можливості", "/international"],
-  ["Про INPOM", "/about"],
-  ["Партнерство", "/partnership"],
-  ["Новини", "/newsletter"],
-] as const
-
-const menuLinks = [
-  ["Усі можливості", "/projects"],
-  ["Спільнота", "/community"],
-  ["Розвиток", "/development"],
-  ["Проєкти", "/projects"],
-  ["Новини", "/newsletter"],
-  ["Прозорість", "/transparency"],
-  ["Підтримати INPOM", "/donation"],
-  ["Контакти", "/contacts"],
-] as const
+const menuLinks = [["Підтримати INPOM", "/donation"]] as const
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false)

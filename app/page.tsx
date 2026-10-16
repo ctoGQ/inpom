@@ -1,6 +1,7 @@
 import { HomeHeroSlider } from "@/components/landing/home-hero-slider"
-import { HomePathways } from "@/components/landing/home-pathways"
 import { AboutCard } from "@/components/landing/about-card"
+import { InpomAppSection } from "@/components/landing/inpom-app-section"
+import { HomePathways } from "@/components/landing/home-pathways"
 import { TestimonialsSection } from "@/components/landing/testimonials-section"
 import { NewsCarousel } from "@/components/landing/news-carousel"
 import { IntegrationsSection } from "@/components/landing/integrations-section"
@@ -23,8 +24,9 @@ export default async function Home() {
   const articles = await getNewsArticles()
   return <main className="relative min-h-screen overflow-x-hidden ">
     <HomeHeroSlider />
-    <HomePathways />
-    <AboutCard />
+      <InpomAppSection />
+      <HomePathways />
+      <AboutCard />
     <TestimonialsSection/>
     <IntegrationsSection/>
     {/* <ImageSplitSection eyebrow="Що таке INPOM" title="Екосистема, у якій жіночі ідеї не залишаються наодинці" description="Міжнародний парламент матерів поєднує спільноту, розвиток, підприємництво та міжнародні зв&apos;язки в один зрозумілий маршрут — від першого запитання до спільної дії." image="/images/inpom-community.png" alt="Жінки разом працюють над ідеями у спільноті" href="/about" linkLabel="Познайомитися з INPOM" /> */}
