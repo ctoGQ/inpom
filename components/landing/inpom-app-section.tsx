@@ -1,43 +1,25 @@
-import { ArrowRight, CheckCircle2 } from "lucide-react"
+import { ArrowRight, CheckCircle2, Sparkles } from "lucide-react"
 
 const benefits = [
-  "одне місце для спільноти, розвитку та партнерства",
-  "зрозумілий шлях від ідеї до спільної дії",
-  "безпечна взаємодія та прозорі можливості",
+  "знаходити спільноту, партнерів і можливості для розвитку",
+  "перетворювати ідеї на проєкти з підтримкою однодумців",
+  "бачити свій прогрес і наступний крок у зрозумілому форматі",
 ]
 
 export function InpomAppSection() {
   return (
-    <section className="border-y border-border/60 bg-muted/30 py-20 sm:py-28" aria-labelledby="inpom-app-title">
+    <section className="border-y border-border/60 bg-background py-24 sm:py-32" aria-labelledby="inpom-app-title">
       <div className="container mx-auto px-6 lg:px-10">
-        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-20">
-          <div className="relative overflow-hidden rounded-3xl border border-border bg-background p-8 shadow-sm sm:p-12">
-            <div className="absolute -right-16 -top-16 size-40 rounded-full bg-primary/10 blur-3xl" aria-hidden="true" />
-            <div className="relative flex min-h-[280px] flex-col justify-between gap-10">
-              <div className="flex items-center justify-between">
-                <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">INPOM / app</span>
-                <span className="rounded-full border border-border px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">beta</span>
-              </div>
-              <div>
-                <p className="font-mono text-sm text-primary">Ваш простір для дій</p>
-                <p className="mt-4 max-w-sm text-3xl font-medium tracking-tight sm:text-4xl">Ідеї стають сильнішими разом</p>
-              </div>
-              <div className="flex items-center gap-3 border-t border-border pt-5 text-sm text-muted-foreground">
-                <span className="flex size-9 items-center justify-center rounded-full bg-primary/10 text-primary" aria-hidden="true">↗</span>
-                <span>Знайти свою наступну можливість</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="max-w-2xl">
-            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">INPOM / цифровий простір</p>
-            <h2 id="inpom-app-title" className="mt-4 text-balance text-4xl font-medium tracking-tight sm:text-5xl lg:text-6xl">
-              Усе необхідне для руху вперед — в одному застосунку
+        <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+          <div className="order-1 mx-auto flex max-w-2xl flex-col items-center gap-6 text-center lg:items-start lg:text-left">
+            <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-muted-foreground">INPOM / застосунок</p>
+            <h2 id="inpom-app-title" className="max-w-xl text-balance text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+              Платформа, де ідеї знаходять підтримку
             </h2>
-            <p className="mt-6 text-pretty text-lg leading-8 text-muted-foreground">
-              Застосунок INPOM допомагає жінкам знаходити своїх людей, розвивати ідеї та перетворювати прагнення на реальні проєкти. Тут легко побачити наступний крок, отримати підтримку й долучитися до змін, які створюються разом.
+            <p className="max-w-xl text-pretty text-lg leading-8 text-muted-foreground lg:text-xl">
+              INPOM об&apos;єднує жінок, які хочуть розвиватися, створювати проєкти та змінювати світ навколо себе. У застосунку ви знайдете людей зі схожими цінностями, корисні можливості та простір для спільних дій.
             </p>
-            <ul className="mt-8 flex flex-col gap-4" aria-label="Переваги застосунку INPOM">
+            <ul className="flex max-w-xl flex-col gap-4 text-left" aria-label="Переваги застосунку INPOM">
               {benefits.map((benefit) => (
                 <li key={benefit} className="flex items-start gap-3 text-sm leading-6">
                   <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
@@ -45,10 +27,44 @@ export function InpomAppSection() {
                 </li>
               ))}
             </ul>
-            <a href="#community" className="mt-9 inline-flex items-center gap-2 font-medium text-primary transition-colors hover:text-primary/70">
-              Дізнатися більше про можливості
-              <ArrowRight className="size-4" aria-hidden="true" />
-            </a>
+            <div className="flex w-full flex-col justify-center gap-2 sm:flex-row lg:justify-start">
+              <a href="#community" className="inline-flex items-center justify-center gap-2 rounded-md bg-primary px-5 py-3 font-medium text-primary-foreground transition-opacity hover:opacity-90">
+                Приєднатися до INPOM
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </a>
+              <a href="#pathways" className="inline-flex items-center justify-center rounded-md border border-border bg-background px-5 py-3 font-medium transition-colors hover:bg-muted">
+                Дізнатися більше
+              </a>
+            </div>
+          </div>
+
+          <div className="order-2 flex w-full justify-center">
+            <div className="relative w-full max-w-xl overflow-hidden rounded-md border border-border bg-muted/30 p-4 shadow-sm sm:p-6">
+              <div className="rounded-md border border-border bg-background p-5 sm:p-8">
+                <div className="flex items-center justify-between border-b border-border pb-5">
+                  <div>
+                    <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">INPOM</p>
+                    <p className="mt-2 text-xl font-semibold">Ваш простір можливостей</p>
+                  </div>
+                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-primary" aria-hidden="true">
+                    <Sparkles className="size-5" />
+                  </div>
+                </div>
+                <div className="grid gap-3 py-6 sm:grid-cols-2">
+                  {["Спільнота", "Розвиток", "Проєкти", "Партнерство"].map((item, index) => (
+                    <div key={item} className="rounded-md border border-border p-4">
+                      <span className="font-mono text-xs text-muted-foreground">0{index + 1}</span>
+                      <p className="mt-5 font-medium">{item}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">Відкривайте нові можливості</p>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center gap-3 rounded-md bg-primary/10 p-4 text-sm text-primary">
+                  <span className="size-2 rounded-full bg-primary" aria-hidden="true" />
+                  Ваш наступний крок уже поруч
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
