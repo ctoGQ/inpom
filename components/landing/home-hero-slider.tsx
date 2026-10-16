@@ -10,7 +10,7 @@ const slides = [
     image: "/home/slider/home-slider-1.png",
     title: "Від спільноти до системи дії",
     action: "Дізнатися більше",
-    href: "/about",
+    href: "/donation",
   },
 ]
 
