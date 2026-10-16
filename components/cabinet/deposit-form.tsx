@@ -158,15 +158,15 @@ export function DepositForm({ customerId, cardId }: DepositFormProps) {
 
           {/* Payment Method Selection */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               Спосіб оплати
-            </p>
+            </label>
 
             <button
               type="button"
               onClick={() => setIsMethodModalOpen(true)}
               disabled={isLoading}
-              className="w-full p-4 rounded-2xl border border-foreground/10 bg-card hover:bg-muted/50 transition-all flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full p-4 mt-2 rounded-2xl border border-foreground/10 bg-card hover:bg-muted/50 transition-all flex items-center justify-between group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-muted group-hover:bg-muted/80 transition-all">
@@ -206,7 +206,7 @@ export function DepositForm({ customerId, cardId }: DepositFormProps) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-xs font-semibold text-muted-foreground tracking-wide">
-                  Сума депозиту
+                  Сума
                 </p>
                 <span className="text-xl font-bold text-foreground">
                   {amount || '0.00'}

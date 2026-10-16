@@ -61,7 +61,7 @@ export function DashboardScreen({ userName, avatarUrl, tasks, article }: Dashboa
           <Image src="/images/inpom-logo-full.png" alt="International Parliament of Mothers" width={178} height={45} className="h-auto w-32 object-contain" priority />
         </Link>
         <Link href="/mycabinet/account" className="relative mt-0.5 inline-flex" aria-label="Відкрити акаунт">
-          <Image src={avatarUrl} alt={`Фото профілю ${userName}`} width={40} height={40} className="h-10 w-10 rounded-full border-2 border-[rgba(255,255,255,.75)] object-cover" />
+          <Image src={avatarUrl} alt={`Фото профілю ${userName}`} width={40} height={40} className="h-10 w-10 rounded-full border-2 border-foreground/20  object-cover" />
           <span className="absolute bottom-0 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-black bg-[#e00070]" aria-hidden="true" />
         </Link>
       </header>
@@ -73,7 +73,7 @@ export function DashboardScreen({ userName, avatarUrl, tasks, article }: Dashboa
             <span className="text-base font-medium">Раді бачити Вас знову!</span>
           </div>
 
-          <section className={`absolute inset-0 m-0 max-h-[60vh] w-full bg-transparent translate-y-4 opacity-0 transition-[opacity,transform] duration-800 ease-[ease] pointer-events-none motion-reduce:transition-none ${showArticle ? 'pointer-events-auto translate-y-0 opacity-100' : ''}`} aria-label="Рекомендована стаття">
+          <section className={`absolute inset-0 m-0 max-h-[50vh] w-full bg-transparent translate-y-4 opacity-0 transition-[opacity,transform] duration-800 ease-[ease] pointer-events-none motion-reduce:transition-none ${showArticle ? 'pointer-events-auto translate-y-0 opacity-100' : ''}`} aria-label="Рекомендована стаття">
             <Link href={activeArticle.id ? `/newsletter/${activeArticle.id}` : '/newsletter'} className="relative block h-full w-full overflow-hidden rounded-3xl bg-transparent">
               <Image src={activeArticle.cover_image_url || '/images/inpom-leader.jpg'} alt={activeArticle.title} fill sizes="(max-width: 700px) 100vw, 420px" className="object-cover object-center" priority />
               <span className="absolute inset-[35%_0_0] bg-[linear-gradient(180deg,transparent,rgba(15,14,26,.98)_72%)]" />

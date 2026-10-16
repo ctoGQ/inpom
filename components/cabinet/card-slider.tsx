@@ -145,7 +145,7 @@ export function CardSlider({
           background: getCardGradient(currentCard.card_type).bg,
           boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
         }}
-        className="relative p-6 rounded-b-4xl overflow-hidden"
+        className="relative pt-12 p-6 rounded-b-4xl overflow-hidden"
         layoutId="card-slider"
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
       >
@@ -195,36 +195,7 @@ export function CardSlider({
         />
 
         {/* Top Icons */}
-        <div className="flex justify-between items-center mb-12 relative z-20">
-          <motion.div
-            className="w-12 h-12 bg-white rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-          >
-            <Bell className="w-6 h-6 text-black" />
-          </motion.div>
-          <Link href="/mycabinet/account">
-            <motion.div
-              className="w-12 h-12 rounded-full overflow-hidden bg-white/20 backdrop-blur-sm border-2 border-white/40 flex-shrink-0 hover:border-white/60 transition-colors cursor-pointer"
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {customerAvatar ? (
-                <Image
-                  src={customerAvatar}
-                  alt={customerName || 'User'}
-                  width={48}
-                  height={48}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-white/20">
-                  <User className="w-6 h-6 text-white" />
-                </div>
-              )}
-            </motion.div>
-          </Link>
-        </div>
+        
 
         {/* Card Content */}
         <div className="text-center space-y-4 relative z-20">
